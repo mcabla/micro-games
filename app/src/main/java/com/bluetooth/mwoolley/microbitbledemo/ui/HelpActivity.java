@@ -40,7 +40,7 @@ public class HelpActivity extends AppCompatActivity {
             uri = extras.getString(Constants.URI);
         }
 
-        WebView help_content = (WebView)findViewById(R.id.general_help);
+        WebView help_content = findViewById(R.id.general_help);
         help_content.getSettings().setBuiltInZoomControls(true);
         help_content.loadUrl(uri);
     }

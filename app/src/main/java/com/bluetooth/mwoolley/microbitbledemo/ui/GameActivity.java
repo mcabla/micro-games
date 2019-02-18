@@ -134,7 +134,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
         exiting = false;
 
-        GridLayout led_grid = (GridLayout) GameActivity.this.findViewById(R.id.led_grid);
+        GridLayout led_grid = GameActivity.this.findViewById(R.id.led_grid);
         int count = led_grid.getChildCount();
         for (int i = 0; i < count; i++) {
             View child = led_grid.getChildAt(i);
@@ -457,7 +457,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     }
 
     private void setUiFromMatrixState(byte[] matrix_state) {
-        GridLayout grid = (GridLayout) GameActivity.this.findViewById(R.id.led_grid);
+        GridLayout grid = GameActivity.this.findViewById(R.id.led_grid);
         int count = grid.getChildCount();
         int display_row = 0;
         int led_in_row = 4;
@@ -512,8 +512,8 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                 ((TextView) GameActivity.this.findViewById(R.id.accel_z)).setText("Z: " + String.format("%.3f", accel_data[2]));
                 ((TextView) GameActivity.this.findViewById(R.id.pitch)).setText("PITCH: " + String.format("%.1f", pitch));
                 ((TextView) GameActivity.this.findViewById(R.id.roll)).setText("ROLL: " + String.format("%.1f", roll));
-                ((ImageView) GameActivity.this.findViewById(R.id.microbit)).setRotationX((float) roll);
-                ((ImageView) GameActivity.this.findViewById(R.id.microbit)).setRotationY((float) pitch);
+                GameActivity.this.findViewById(R.id.microbit).setRotationX((float) roll);
+                GameActivity.this.findViewById(R.id.microbit).setRotationY((float) pitch);
             }
         });
     }
@@ -529,9 +529,9 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     @Override
     public void connectionStatusChanged(boolean connected) {
         if (connected) {
-            showMsg(Utility.htmlColorGreen("Connected"));
+            showMsg(Utility.htmlColorGreen("Verbonden"));
         } else {
-            showMsg(Utility.htmlColorRed("Disconnected"));
+            showMsg(Utility.htmlColorRed("Verbinding verbroken"));
         }
     }
 

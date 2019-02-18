@@ -39,7 +39,7 @@ public class MainSettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_settings);
-        cb_fud = (CheckBox) this.findViewById(R.id.cb_scan_filter_unpaired);
+        cb_fud = this.findViewById(R.id.cb_scan_filter_unpaired);
         cb_fud.setChecked(Settings.getInstance().isFilter_unpaired_devices());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Save");

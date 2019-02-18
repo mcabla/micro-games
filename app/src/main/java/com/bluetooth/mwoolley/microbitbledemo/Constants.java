@@ -17,7 +17,7 @@ package com.bluetooth.mwoolley.microbitbledemo;
  *  limitations under the License.
  */
 public class Constants {
-    public static final String TAG = "microbitbledemo";
+    public static final String TAG = "microbitblegame";
     public static final String URI = "URI";
     public static final String NO_HELP = "file:///android_res/raw/no_help.html";
     public static final String MAIN_HELP = "file:///android_res/raw/main_help.html";
@@ -34,7 +34,6 @@ public class Constants {
 
     public static final long GATT_OPERATION_TIME_OUT = 5000;
     public static final long CONNECTION_KEEP_ALIVE_FREQUENCY = 10000;
-
 
     public static final String SERVICE_PRESENT_COLOUR = "#228B22";
     public static final String SERVICE_ABSENT_COLOUR = "#FF0000";

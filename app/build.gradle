@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.bluetooth.mwoolley.microbitbledemo"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 7
         versionName "1.5.4"

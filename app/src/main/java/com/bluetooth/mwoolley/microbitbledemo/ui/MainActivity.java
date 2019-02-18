@@ -372,8 +372,8 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
                 view = MainActivity.this.getLayoutInflater().inflate(
                         R.layout.list_row, null);
                 viewHolder = new ViewHolder();
-                viewHolder.text = (TextView) view.findViewById(R.id.textView);
-                viewHolder.bdaddr = (TextView) view.findViewById(R.id.bdaddr);
+                viewHolder.text = view.findViewById(R.id.textView);
+                viewHolder.bdaddr = view.findViewById(R.id.bdaddr);
                 view.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) view.getTag();
@@ -381,12 +381,12 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
             BluetoothDevice device = ble_devices.get(i);
             String deviceName = device.getName();
             if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                deviceName = deviceName + " (BONDED)";
+                deviceName = deviceName + " (Gekoppeld)";
             }
             if (deviceName != null && deviceName.length() > 0)
                 viewHolder.text.setText(deviceName);
             else
-                viewHolder.text.setText("unknown device");
+                viewHolder.text.setText("Onbekend apparaat");
 
             viewHolder.bdaddr.setText(device.getAddress());
 
@@ -425,9 +425,9 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
 
     private String getScanningMessage() {
         if (Settings.getInstance().isFilter_unpaired_devices()) {
-            return "Scanning for paired micro:bits";
+            return "Scannen voor gekoppelde micro:bits";
         } else {
-            return "Scanning for all micro:bits";
+            return "Scannen voor alle micro:bits";
 
         }
     }
