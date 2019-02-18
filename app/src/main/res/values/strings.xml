@@ -1,0 +1,63 @@
+<!--
+/*
+ * Author: Martin Woolley
+ * Twitter: @bluetooth_mdw
+ *
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+-->
+<resources>
+    <string name="app_name">micro:bit Game</string>
+    <string name="menu_settings">Instellingen</string>
+    <string name="menu_help">Help</string>
+    <string name="menu_about">Over</string>
+    <string name="menu_profile">Bluetooth Profiel</string>
+    <string name="menu_services">Bluetooth Services</string>
+    <string name="menu_refresh">Vernieuw Services</string>
+    <string name="menu_new_game">Nieuw spel</string>
+
+    <string name="screen_title_main">Controlers</string>
+    <string name="screen_title_menu">Spel starten</string>
+    <string name="screen_title_accelerometer">Accelerometer</string>
+    <string name="screen_title_buttons">Knoppen</string>
+    <string name="screen_title_LEDs">LEDs</string>
+    <string name="screen_title_device_information">apparaatinformatie</string>
+    <string name="screen_title_game">Spel</string>
+
+    <string name="model_number">Model Nummer:</string>
+    <string name="serial_number">Serial Nummer:</string>
+    <string name="hardware_revision">Hardware Revisie:</string>
+    <string name="firmware_revision">Firmware Revisie:</string>
+    <string name="buttons">Knoppen</string>
+    <string name="accelerometer">Accelerometer</string>
+    <string name="leds">LEDs</string>
+    <string name="game">Spel</string>
+
+    <string name="accelerometer_period">Accelerometer Periode</string>
+    <string name="display_text">Toon tekst</string>
+    <string name="bluetooth_scanning">Bluetooth Scanning</string>
+    <string name="scan_filter_unpaired">Filter onaangekoppelde micro:bits van de scan resultaten?</string>
+    <string name="bluetooth_services">Bluetooth Services op de micro:bit</string>
+    <string name="services_key">Legende</string>
+    <string name="zone1_limit">Zone 1 Upper BPM Limit</string>
+    <string name="zone2_limit">Zone 2 Upper BPM Limit</string>
+    <string name="zone3_limit">Zone 3 Upper BPM Limit</string>
+    <string name="zone4_limit">Zone 4 Upper BPM Limit</string>
+    <string name="service_generic_access">Generic Access Service</string>
+    <string name="service_generic_attribute">Generic Attribute Service</string>
+    <string name="service_device_information">Device Information Service</string>
+    <string name="service_accelerometer">Accelerometer Service</string>
+    <string name="service_button">Knop Service</string>
+    <string name="service_led">LED Service</string>
+</resources>
