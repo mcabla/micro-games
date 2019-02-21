@@ -1,15 +1,17 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 28
     buildToolsVersion "28.0.3"
 
     defaultConfig {
-        applicationId "com.bluetooth.mwoolley.microbitbledemo"
+        applicationId "com.mcabla.microbit.game"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 7
-        versionName "1.5.4"
+        versionName "0.1"
     }
     buildTypes {
         release {
@@ -21,8 +23,14 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.google.firebase:firebase-core:16.0.7'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
     testImplementation 'junit:junit:4.12'
     implementation "androidx.appcompat:appcompat:1.0.2"
-    implementation "com.google.android.material:material:1.0.0-rc01"
+    implementation "com.google.android.material:material:1.1.0-alpha03"
     implementation "androidx.gridlayout:gridlayout:1.0.0"
+    api 'com.google.guava:guava:27.0.1-android'
+    implementation files('libs/libGoogleAnalytics.jar')
+    implementation files('libs/locale_platform.jar')
+    implementation files('libs/script.jar')
 }

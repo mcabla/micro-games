@@ -5,7 +5,7 @@ todo
 
 
 ## Copyright
- * Copyright (c) [DATE] Martin Woolley (@bluetooth_mdw)
+ * Copyright (c) 2016-2017 Martin Woolley (@bluetooth_mdw)
  * Copyright (c) 2019 Casper Haems
 
 ## Licence
