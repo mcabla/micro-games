@@ -22,11 +22,15 @@
 
 package com.mcabla.microbit.game.python.process;
 
+import android.os.Environment;
+import android.util.Log;
+
 import com.mcabla.microbit.game.python.config.GlobalConstants;
 import com.googlecode.android_scripting.AndroidProxy;
 import com.googlecode.android_scripting.interpreter.InterpreterConfiguration;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +47,7 @@ public class MyScriptProcess extends PythonScriptProcess {
 
 	  public static MyScriptProcess launchScript(File script, InterpreterConfiguration configuration, final AndroidProxy proxy, Runnable shutdownHook, String workingDir, String sdcardPackageDirectory, List<String> args, Map<String, String> envVars, File binary) {
 	    if (!script.exists()) {
-	        throw new RuntimeException("No such script to launch.");
+			throw new RuntimeException("No such script to launch.");
 	      }
 
 	    MyScriptProcess localScriptProcess = new MyScriptProcess(script, configuration, proxy, workingDir, sdcardPackageDirectory);

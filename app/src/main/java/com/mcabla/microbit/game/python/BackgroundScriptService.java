@@ -37,6 +37,8 @@ import com.googlecode.android_scripting.jsonrpc.RpcReceiverManager;
 import com.googlecode.android_scripting.interpreter.InterpreterConfiguration;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -113,15 +115,24 @@ public class BackgroundScriptService extends Service {
 	}
 
     // ------------------------------------------------------------------------------------------------------
-	
+
 	@Override
 	public void onStart(Intent intent, final int startId) {
+		handleStart(intent,startId);
 		super.onStart(intent, startId);
-		
+	}
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId){
+		handleStart(intent,startId);
+		return START_STICKY;
+	}
+
+	public void handleStart(Intent intent, final int startId){
 		killProcess();
-		
+
 		instance = this;
-	    this.killMe = false;
+		this.killMe = false;
 
 		new startMyAsyncTask().execute(startId);
 	}
@@ -158,6 +169,29 @@ public class BackgroundScriptService extends Service {
 		String scriptName = GlobalConstants.PYTHON_MAIN_SCRIPT_NAME;
 		scriptName = this.getFilesDir().getAbsolutePath() + "/" + scriptName;
 		File script = new File(scriptName);
+
+		if (!script.exists()){
+			String text = "import android, time\n" +
+					"\n" +
+					"droid = android.Android()\n" +
+					"\n" +
+					"while 1:\n" +
+					"\tdroid.makeToast(\"Hello from Python 3.2 for Android\")\n" +
+					"\ttime.sleep(5)";
+			try {
+				File outputDir = context.getCacheDir(); // context being the Activity pointer
+				script = File.createTempFile("temp", "py", outputDir);
+				FileOutputStream stream = new FileOutputStream(script);
+				try {
+					stream.write(text.getBytes());
+				} finally {
+					stream.close();
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		
 		// arguments
 		ArrayList<String> args = new ArrayList<String>();

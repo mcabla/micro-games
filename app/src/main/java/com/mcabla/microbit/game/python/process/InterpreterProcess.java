@@ -24,9 +24,7 @@ package com.mcabla.microbit.game.python.process;
 
 import android.os.Environment;
 
-import com.mcabla.microbit.game.python.ScriptApplication;
-import com.mcabla.microbit.game.python.config.GlobalConstants;
-import com.googlecode.android_scripting.Analytics;
+import com.mcabla.microbit.game.App;
 import com.googlecode.android_scripting.AndroidProxy;
 import com.googlecode.android_scripting.interpreter.Interpreter;
 import com.googlecode.android_scripting.interpreter.MyInterpreter;
@@ -63,7 +61,7 @@ public class InterpreterProcess extends Process {
     mProxy = paramAndroidProxy;
     mInterpreter = myInterpreter.getInterpreter();
 
-  	niceName = "Python 3.2.2";
+  	niceName = "Python 3.6.4";
     pyname = "python3";
     interactiveCommand = "";
     arguments = new ArrayList<String>();
@@ -118,7 +116,7 @@ public class InterpreterProcess extends Process {
 
   @Override
   public String getSdcardPackageDirectory() {
-    return Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + ScriptApplication.getThePackageName();
+    return Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + App.getThePackageName();
   }
   
   public RpcReceiverManagerFactory getRpcReceiverManagerFactory()
@@ -128,9 +126,6 @@ public class InterpreterProcess extends Process {
   
   public void start(Runnable paramRunnable, List<String> paramList)
   {
-    String[] arrayOfString = new String[1];
-    arrayOfString[0] = pyname;
-    Analytics.track(arrayOfString);
     if (!this.mCommand.equals(""))
       addArgument(this.mCommand);
     if (paramList != null)

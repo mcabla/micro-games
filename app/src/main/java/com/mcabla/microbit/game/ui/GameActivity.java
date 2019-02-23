@@ -45,8 +45,12 @@ import com.mcabla.microbit.game.Settings;
 import com.mcabla.microbit.game.Utility;
 import com.mcabla.microbit.game.bluetooth.BleAdapterService;
 import com.mcabla.microbit.game.bluetooth.ConnectionStatusListener;
+import com.mcabla.microbit.game.python.BackgroundScriptService;
+import com.mcabla.microbit.game.python.ScriptService;
+import com.mcabla.microbit.game.python.config.GlobalConstants;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -556,6 +560,25 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             showMsg("Unable to convert text to UTF8 bytes");
+        }
+        runScriptService();
+    }
+
+    public void sendText(String text) {
+        Log.d(Constants.TAG, "sendText");
+        /*EditText text = (EditText) GameActivity.this.findViewById(R.id.display_text2);*/
+        Log.d(Constants.TAG, "sendText: " + text);
+        byte[] utf8_bytes = text.getBytes(StandardCharsets.UTF_8);
+        Log.d(Constants.TAG, "UTF8 bytes: 0x" + Utility.byteArrayAsHexString(utf8_bytes));
+        bluetooth_le_adapter.writeCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.LEDTEXT_CHARACTERISTIC_UUID), utf8_bytes);
+    }
+
+    private void runScriptService() {
+        if(GlobalConstants.IS_FOREGROUND_SERVICE) {
+            startService(new Intent(this, ScriptService.class));
+        }
+        else {
+            startService(new Intent(this, BackgroundScriptService.class));
         }
     }
 

@@ -4,6 +4,11 @@
 todo
 
 
+##Useful links
+ * (https://github.com/ainsophical/DROID_PYTHON)
+ * (https://github.com/kuri65536/sl4a/releases)
+ * (https://github.com/kuri65536/python-for-android/releases)
+
 ## Copyright
  * Copyright (c) 2016-2017 Martin Woolley (@bluetooth_mdw)
  * Copyright (c) 2019 Casper Haems

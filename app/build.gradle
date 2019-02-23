@@ -32,5 +32,5 @@ dependencies {
     api 'com.google.guava:guava:27.0.1-android'
     implementation files('libs/libGoogleAnalytics.jar')
     implementation files('libs/locale_platform.jar')
-    implementation files('libs/script.jar')
+    //implementation files('libs/script.jar')
 }

@@ -16,9 +16,10 @@
 
 package com.googlecode.android_scripting.facade;
 
+import android.os.Build;
+
 import com.google.common.collect.Maps;
 import com.googlecode.android_scripting.Log;
-import com.googlecode.android_scripting.facade.ui.UiFacade;
 import com.googlecode.android_scripting.jsonrpc.RpcReceiver;
 import com.googlecode.android_scripting.rpc.MethodDescriptor;
 import com.googlecode.android_scripting.rpc.RpcDeprecated;
@@ -51,56 +52,21 @@ public class FacadeConfiguration {
 
   static {
 
-    if (android.os.Build.VERSION.SDK == null) {
-      sSdkLevel = 3;
-    } else {
-      try {
-        sSdkLevel = Integer.parseInt(android.os.Build.VERSION.SDK);
-      } catch (NumberFormatException e) {
-        Log.e(e);
-      }
+    try {
+      sSdkLevel = Build.VERSION.SDK_INT;
+    } catch (Exception e) {
+      Log.e(e);
+      sSdkLevel = 21;
     }
 
     sFacadeClassList = new HashSet<Class<? extends RpcReceiver>>();
     sFacadeClassList.add(AndroidFacade.class);
-    sFacadeClassList.add(ApplicationManagerFacade.class);
-    sFacadeClassList.add(CameraFacade.class);
-    sFacadeClassList.add(CommonIntentsFacade.class);
-    sFacadeClassList.add(ContactsFacade.class);
     sFacadeClassList.add(EventFacade.class);
-    sFacadeClassList.add(LocationFacade.class);
-    sFacadeClassList.add(PhoneFacade.class);
-    sFacadeClassList.add(MediaRecorderFacade.class);
-    sFacadeClassList.add(SensorManagerFacade.class);
-    sFacadeClassList.add(SettingsFacade.class);
-    sFacadeClassList.add(SmsFacade.class);
-    sFacadeClassList.add(SpeechRecognitionFacade.class);
     sFacadeClassList.add(ToneGeneratorFacade.class);
     sFacadeClassList.add(WakeLockFacade.class);
-    sFacadeClassList.add(WifiFacade.class);
-    sFacadeClassList.add(UiFacade.class);
-    sFacadeClassList.add(BatteryManagerFacade.class);
-    sFacadeClassList.add(ActivityResultFacade.class);
-    sFacadeClassList.add(MediaPlayerFacade.class);
-    sFacadeClassList.add(PreferencesFacade.class);
 
     if (sSdkLevel >= 4) {
-      sFacadeClassList.add(TextToSpeechFacade.class);
-      sFacadeClassList.add(ACustomFacade.class);
-    } else {
-      sFacadeClassList.add(EyesFreeFacade.class);
-    }
-
-    if (sSdkLevel >= 5) {
-      sFacadeClassList.add(BluetoothFacade.class);
-    }
-
-    if (sSdkLevel >= 7) {
-      sFacadeClassList.add(SignalStrengthFacade.class);
-    }
-
-    if (sSdkLevel >= 8) {
-      sFacadeClassList.add(WebCamFacade.class);
+      sFacadeClassList.add(MicrobitFacade.class);
     }
 
     for (Class<? extends RpcReceiver> recieverClass : sFacadeClassList) {

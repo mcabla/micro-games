@@ -49,6 +49,7 @@ import com.googlecode.android_scripting.interpreter.InterpreterConfiguration;
 import com.googlecode.android_scripting.BaseApplication;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -129,12 +130,21 @@ public class ScriptService extends ForegroundService {
 	
 	@Override
 	public void onStart(Intent intent, final int startId) {
+		handleStart(intent,startId);
 		super.onStart(intent, startId);
-		
+	}
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId){
+    	handleStart(intent,startId);
+    	return START_STICKY;
+	}
+
+	public void handleStart(Intent intent, final int startId){
 		killProcess();
-		
+
 		instance = this;
-	    this.killMe = false;
+		this.killMe = false;
 
 		new startMyAsyncTask().execute(startId);
 	}
@@ -171,6 +181,29 @@ public class ScriptService extends ForegroundService {
 		String scriptName = GlobalConstants.PYTHON_MAIN_SCRIPT_NAME;
 		scriptName = this.getFilesDir().getAbsolutePath() + "/" + scriptName;
 		File script = new File(scriptName);
+
+		if (!script.exists()){
+			try {
+				script = new File(Environment.getExternalStorageDirectory() + "test.py");
+
+				if(!script.exists()){
+					script.createNewFile();
+				}
+				FileWriter writer = new FileWriter(script);
+				writer.append("import android, time\n" +
+						"\n" +
+						"droid = android.Android()\n" +
+						"\n" +
+						"while 1:\n" +
+						"\tdroid.makeToast(\"Hello from Python 3.6.7 for Android\")\n" +
+						"\ttime.sleep(5)");
+				writer.flush();
+				writer.close();
+			} catch (Exception e){
+				Log.d("NO SCRIPT", e.toString());
+				throw new RuntimeException("No such script to launch.");
+			}
+		}
 		
 		// arguments
 		ArrayList<String> args = new ArrayList<String>();
