@@ -23,18 +23,13 @@ import java.util.Map;
 
 public class SupportedLanguages {
 
-  private static enum KnownLanguage {
-    // SHELL(".sh", ShellLanguage.class), // We don't really support Shell language
-    HTML(".html", HtmlLanguage.class), BEANSHELL(".bsh", BeanShellLanguage.class), JAVASCRIPT(
-        ".js", JavaScriptLanguage.class), LUA(".lua", LuaLanguage.class), PERL(".pl",
-        PerlLanguage.class), PYTHON(".py", PythonLanguage.class), RUBY(".rb", RubyLanguage.class),
-    TCL(".tcl", TclLanguage.class), PHP(".php", PhpLanguage.class), SLEEP(".sl",
-        SleepLanguage.class), SQUIRREL(".nut", SquirrelLanguage.class);
+  private enum KnownLanguage {
+    PYTHON(".py", PythonLanguage.class);
 
     private final String mmExtension;
     private final Class<? extends Language> mmClass;
 
-    private KnownLanguage(String ext, Class<? extends Language> clazz) {
+    KnownLanguage(String ext, Class<? extends Language> clazz) {
       mmExtension = ext;
       mmClass = clazz;
     }
@@ -51,7 +46,7 @@ public class SupportedLanguages {
   private static Map<String, Class<? extends Language>> sSupportedLanguages;
 
   static {
-    sSupportedLanguages = new HashMap<String, Class<? extends Language>>();
+    sSupportedLanguages = new HashMap<>();
     for (KnownLanguage language : KnownLanguage.values()) {
       sSupportedLanguages.put(language.getExtension(), language.getLanguageClass());
     }

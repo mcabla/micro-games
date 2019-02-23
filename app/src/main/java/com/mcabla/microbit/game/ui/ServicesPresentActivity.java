@@ -37,12 +37,12 @@ public class ServicesPresentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_services_present);
-        TextView presence_generic_access = (TextView) this.findViewById(R.id.service_generic_access_presence);
-        TextView presence_generic_attribute = (TextView) this.findViewById(R.id.service_generic_attribute_presence);
-        TextView presence_device_information = (TextView) this.findViewById(R.id.service_device_information_presence);
-        TextView presence_accelerometer = (TextView) this.findViewById(R.id.service_accelerometer_presence);
-        TextView presence_button = (TextView) this.findViewById(R.id.service_button_presence);
-        TextView presence_led = (TextView) this.findViewById(R.id.service_led_presence);
+        TextView presence_generic_access = this.findViewById(R.id.service_generic_access_presence);
+        TextView presence_generic_attribute = this.findViewById(R.id.service_generic_attribute_presence);
+        TextView presence_device_information = this.findViewById(R.id.service_device_information_presence);
+        TextView presence_accelerometer = this.findViewById(R.id.service_accelerometer_presence);
+        TextView presence_button = this.findViewById(R.id.service_button_presence);
+        TextView presence_led = this.findViewById(R.id.service_led_presence);
 
         indicatePresence(presence_generic_access,MicroBit.getInstance().hasService(BleAdapterService.GENERICACCESS_SERVICE_UUID));
         indicatePresence(presence_generic_attribute,MicroBit.getInstance().hasService(BleAdapterService.GENERICATTRIBUTE_SERVICE_UUID));

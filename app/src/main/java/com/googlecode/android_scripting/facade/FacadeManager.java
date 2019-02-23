@@ -21,6 +21,7 @@ import android.content.Intent;
 
 import com.googlecode.android_scripting.Log;
 import com.googlecode.android_scripting.exception.Sl4aException;
+import com.googlecode.android_scripting.facade.Facades.AndroidFacade;
 import com.googlecode.android_scripting.jsonrpc.RpcReceiver;
 import com.googlecode.android_scripting.jsonrpc.RpcReceiverManager;
 import com.googlecode.android_scripting.rpc.RpcDeprecated;
@@ -62,8 +63,8 @@ public class FacadeManager extends RpcReceiverManager {
     try {
       if (method.isAnnotationPresent(RpcDeprecated.class)) {
         String replacedBy = method.getAnnotation(RpcDeprecated.class).value();
-        String title = method.getName() + " is deprecated";
-        Log.notify(mService, title, title, String.format("Please use %s instead.", replacedBy));
+        String title = method.getName() + " is verouderd";
+        Log.notify(mService, title, title, String.format("Gebruik %s in de plaats.", replacedBy));
       } else if (method.isAnnotationPresent(RpcMinSdk.class)) {
         int requiredSdkLevel = method.getAnnotation(RpcMinSdk.class).value();
         if (mSdkLevel < requiredSdkLevel) {
@@ -74,7 +75,7 @@ public class FacadeManager extends RpcReceiverManager {
       return super.invoke(clazz, method, args);
     } catch (InvocationTargetException e) {
       if (e.getCause() instanceof SecurityException) {
-        Log.notify(mService, "RPC invoke failed...", mService.getPackageName(), e.getCause()
+        Log.notify(mService, "Poging om beroep te doen op RPC is mislukt.", mService.getPackageName(), e.getCause()
             .getMessage());
       }
       throw e;
@@ -87,7 +88,7 @@ public class FacadeManager extends RpcReceiverManager {
       public int getLogo48() {
         // TODO(Alexey): As an alternative, ask application for resource ids.
         String packageName = mService.getApplication().getPackageName();
-        return mService.getResources().getIdentifier("ic_bluetooth_connected_black_24dp", "drawable", packageName);
+        return mService.getResources().getIdentifier("micro_games_logo", "drawable", packageName);
       }
     };
   }

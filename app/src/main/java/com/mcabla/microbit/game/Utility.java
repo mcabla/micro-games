@@ -1,6 +1,17 @@
 package com.mcabla.microbit.game;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.os.Environment;
+import android.util.Log;
 import android.view.View;
+
+import com.googlecode.android_scripting.FileUtils;
+import com.mcabla.microbit.game.python.config.GlobalConstants;
+import com.mcabla.microbit.game.python.support.Utils;
+
+import java.io.File;
+import java.io.InputStream;
 
 /*
  * Author: Martin Woolley
@@ -250,6 +261,53 @@ public class Utility {
         } else {
             return View.INVISIBLE;
         }
+    }
+
+    // quick and dirty: only test a file
+    public static boolean isInstallNeeded(Context context) {
+        File testedFile = new File(context.getFilesDir().getAbsolutePath()+ "/" + GlobalConstants.PYTHON_MAIN_SCRIPT_NAME);
+        return !testedFile.exists();
+    }
+
+    public static void copyResourcesToLocal(Context context) {
+        String name, sFileName;
+        InputStream content;
+
+        R.raw a = new R.raw();
+        java.lang.reflect.Field[] t = R.raw.class.getFields();
+        Resources resources = context.getResources();
+
+        boolean succeed = true;
+
+        for (int i = 0; i < t.length; i++) {
+            try {
+                name = resources.getText(t[i].getInt(a)).toString();
+                sFileName = name.substring(name.lastIndexOf('/') + 1, name.length());
+                content = context.getResources().openRawResource(t[i].getInt(a));
+                content.reset();
+
+                // python project
+                if(sFileName.endsWith(GlobalConstants.PYTHON_PROJECT_ZIP_NAME)) {
+                    succeed &= Utils.unzip(content, context.getFilesDir().getAbsolutePath()+ "/", true);
+                }
+                // python -> /data/data/com.android.python32/files/python
+                else if (sFileName.endsWith(GlobalConstants.PYTHON_ZIP_NAME)) {
+                    succeed &= Utils.unzip(content, context.getFilesDir().getAbsolutePath()+ "/", true);
+                    FileUtils.chmod(new File(context.getFilesDir().getAbsolutePath()+ "/python3/bin/python3" ), 0755);
+                }
+                // python extras -> /sdcard/com.android.python32/extras/python
+                else if (sFileName.endsWith(GlobalConstants.PYTHON_EXTRAS_ZIP_NAME)) {
+                    Utils.createDirectoryOnExternalStorage( context.getPackageName() + "/" + "extras");
+                    Utils.createDirectoryOnExternalStorage( context.getPackageName() + "/" + "extras" + "/" + "tmp");
+                    succeed &= Utils.unzip(content, Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + context.getPackageName() + "/extras/", true);
+                }
+
+            } catch (Exception e) {
+                Log.e(GlobalConstants.LOG_TAG, "Failed to copyResourcesToLocal", e);
+                succeed = false;
+            }
+        }
+
     }
 
 

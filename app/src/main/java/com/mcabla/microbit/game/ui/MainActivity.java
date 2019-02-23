@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        showMsg(Utility.htmlColorGreen("Ready"));
+        showMsg(Utility.htmlColorGreen("Klaar"));
 
         Settings.getInstance().restore(this);
 
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
                 BluetoothDevice device = ble_device_list_adapter.getDevice(position);
                 if (device.getBondState() == BluetoothDevice.BOND_NONE && Settings.getInstance().isFilter_unpaired_devices()) {
                     device.createBond();
-                    showMsg(Utility.htmlColorRed("Selected micro:bit must be paired - pairing now"));
+                    showMsg(Utility.htmlColorRed("De geselecteerde micro:bit moete gekoppeld zijn - aan het koppelen"));
                     return;
                 }
                 try {
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
             }
             startScanning();
         } else {
-            showMsg(Utility.htmlColorGreen("Stopping scanning"));
+            showMsg(Utility.htmlColorGreen("Stoppen met scannen"));
             ble_scanner.stopScanning();
         }
     }

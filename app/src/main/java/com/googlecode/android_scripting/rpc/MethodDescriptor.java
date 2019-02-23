@@ -21,7 +21,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import com.googlecode.android_scripting.facade.AndroidFacade;
+import com.googlecode.android_scripting.facade.Facades.AndroidFacade;
 import com.googlecode.android_scripting.jsonrpc.RpcReceiver;
 import com.googlecode.android_scripting.jsonrpc.RpcReceiverManager;
 import com.googlecode.android_scripting.util.VisibleForTesting;

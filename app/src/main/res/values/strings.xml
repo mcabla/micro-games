@@ -61,5 +61,5 @@
     <string name="service_button">Knop Service</string>
     <string name="service_led">LED Service</string>
 
-    <string name="python_loading">Python3 uitvoeren...</string>
+    <string name="micro_game_running">Micro:game is bezig</string>
 </resources>

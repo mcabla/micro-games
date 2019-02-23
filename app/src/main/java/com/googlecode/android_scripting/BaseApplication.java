@@ -19,31 +19,15 @@ package com.googlecode.android_scripting;
 import android.app.Application;
 
 import com.googlecode.android_scripting.interpreter.InterpreterConfiguration;
-import com.googlecode.android_scripting.trigger.TriggerRepository;
 
 public class BaseApplication extends Application {
 
-  private final FutureActivityTaskExecutor mTaskExecutor = new FutureActivityTaskExecutor(this);
-  private TriggerRepository mTriggerRepository;
-
   protected InterpreterConfiguration mConfiguration;
-
-  public FutureActivityTaskExecutor getTaskExecutor() {
-    return mTaskExecutor;
-  }
 
   @Override
   public void onCreate() {
     mConfiguration = new InterpreterConfiguration(this);
     mConfiguration.startDiscovering();
-    mTriggerRepository = new TriggerRepository(this);
-  }
-
-  public InterpreterConfiguration getInterpreterConfiguration() {
-    return mConfiguration;
-  }
-
-  public TriggerRepository getTriggerRepository() {
-    return mTriggerRepository;
+    super.onCreate();
   }
 }

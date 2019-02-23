@@ -122,14 +122,14 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
 
     private void refreshBluetoothServices() {
         if (MicroBit.getInstance().isMicrobit_connected()) {
-            Toast toast = Toast.makeText(this, "Refreshing GATT services", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, "GATT services aan het venieuwen", Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
             MicroBit.getInstance().resetAttributeTables();
             bluetooth_le_adapter.refreshDeviceCache();
             bluetooth_le_adapter.discoverServices();
         } else {
-            Toast toast = Toast.makeText(this, "Request Ignored - Not Connected", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, "Verzoek genegeerd - niet verbonden", Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
         }
@@ -150,9 +150,9 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
     protected void onResume() {
         super.onResume();
         if (MicroBit.getInstance().isMicrobit_connected()) {
-            showMsg(Utility.htmlColorGreen("Connected"));
+            showMsg(Utility.htmlColorGreen("Verbonden"));
         } else {
-            showMsg(Utility.htmlColorRed("Disconnected"));
+            showMsg(Utility.htmlColorRed("Niet verbonden"));
         }
     }
 
@@ -170,10 +170,10 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
     }
 
     private void connectToDevice() {
-        showMsg(Utility.htmlColorBlue("Connecting to micro:bit"));
+        showMsg(Utility.htmlColorBlue("Verbinden met micro:bit"));
         if (bluetooth_le_adapter.connect(MicroBit.getInstance().getMicrobit_address())) {
         } else {
-            showMsg(Utility.htmlColorRed("onConnect: failed to connect"));
+            showMsg(Utility.htmlColorRed("Verbinding met micro:bit mislukt"));
         }
     }
 
@@ -181,7 +181,7 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
         Log.d(Constants.TAG, "onDemoSelected ");
         if (!MicroBit.getInstance().isMicrobit_connected()|| !MicroBit.getInstance().isMicrobit_services_discovered() ) {
             Log.d(Constants.TAG, "onDemoSelected - micro:bit is not connected or service discovery has not completed so ignoring");
-            showMsg(Utility.htmlColorRed("Not connected to micro:bit - find and connect again"));
+            showMsg(Utility.htmlColorRed("Niet verbonden met micro:bit - probeer opnieuw"));
             return;
         }
         ImageView iw = (ImageView) view;
@@ -193,7 +193,7 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
                     intent = new Intent(MenuActivity.this, DeviceInformationActivity.class);
                     startActivity(intent);
                 } else {
-                    showMsg(Utility.htmlColorRed("Device Information Service not on this micro:bit"));
+                    showMsg(Utility.htmlColorRed("Apparaat Informatie Service is niet toegankelijk op deze micro:bit"));
                 }
                 break;
             case R.id.btn_game:
@@ -204,13 +204,13 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
                             intent = new Intent(MenuActivity.this, GameActivity.class);
                             startActivity(intent);
                         } else {
-                            showMsg(Utility.htmlColorRed("Button Service not on this micro:bit"));
+                            showMsg(Utility.htmlColorRed("Knoppen Service is niet toegankelijk op deze micro:bit"));
                         }
                     } else {
-                        showMsg(Utility.htmlColorRed("LED Service not on this micro:bit"));
+                        showMsg(Utility.htmlColorRed("LED Service is niet toegankelijk op deze micro:bit"));
                     }
                 } else {
-                    showMsg(Utility.htmlColorRed("Accelerometer Service not on this micro:bit"));
+                    showMsg(Utility.htmlColorRed("Accelerometer Service is niet toegankelijk op deze micro:bit"));
                 }
                 break;
         }
@@ -228,18 +228,18 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
 
             switch (msg.what) {
                 case BleAdapterService.GATT_CONNECTED:
-                    showMsg(Utility.htmlColorGreen("Connected"));
-                    showMsg(Utility.htmlColorGreen("Discovering services..."));
+                    showMsg(Utility.htmlColorGreen("Verbonden"));
+                    showMsg(Utility.htmlColorGreen("Zoeken naar services..."));
                     bluetooth_le_adapter.discoverServices();
                     break;
                 case BleAdapterService.GATT_DISCONNECT:
-                    showMsg(Utility.htmlColorRed("Disconnected"));
-                    ((LinearLayout) MenuActivity.this.findViewById(R.id.menu_items_area)).setVisibility(View.VISIBLE);
+                    showMsg(Utility.htmlColorRed("Niet verbonden"));
+                    ( MenuActivity.this.findViewById(R.id.menu_items_area)).setVisibility(View.VISIBLE);
                     break;
                 case BleAdapterService.GATT_SERVICES_DISCOVERED:
                     Log.d(Constants.TAG, "XXXX Services discovered");
-                    showMsg(Utility.htmlColorGreen("Ready"));
-                    ((LinearLayout) MenuActivity.this.findViewById(R.id.menu_items_area)).setVisibility(View.VISIBLE);
+                    showMsg(Utility.htmlColorGreen("Klaar"));
+                    ( MenuActivity.this.findViewById(R.id.menu_items_area)).setVisibility(View.VISIBLE);
                     List<BluetoothGattService> slist = bluetooth_le_adapter.getSupportedGattServices();
                     for (BluetoothGattService svc : slist) {
                         Log.d(Constants.TAG, "UUID=" + svc.getUuid().toString().toUpperCase() + " INSTANCE=" + svc.getInstanceId());
@@ -270,9 +270,9 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
     @Override
     public void connectionStatusChanged(boolean connected) {
         if (connected) {
-            showMsg(Utility.htmlColorGreen("Connected"));
+            showMsg(Utility.htmlColorGreen("Verbonden"));
         } else {
-            showMsg(Utility.htmlColorRed("Disconnected"));
+            showMsg(Utility.htmlColorRed("Niet verbonden"));
         }
     }
 

@@ -53,7 +53,7 @@ public class NotificationHelper extends ContextWrapper {
             return new Notification.Builder (getApplicationContext (), CHANNEL_ONE_ID)
                     .setContentTitle (title)
                     .setContentText (body)
-                    .setSmallIcon (R.drawable.ic_bluetooth_connected_black_24dp)
+                    .setSmallIcon (R.drawable.micro_games_logo)
                     .setAutoCancel (true)
                     .setColor (color)
                     .setContentIntent (pendingIntent);
@@ -64,7 +64,7 @@ public class NotificationHelper extends ContextWrapper {
             return new Notification.Builder (getApplicationContext ())
                     .setContentTitle (title)
                     .setContentText (body)
-                    .setSmallIcon (R.drawable.ic_bluetooth_connected_black_24dp)
+                    .setSmallIcon (R.drawable.micro_games_logo)
                     .setAutoCancel (true)
                     .setColor (color)
                     .setContentIntent (pendingIntent);
@@ -73,7 +73,7 @@ public class NotificationHelper extends ContextWrapper {
         return new Notification.Builder (getApplicationContext ())
                 .setContentTitle (title)
                 .setContentText (body)
-                .setSmallIcon (R.drawable.ic_bluetooth_connected_black_24dp)
+                .setSmallIcon (R.drawable.micro_games_logo)
                 .setAutoCancel (true)
                 .setContentIntent (pendingIntent);
 

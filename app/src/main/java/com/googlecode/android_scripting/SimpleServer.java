@@ -40,16 +40,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class SimpleServer {
 
   private final CopyOnWriteArrayList<ConnectionThread> mConnectionThreads =
-      new CopyOnWriteArrayList<ConnectionThread>();
+      new CopyOnWriteArrayList<>();
   private final List<SimpleServerObserver> mObservers = Lists.newArrayList();
   private volatile boolean mStopServer = false;
   private ServerSocket mServer;
   private Thread mServerThread;
 
   public interface SimpleServerObserver {
-    public void onConnect();
+    void onConnect();
 
-    public void onDisconnect();
+    void onDisconnect();
   }
 
   protected abstract void handleConnection(Socket socket) throws Exception;

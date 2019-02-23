@@ -1,7 +1,8 @@
-package com.googlecode.android_scripting.facade;
+package com.googlecode.android_scripting.facade.Facades;
 
 import android.util.Log;
 
+import com.googlecode.android_scripting.facade.FacadeManager;
 import com.googlecode.android_scripting.jsonrpc.RpcReceiver;
 import com.googlecode.android_scripting.rpc.Rpc;
 import com.googlecode.android_scripting.rpc.RpcMinSdk;

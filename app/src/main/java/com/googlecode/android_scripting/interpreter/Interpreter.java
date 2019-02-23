@@ -48,8 +48,8 @@ public class Interpreter implements InterpreterPropertyNames {
   private Language mLanguage;
 
   public Interpreter() {
-    mArguments = new ArrayList<String>();
-    mEnvironment = new HashMap<String, String>();
+    mArguments = new ArrayList<>();
+    mEnvironment = new HashMap<>();
   }
 
   public static Interpreter buildFromMaps(Map<String, String> data,

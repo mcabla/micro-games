@@ -26,36 +26,26 @@ import android.os.Environment;
  */
 public interface InterpreterConstants {
 
-  public static final String SDCARD_ROOT =
+  String SDCARD_ROOT =
       Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
 
-  public static final String SDCARD_SL4A_ROOT = SDCARD_ROOT + "sl4a/";
-
-  public static final String SCRIPTS_ROOT = SDCARD_SL4A_ROOT + "scripts/";
-
-  public static final String SDCARD_SL4A_DOC = SDCARD_SL4A_ROOT + "doc/";
-
-  public static final String SL4A_DALVIK_CACHE_ROOT = "/dalvik-cache/";
-
-  public static final String INTERPRETER_EXTRAS_ROOT = "/extras/";
+  String SDCARD_SL4A_ROOT = SDCARD_ROOT + "sl4a/";
 
   // Interpreters discovery mechanism.
-  public static final String ACTION_DISCOVER_INTERPRETERS =
-      "com.googlecode.android_scripting.DISCOVER_INTERPRETERS";
+  String ACTION_DISCOVER_INTERPRETERS =
+      "com.mcabla.microbit.game.DISCOVER_INTERPRETERS";
 
   // Interpreters broadcasts.
-  public static final String ACTION_INTERPRETER_ADDED =
-      "com.googlecode.android_scripting.INTERPRETER_ADDED";
-  public static final String ACTION_INTERPRETER_REMOVED =
-      "com.googlecode.android_scripting.INTERPRETER_REMOVED";
+  String ACTION_INTERPRETER_ADDED =
+      "com.mcabla.microbit.game.INTERPRETER_ADDED";
+  String ACTION_INTERPRETER_REMOVED =
+      "com.mcabla.microbit.game.INTERPRETER_REMOVED";
 
   // Interpreter content provider.
-  public static final String PROVIDER_PROPERTIES = "com.googlecode.android_scripting.base";
-  public static final String PROVIDER_ENVIRONMENT_VARIABLES =
-      "com.googlecode.android_scripting.env";
-  public static final String PROVIDER_ARGUMENTS = "com.googlecode.android_scripting.args";
+  String PROVIDER_PROPERTIES = "com.mcabla.microbit.game.base";
+  String PROVIDER_ENVIRONMENT_VARIABLES =
+      "com.mcabla.microbit.game.env";
+  String PROVIDER_ARGUMENTS = "com.mcabla.microbit.game.args";
 
-  public static final String INSTALLED_PREFERENCE_KEY = "SL4A.interpreter.installed";
-
-  public static final String MIME = "script/";
+  String MIME = "script/";
 }

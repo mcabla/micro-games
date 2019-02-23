@@ -31,9 +31,7 @@ import android.net.Uri;
 
 import com.googlecode.android_scripting.Log;
 import com.googlecode.android_scripting.SingleThreadExecutor;
-import com.googlecode.android_scripting.interpreter.shell.ShellInterpreter;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -57,7 +55,7 @@ public class InterpreterConfiguration {
   private volatile boolean mIsDiscoveryComplete = false;
 
   public interface ConfigurationObserver {
-    public void onConfigurationChanged();
+    void onConfigurationChanged();
   }
 
   private class InterpreterListener extends BroadcastReceiver {
@@ -70,7 +68,7 @@ public class InterpreterConfiguration {
       mmPackageManager = context.getPackageManager();
       mmResolver = context.getContentResolver();
       mmExecutor = new SingleThreadExecutor();
-      mmDiscoveredInterpreters = new HashMap<String, Interpreter>();
+      mmDiscoveredInterpreters = new HashMap<>();
     }
 
     private void discoverForType(final String mime) {
@@ -213,9 +211,8 @@ public class InterpreterConfiguration {
 
   public InterpreterConfiguration(Context context) {
     mContext = context;
-    mInterpreterSet = new CopyOnWriteArraySet<Interpreter>();
-    mInterpreterSet.add(new ShellInterpreter());
-    mObserverSet = new CopyOnWriteArraySet<ConfigurationObserver>();
+    mInterpreterSet = new CopyOnWriteArraySet<>();
+    mObserverSet = new CopyOnWriteArraySet<>();
     IntentFilter filter = new IntentFilter();
     filter.addAction(InterpreterConstants.ACTION_INTERPRETER_ADDED);
     filter.addAction(InterpreterConstants.ACTION_INTERPRETER_REMOVED);
@@ -255,14 +252,14 @@ public class InterpreterConfiguration {
    * Returns the list of all known interpreters.
    */
   public List<? extends Interpreter> getSupportedInterpreters() {
-    return new ArrayList<Interpreter>(mInterpreterSet);
+    return new ArrayList<>(mInterpreterSet);
   }
 
   /**
    * Returns the list of all installed interpreters.
    */
   public List<Interpreter> getInstalledInterpreters() {
-    List<Interpreter> interpreters = new ArrayList<Interpreter>();
+    List<Interpreter> interpreters = new ArrayList<>();
     for (Interpreter i : mInterpreterSet) {
       if (i.isInstalled()) {
         interpreters.add(i);
@@ -275,7 +272,7 @@ public class InterpreterConfiguration {
    * Returns the list of interpreters that support interactive mode execution.
    */
   public List<Interpreter> getInteractiveInterpreters() {
-    List<Interpreter> interpreters = new ArrayList<Interpreter>();
+    List<Interpreter> interpreters = new ArrayList<>();
     for (Interpreter i : mInterpreterSet) {
       if (i.isInstalled() && i.hasInteractiveMode()) {
         interpreters.add(i);

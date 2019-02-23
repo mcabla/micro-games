@@ -26,11 +26,9 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -39,14 +37,10 @@ import com.mcabla.microbit.game.R;
 import com.mcabla.microbit.game.python.config.GlobalConstants;
 import com.mcabla.microbit.game.python.process.MyScriptProcess;
 import com.googlecode.android_scripting.AndroidProxy;
-import com.googlecode.android_scripting.Constants;
-import com.googlecode.android_scripting.FeaturedInterpreters;
 import com.googlecode.android_scripting.ForegroundService;
 import com.googlecode.android_scripting.NotificationIdFactory;
-import com.googlecode.android_scripting.interpreter.Interpreter;
 import com.googlecode.android_scripting.jsonrpc.RpcReceiverManager;
 import com.googlecode.android_scripting.interpreter.InterpreterConfiguration;
-import com.googlecode.android_scripting.BaseApplication;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -261,7 +255,7 @@ public class ScriptService extends ForegroundService {
 
 		NotificationHelper notificationHelper = new NotificationHelper (this);
 
-		Notification.Builder notificationBuilder = notificationHelper.getNotification1 (this.getString(R.string.app_name), this.getString(R.string.python_loading), contentIntent);
+		Notification.Builder notificationBuilder = notificationHelper.getNotification1 (this.getString(R.string.app_name), this.getString(R.string.micro_game_running), contentIntent);
 		return notificationBuilder.build();
 	}
 

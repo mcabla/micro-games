@@ -26,7 +26,6 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.mcabla.microbit.game.python.config.GlobalConstants;
-import com.googlecode.android_scripting.Constants;
 import com.googlecode.android_scripting.FileUtils;
 
 import java.io.BufferedInputStream;
@@ -36,7 +35,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 public class Utils {

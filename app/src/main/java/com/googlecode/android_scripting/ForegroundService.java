@@ -35,7 +35,7 @@ public abstract class ForegroundService extends Service {
   private void startForegroundCompat(Notification notification) {
     // If we have the new startForeground API, then use it.
     if (mStartForeground != null) {
-      mStartForegroundArgs[0] = Integer.valueOf(mNotificationId);
+      mStartForegroundArgs[0] = mNotificationId;
       mStartForegroundArgs[1] = notification;
       try {
         mStartForeground.invoke(this, mStartForegroundArgs);

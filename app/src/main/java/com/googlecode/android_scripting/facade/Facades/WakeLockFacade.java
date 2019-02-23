@@ -14,13 +14,14 @@
  * the License.
  */
 
-package com.googlecode.android_scripting.facade;
+package com.googlecode.android_scripting.facade.Facades;
 
 import android.app.Service;
 import android.content.Context;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 
+import com.googlecode.android_scripting.facade.FacadeManager;
 import com.googlecode.android_scripting.jsonrpc.RpcReceiver;
 import com.googlecode.android_scripting.rpc.Rpc;
 
@@ -64,7 +65,7 @@ public class WakeLockFacade extends RpcReceiver {
     }
 
     public void acquire(WakeLockType type) {
-      mmLocks.get(type).acquire();
+      mmLocks.get(type).acquire(10*60*1000L /*10 minutes*/);
       for (Entry<WakeLockType, WakeLock> entry : mmLocks.entrySet()) {
         if (entry.getKey() != type) {
           entry.getValue().release();

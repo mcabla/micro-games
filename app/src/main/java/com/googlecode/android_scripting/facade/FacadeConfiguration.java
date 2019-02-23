@@ -20,6 +20,10 @@ import android.os.Build;
 
 import com.google.common.collect.Maps;
 import com.googlecode.android_scripting.Log;
+import com.googlecode.android_scripting.facade.Facades.AndroidFacade;
+import com.googlecode.android_scripting.facade.Facades.MicrobitFacade;
+import com.googlecode.android_scripting.facade.Facades.ToneGeneratorFacade;
+import com.googlecode.android_scripting.facade.Facades.WakeLockFacade;
 import com.googlecode.android_scripting.jsonrpc.RpcReceiver;
 import com.googlecode.android_scripting.rpc.MethodDescriptor;
 import com.googlecode.android_scripting.rpc.RpcDeprecated;
@@ -46,7 +50,7 @@ import java.util.TreeMap;
 public class FacadeConfiguration {
   private final static Set<Class<? extends RpcReceiver>> sFacadeClassList;
   private final static SortedMap<String, MethodDescriptor> sRpcs =
-      new TreeMap<String, MethodDescriptor>();
+      new TreeMap<>();
 
   private static int sSdkLevel;
 
@@ -59,9 +63,8 @@ public class FacadeConfiguration {
       sSdkLevel = 21;
     }
 
-    sFacadeClassList = new HashSet<Class<? extends RpcReceiver>>();
+    sFacadeClassList = new HashSet<>();
     sFacadeClassList.add(AndroidFacade.class);
-    sFacadeClassList.add(EventFacade.class);
     sFacadeClassList.add(ToneGeneratorFacade.class);
     sFacadeClassList.add(WakeLockFacade.class);
 
@@ -86,7 +89,7 @@ public class FacadeConfiguration {
 
   /** Returns a list of {@link MethodDescriptor} objects for all facades. */
   public static List<MethodDescriptor> collectMethodDescriptors() {
-    return new ArrayList<MethodDescriptor>(sRpcs.values());
+    return new ArrayList<>(sRpcs.values());
   }
 
   /**
@@ -94,7 +97,7 @@ public class FacadeConfiguration {
    * current SDK version.
    */
   public static List<MethodDescriptor> collectSupportedMethodDescriptors() {
-    List<MethodDescriptor> list = new ArrayList<MethodDescriptor>();
+    List<MethodDescriptor> list = new ArrayList<>();
     for (MethodDescriptor descriptor : sRpcs.values()) {
       Method method = descriptor.getMethod();
       if (method.isAnnotationPresent(RpcDeprecated.class)) {

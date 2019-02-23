@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.widget.Toast;
 
 import com.mcabla.microbit.game.NotificationHelper;
-import com.mcabla.microbit.game.R;
 
 public class Log {
   private Log() {
@@ -46,9 +45,8 @@ public class Log {
   }
 
   public static void notify(Context context, String title, String contentTitle, String message) {
-    android.util.Log.v(getTag(), String.format("%s %s", contentTitle, message));
+    android.util.Log.v(getTag(), String.format("%s %s %s", title, contentTitle, message));
 
-    String packageName = context.getPackageName();
     NotificationManager notificationManager =
         (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 

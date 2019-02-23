@@ -20,8 +20,11 @@ package com.mcabla.microbit.game.ui;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -38,6 +41,7 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.googlecode.android_scripting.FileUtils;
 import com.mcabla.microbit.game.Constants;
 import com.mcabla.microbit.game.MicroBit;
 import com.mcabla.microbit.game.R;
@@ -48,7 +52,10 @@ import com.mcabla.microbit.game.bluetooth.ConnectionStatusListener;
 import com.mcabla.microbit.game.python.BackgroundScriptService;
 import com.mcabla.microbit.game.python.ScriptService;
 import com.mcabla.microbit.game.python.config.GlobalConstants;
+import com.mcabla.microbit.game.python.support.Utils;
 
+import java.io.File;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
@@ -561,7 +568,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             e.printStackTrace();
             showMsg("Unable to convert text to UTF8 bytes");
         }
-        runScriptService();
+        startScript();
     }
 
     public void sendText(String text) {
@@ -573,6 +580,45 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         bluetooth_le_adapter.writeCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.LEDTEXT_CHARACTERISTIC_UUID), utf8_bytes);
     }
 
+    private void startScript(){
+        boolean installNeeded = Utility.isInstallNeeded(this);
+
+        if(installNeeded) {
+            new InstallAsyncTask().execute();
+        }
+        else {
+            runScriptService();
+        }
+    }
+
+    public class InstallAsyncTask extends AsyncTask<Void, Integer, Boolean> {
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            Log.i(GlobalConstants.LOG_TAG, "Installing...");
+
+            createOurExternalStorageRootDir();
+
+            Utility.copyResourcesToLocal(getBaseContext());
+
+            // TODO
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean installStatus) {
+
+            if(installStatus) Log.d(GlobalConstants.LOG_TAG, "installSucceed");
+            else Log.d(GlobalConstants.LOG_TAG, "installSucceed");
+
+            runScriptService();
+        }
+
+    }
+
     private void runScriptService() {
         if(GlobalConstants.IS_FOREGROUND_SERVICE) {
             startService(new Intent(this, ScriptService.class));
@@ -580,6 +626,10 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         else {
             startService(new Intent(this, BackgroundScriptService.class));
         }
+    }
+
+    private void createOurExternalStorageRootDir() {
+        Utils.createDirectoryOnExternalStorage( this.getPackageName() );
     }
 
     @Override

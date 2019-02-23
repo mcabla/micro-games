@@ -17,7 +17,7 @@ package com.mcabla.microbit.game;
  *  limitations under the License.
  */
 public class Constants {
-    public static final String TAG = "microbitblegame";
+    public static final String TAG = "micro:games";
     public static final String URI = "URI";
     public static final String NO_HELP = "file:///android_res/raw/no_help.html";
     public static final String MAIN_HELP = "file:///android_res/raw/main_help.html";
