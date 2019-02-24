@@ -290,16 +290,17 @@ public class Utility {
                 if(sFileName.endsWith(GlobalConstants.PYTHON_PROJECT_ZIP_NAME)) {
                     succeed &= Utils.unzip(content, context.getFilesDir().getAbsolutePath()+ "/", true);
                 }
-                // python -> /data/data/com.android.python32/files/python
+                // python -> /data/data/com.mcabla.microbit.games/files/python
                 else if (sFileName.endsWith(GlobalConstants.PYTHON_ZIP_NAME)) {
                     succeed &= Utils.unzip(content, context.getFilesDir().getAbsolutePath()+ "/", true);
                     FileUtils.chmod(new File(context.getFilesDir().getAbsolutePath()+ "/python3/bin/python3" ), 0755);
                 }
-                // python extras -> /sdcard/com.android.python32/extras/python
+                // python extras -> /data/data/com.mcabla.microbit.games/files/extras/
                 else if (sFileName.endsWith(GlobalConstants.PYTHON_EXTRAS_ZIP_NAME)) {
-                    Utils.createDirectoryOnExternalStorage( context.getPackageName() + "/" + "extras");
-                    Utils.createDirectoryOnExternalStorage( context.getPackageName() + "/" + "extras" + "/" + "tmp");
-                    succeed &= Utils.unzip(content, Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + context.getPackageName() + "/extras/", true);
+                    //Utils.createDirectoryOnExternalStorage( context.getPackageName() + "/" + "extras" + "/" + "tmp");
+
+                    succeed &= Utils.unzip(content, context.getFilesDir().getAbsolutePath()+ "/extras/", true);
+
                 }
 
             } catch (Exception e) {

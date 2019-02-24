@@ -28,7 +28,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
-import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -66,8 +65,6 @@ public class ScriptService extends ForegroundService {
     static {
       instance = null;
     }
-    
-    // ------------------------------------------------------------------------------------------------------
 
 	public class LocalBinder extends Binder {
 		public ScriptService getService() {
@@ -75,34 +72,19 @@ public class ScriptService extends ForegroundService {
 		}
 	}
 
-    // ------------------------------------------------------------------------------------------------------
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-	}
-
-    // ------------------------------------------------------------------------------------------------------
-
 	public ScriptService() {
 		super(NOTIFICATION_ID);
 		mBinder = new LocalBinder();
 	}
-
-    // ------------------------------------------------------------------------------------------------------
 
 	@Override
 	public IBinder onBind(Intent intent) {
 		return mBinder;
 	}
 
-    // ------------------------------------------------------------------------------------------------------
-
     public static Context getAppContext() {
         return ScriptService.context;
     }
-    
-    // ------------------------------------------------------------------------------------------------------
 
 	@Override
 	public void onCreate() {
@@ -110,7 +92,11 @@ public class ScriptService extends ForegroundService {
 		ScriptService.context = getApplicationContext();
 	}
 
-    // ------------------------------------------------------------------------------------------------------
+	@Override
+	public void onDestroy(){
+		killProcess();
+    	super.onDestroy();
+	}
 
 	private void killProcess() {
 		this.killMe = true;
@@ -118,14 +104,6 @@ public class ScriptService extends ForegroundService {
 	    if (myScriptProcess != null) {
 	    	myScriptProcess.kill();
 	    }
-	}
-
-    // ------------------------------------------------------------------------------------------------------
-	
-	@Override
-	public void onStart(Intent intent, final int startId) {
-		handleStart(intent,startId);
-		super.onStart(intent, startId);
 	}
 
 	@Override
@@ -142,8 +120,6 @@ public class ScriptService extends ForegroundService {
 
 		new startMyAsyncTask().execute(startId);
 	}
-
-    // ------------------------------------------------------------------------------------------------------
 
 	  public class startMyAsyncTask extends AsyncTask<Integer, Integer, Boolean> {
 		   @Override
@@ -168,8 +144,6 @@ public class ScriptService extends ForegroundService {
 	   
 	  }
 
-	// ------------------------------------------------------------------------------------------------------
-
 	private void startMyMain(final int startId) {
 
 		String scriptName = GlobalConstants.PYTHON_MAIN_SCRIPT_NAME;
@@ -178,7 +152,7 @@ public class ScriptService extends ForegroundService {
 
 		if (!script.exists()){
 			try {
-				script = new File(Environment.getExternalStorageDirectory() + "test.py");
+				script = new File(context.getFilesDir().getAbsolutePath()+ "/" + GlobalConstants.PYTHON_MAIN_SCRIPT_NAME);
 
 				if(!script.exists()){
 					script.createNewFile();
@@ -188,9 +162,7 @@ public class ScriptService extends ForegroundService {
 						"\n" +
 						"droid = android.Android()\n" +
 						"\n" +
-						"while 1:\n" +
-						"\tdroid.makeToast(\"Hello from Python 3.6.7 for Android\")\n" +
-						"\ttime.sleep(5)");
+						"\tdroid.makeToast(\"Hello from Python 3.6.4 for Android\")");
 				writer.flush();
 				writer.close();
 			} catch (Exception e){
@@ -200,17 +172,17 @@ public class ScriptService extends ForegroundService {
 		}
 		
 		// arguments
-		ArrayList<String> args = new ArrayList<String>();
+		ArrayList<String> args = new ArrayList<>();
 		args.add(scriptName);
 		args.add("--foreground");
 
 		File pythonBinary = new File(this.getFilesDir().getAbsolutePath() + "/python3/bin/python3");
 
 		// env var
-		Map<String, String> environmentVariables = null;	
-		environmentVariables = new HashMap<String, String>();
-		environmentVariables.put("PYTHONPATH", Environment.getExternalStorageDirectory().getAbsolutePath()+ "/" + this.getPackageName() + "/extras/python3" + ":" + this.getFilesDir().getAbsolutePath() + "/python3/lib/python3.2/lib-dynload" + ":" + this.getFilesDir().getAbsolutePath() + "/python3/lib/python3.2");		
-		environmentVariables.put("TEMP", Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + this.getPackageName() + "/extras/tmp");		
+		Map<String, String> environmentVariables;
+		environmentVariables = new HashMap<>();
+		environmentVariables.put("PYTHONPATH", this.getFilesDir().getAbsolutePath() + "/extras/python3" + ":" + this.getFilesDir().getAbsolutePath() + "/python3/lib/python3.2/lib-dynload" + ":" + this.getFilesDir().getAbsolutePath() + "/python3/lib/python3.2");
+		environmentVariables.put("TEMP", this.getFilesDir().getAbsolutePath() + "/extras/tmp");
 		environmentVariables.put("PYTHONHOME", this.getFilesDir().getAbsolutePath() + "/python3");		
 		environmentVariables.put("LD_LIBRARY_PATH", this.getFilesDir().getAbsolutePath() + "/python3/lib" + ":" + this.getFilesDir().getAbsolutePath() + "/python3/lib/python3.2/lib-dynload");		
 		
@@ -231,10 +203,8 @@ public class ScriptService extends ForegroundService {
 //				        }
 
 					}
-				}, script.getParent(),  Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + this.getPackageName(), args, environmentVariables, pythonBinary);		
+				}, script.getParent(),  this.getFilesDir().getAbsolutePath() + "/" + this.getPackageName(), args, environmentVariables, pythonBinary);
 	}
-	
-    // ------------------------------------------------------------------------------------------------------
 
 	RpcReceiverManager getRpcReceiverManager() throws InterruptedException {
 		mLatch.await();
@@ -245,8 +215,6 @@ public class ScriptService extends ForegroundService {
 		}
 		return mFacadeManager;
 	}
-
-    // ------------------------------------------------------------------------------------------------------
 
 	@Override
 	protected Notification createNotification() {

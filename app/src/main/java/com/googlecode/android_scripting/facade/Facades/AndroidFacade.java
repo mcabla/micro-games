@@ -278,6 +278,11 @@ public class AndroidFacade extends RpcReceiver {
     });
   }
 
+  @Rpc(description = "Displays a short-duration Toast notification.")
+  public void makeLog(@RpcParameter(name = "message") final String message) {
+    Log.d(message);
+  }
+
   @Rpc(description = "Displays a notification that will be canceled when the user clicks on it.")
   public void notify(@RpcParameter(name = "title", description = "title") String title,
       @RpcParameter(name = "message") String message) {

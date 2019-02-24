@@ -42,6 +42,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.googlecode.android_scripting.FileUtils;
+import com.googlecode.android_scripting.facade.Facades.MicrobitFacade;
 import com.mcabla.microbit.game.Constants;
 import com.mcabla.microbit.game.MicroBit;
 import com.mcabla.microbit.game.R;
@@ -67,7 +68,6 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     private static final int ACCELEROMETER_DIVISOR = 512;
 
     private float[] accel_input = new float[3];
-    private float[] accel_output = new float[3];
 
     private BleAdapterService bluetooth_le_adapter;
 
@@ -85,6 +85,21 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     private int exit_step=0;
     private boolean b1_notifications_on =false;
     private boolean b2_notifications_on =false;
+
+    private boolean b1_pressed = false;
+    private boolean b2_pressed = false;
+
+    private int b1_presses = 0;
+    private int b2_presses = 0;
+
+    private boolean b1_was_pressed = false;
+    private boolean b2_was_pressed = false;
+
+    //Accelerometer
+    private double acel_pitch = 0;
+    private double acel_roll = 0;
+
+    private float[] accel_output = new float[3];
 
     //LEDs
     private short scrolling_delay;
@@ -109,7 +124,6 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             start_time = System.currentTimeMillis();
             minute_number=1;
             notification_count=0;
-            showBenchmark();
             bluetooth_le_adapter = ((BleAdapterService.LocalBinder) service).getService();
             bluetooth_le_adapter.setActivityHandler(mMessageHandler);
             bluetooth_le_adapter.readCharacteristic(Utility.normaliseUUID(BleAdapterService.ACCELEROMETERSERVICE_SERVICE_UUID),Utility.normaliseUUID(BleAdapterService.ACCELEROMETERPERIOD_CHARACTERISTIC_UUID));
@@ -164,15 +178,17 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (notifications_on) {
+        //if (notifications_on) {
             bluetooth_le_adapter.setNotificationsState(Utility.normaliseUUID(BleAdapterService.ACCELEROMETERSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.ACCELEROMETERDATA_CHARACTERISTIC_UUID), false);
-        }
+        //}
         try {
             // may already have unbound. No API to check state so....
             unbindService(mServiceConnection);
         } catch (Exception e) {
         }
         bluetooth_le_adapter = null;
+
+        stopScriptService();
     }
 
     public void onBackPressed() {
@@ -252,14 +268,15 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     }
 
     private Handler mMessageHandler = new Handler() {
+
         @Override
         public void handleMessage(Message msg) {
 
             Bundle bundle;
-            String service_uuid = "";
-            String characteristic_uuid = "";
-            String descriptor_uuid = "";
-            byte[] b = null;
+            String service_uuid;
+            String characteristic_uuid;
+            String descriptor_uuid;
+            byte[] b;
             TextView value_text = null;
 
             switch (msg.what) {
@@ -370,7 +387,6 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                     if (characteristic_uuid.equalsIgnoreCase((Utility.normaliseUUID(BleAdapterService.ACCELEROMETERDATA_CHARACTERISTIC_UUID)))) {
                         notification_count++;
                         if (System.currentTimeMillis() - start_time >= 60000) {
-                            showBenchmark();
                             notification_count = 0;
                             minute_number++;
                             start_time = System.currentTimeMillis();
@@ -407,23 +423,47 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                         double pitch = Math.atan(accel_output[0] / Math.sqrt(Math.pow(accel_output[1], 2) + Math.pow(accel_output[2], 2)));
                         double roll = Math.atan(accel_output[1] / Math.sqrt(Math.pow(accel_output[0], 2) + Math.pow(accel_output[2], 2)));
                         //convert radians into degrees
-                        pitch = pitch * (180.0 / Math.PI);
-                        roll = -1 * roll * (180.0 / Math.PI);
+                        acel_pitch = pitch * (180.0 / Math.PI);
+                        acel_roll = -1 * roll * (180.0 / Math.PI);
 
-                        showAccelerometerData(accel_output,pitch,roll);
+                        showAccelerometerData(accel_output,acel_pitch,acel_roll);
 
                     } else if (characteristic_uuid.equalsIgnoreCase((Utility.normaliseUUID(BleAdapterService.BUTTON1STATE_CHARACTERISTIC_UUID)))) {
-                        Log.d(Constants.TAG, "Button 1 State received: " + btn_state);
-                        ImageView b1_image = (ImageView) GameActivity.this.findViewById(R.id.button1);
-                        setButtonImage(b1_image, btn_state);
-                        TextView b1_label = (TextView) GameActivity.this.findViewById(R.id.button1_state);
-                        setButtonLabel(b1_label, btn_state);
+                        switch (btn_state) {
+                            case 0:
+                                //Niet ingedrukt
+                                b1_pressed = false;
+                                break;
+                            case 1:
+                                //Ingedrukt
+                                b1_pressed = true;
+                                b1_presses += 1;
+                                b1_was_pressed = true;
+                                break;
+                            case 2:
+                                //Lang ingedrukt
+                                b1_pressed = true;
+                                break;
+                        }
+
                     } else if (characteristic_uuid.equalsIgnoreCase((Utility.normaliseUUID(BleAdapterService.BUTTON2STATE_CHARACTERISTIC_UUID)))) {
                         Log.d(Constants.TAG, "Button 2 State received: " + btn_state);
-                        ImageView b2_image = (ImageView) GameActivity.this.findViewById(R.id.button2);
-                        setButtonImage(b2_image, btn_state);
-                        TextView b2_label = (TextView) GameActivity.this.findViewById(R.id.button2_state);
-                        setButtonLabel(b2_label, btn_state);
+                        switch (btn_state) {
+                            case 0:
+                                //Niet ingedrukt
+                                b2_pressed = false;
+                                break;
+                            case 1:
+                                //Ingedrukt
+                                b2_pressed = true;
+                                b2_presses += 1;
+                                b2_was_pressed = true;
+                                break;
+                            case 2:
+                                //Lang ingedrukt
+                                b2_pressed = true;
+                                break;
+                        }
                     }
                     break;
                 case BleAdapterService.GATT_REMOTE_RSSI:
@@ -438,34 +478,6 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             }
         }
     };
-
-    private void setButtonImage(ImageView btn_image, byte btn_state) {
-        switch (btn_state) {
-            case 0:
-                btn_image.setImageResource(R.drawable.button_black_40);
-                break;
-            case 1:
-                btn_image.setImageResource(R.drawable.button_green_40);
-                break;
-            case 2:
-                btn_image.setImageResource(R.drawable.button_red_40);
-                break;
-        }
-    }
-
-    private void setButtonLabel(TextView btn_label, byte btn_state) {
-        switch (btn_state) {
-            case 0:
-                btn_label.setText("Not Pressed");
-                break;
-            case 1:
-                btn_label.setText("Pressed");
-                break;
-            case 2:
-                btn_label.setText("Long Press");
-                break;
-        }
-    }
 
     private void setUiFromMatrixState(byte[] matrix_state) {
         GridLayout grid = GameActivity.this.findViewById(R.id.led_grid);
@@ -529,14 +541,6 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         });
     }
 
-	private void showBenchmark() {
-			final int notifications_per_minute = notification_count;
-			final int notifications_per_second = notification_count / 60;
-			Log.d(Constants.TAG,"Minute: " + Integer.toString(minute_number));
-			Log.d(Constants.TAG,"Notification Count: " + Integer.toString(notification_count));
-			Log.d(Constants.TAG,"Notifications per Second: " + Integer.toString(notifications_per_second));
-	}
-
     @Override
     public void connectionStatusChanged(boolean connected) {
         if (connected) {
@@ -571,15 +575,6 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         startScript();
     }
 
-    public void sendText(String text) {
-        Log.d(Constants.TAG, "sendText");
-        /*EditText text = (EditText) GameActivity.this.findViewById(R.id.display_text2);*/
-        Log.d(Constants.TAG, "sendText: " + text);
-        byte[] utf8_bytes = text.getBytes(StandardCharsets.UTF_8);
-        Log.d(Constants.TAG, "UTF8 bytes: 0x" + Utility.byteArrayAsHexString(utf8_bytes));
-        bluetooth_le_adapter.writeCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.LEDTEXT_CHARACTERISTIC_UUID), utf8_bytes);
-    }
-
     private void startScript(){
         boolean installNeeded = Utility.isInstallNeeded(this);
 
@@ -599,8 +594,6 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         @Override
         protected Boolean doInBackground(Void... params) {
             Log.i(GlobalConstants.LOG_TAG, "Installing...");
-
-            createOurExternalStorageRootDir();
 
             Utility.copyResourcesToLocal(getBaseContext());
 
@@ -626,10 +619,26 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         else {
             startService(new Intent(this, BackgroundScriptService.class));
         }
+
+        b1_pressed = false;
+        b2_pressed = false;
+
+        b1_presses = 0;
+        b2_presses = 0;
+
+        b1_was_pressed = false;
+        b2_was_pressed = false;
+
+        MicrobitFacade.updateActivity(this);
     }
 
-    private void createOurExternalStorageRootDir() {
-        Utils.createDirectoryOnExternalStorage( this.getPackageName() );
+    private void stopScriptService() {
+        if(GlobalConstants.IS_FOREGROUND_SERVICE) {
+            stopService(new Intent(this, ScriptService.class));
+        }
+        else {
+            stopService(new Intent(this, BackgroundScriptService.class));
+        }
     }
 
     @Override
@@ -640,7 +649,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             return true;
         }
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            GridLayout grid = (GridLayout) GameActivity.this.findViewById(R.id.led_grid);
+            GridLayout grid = GameActivity.this.findViewById(R.id.led_grid);
             int count = grid.getChildCount();
             int display_row = 0;
             int led_in_row = 4;
@@ -667,4 +676,53 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         }
         return false;
     }
+
+
+
+
+
+    /*---------------------------------------------*/
+    /*------------------MICRO:BIT------------------*/
+    /*---------------------------------------------*/
+
+    /*-------------------DISPLAY-------------------*/
+    public void sendText(String text) {
+        byte[] utf8_bytes = text.getBytes(StandardCharsets.UTF_8);
+        bluetooth_le_adapter.writeCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.LEDTEXT_CHARACTERISTIC_UUID), utf8_bytes);
+    }
+
+    /*-------------------BUTTONS-------------------*/
+    public int getPresses(int button) {
+        if (button == 1){
+            int presses = b1_presses;
+            b1_presses = 0;
+            return presses;
+        }
+        int presses = b2_presses;
+        b2_presses = 0;
+        return presses;
+    }
+
+    public boolean getPressed(int button) {
+        if (button == 1) return b1_pressed;
+        return b2_pressed;
+    }
+
+    public boolean getWasPressed(int button) {
+        if (button == 1){
+            if (b1_was_pressed) {
+                b1_was_pressed = false;
+                return true;
+            }
+            return false;
+        }
+        if (b2_was_pressed) {
+            b2_was_pressed = false;
+            return true;
+        }
+        return false;
+    }
+
+    /*----------------ACCELEROMETER----------------*/
+
 }

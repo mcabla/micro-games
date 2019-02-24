@@ -22,6 +22,7 @@
 
 package com.mcabla.microbit.game.python.process;
 
+import android.os.Environment;
 import android.util.Log;
 
 import com.mcabla.microbit.game.python.config.GlobalConstants;
@@ -133,7 +134,7 @@ public class Process {
     int[] pid = new int[1];
     String[] argumentsArray = mArguments.toArray(new String[mArguments.size()]);
 
-    mLog = new File(String.format("%s/%s.log", getSdcardPackageDirectory() + "/", getName()));
+    mLog = new File(String.format("%s/%s.log", Environment.getExternalStorageDirectory().getAbsolutePath() + "/microgames/", getName()));
     mFd = Exec.createSubprocess(binaryPath, argumentsArray, getEnvironmentArray(), getWorkingDirectory(), pid);
     mPid.set(pid[0]);
     mOut = new FileOutputStream(mFd);
@@ -164,7 +165,7 @@ public class Process {
   }
 
   private String[] getEnvironmentArray() {
-    List<String> environmentVariables = new ArrayList<String>();
+    List<String> environmentVariables = new ArrayList<>();
     for (Entry<String, String> entry : mEnvironment.entrySet()) {
       environmentVariables.add(entry.getKey() + "=" + entry.getValue());
     }

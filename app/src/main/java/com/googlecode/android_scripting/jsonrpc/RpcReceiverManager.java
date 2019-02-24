@@ -32,7 +32,7 @@ public abstract class RpcReceiverManager {
   /**
    * A map of strings to known RPCs.
    */
-  private final Map<String, MethodDescriptor> mKnownRpcs = new HashMap<String, MethodDescriptor>();
+  private final Map<String, MethodDescriptor> mKnownRpcs = new HashMap<>();
 
   public RpcReceiverManager(Collection<Class<? extends RpcReceiver>> classList) {
     mReceivers = new HashMap<>();

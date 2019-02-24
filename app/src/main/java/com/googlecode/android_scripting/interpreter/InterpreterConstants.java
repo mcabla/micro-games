@@ -26,11 +26,6 @@ import android.os.Environment;
  */
 public interface InterpreterConstants {
 
-  String SDCARD_ROOT =
-      Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
-
-  String SDCARD_SL4A_ROOT = SDCARD_ROOT + "sl4a/";
-
   // Interpreters discovery mechanism.
   String ACTION_DISCOVER_INTERPRETERS =
       "com.mcabla.microbit.game.DISCOVER_INTERPRETERS";

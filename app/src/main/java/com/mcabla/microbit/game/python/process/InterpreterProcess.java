@@ -42,7 +42,7 @@ public class InterpreterProcess extends Process {
   private final Interpreter mInterpreter;
   private String mCommand;
   
-  private String pyname = "python";
+  private String pyname;
   private File binary = null;
   private String niceName;
   private String interactiveCommand;
@@ -107,16 +107,6 @@ public class InterpreterProcess extends Process {
   @Override
   public void start(final Runnable shutdownHook) {
     start(shutdownHook, null);
-  }
-
-  @Override
-  public String getWorkingDirectory() {
-    return InterpreterConstants.SDCARD_SL4A_ROOT;
-  }
-
-  @Override
-  public String getSdcardPackageDirectory() {
-    return Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + App.getThePackageName();
   }
   
   public RpcReceiverManagerFactory getRpcReceiverManagerFactory()

@@ -67,10 +67,7 @@ public class FacadeConfiguration {
     sFacadeClassList.add(AndroidFacade.class);
     sFacadeClassList.add(ToneGeneratorFacade.class);
     sFacadeClassList.add(WakeLockFacade.class);
-
-    if (sSdkLevel >= 4) {
-      sFacadeClassList.add(MicrobitFacade.class);
-    }
+    sFacadeClassList.add(MicrobitFacade.class);
 
     for (Class<? extends RpcReceiver> recieverClass : sFacadeClassList) {
       for (MethodDescriptor rpcMethod : MethodDescriptor.collectFrom(recieverClass)) {

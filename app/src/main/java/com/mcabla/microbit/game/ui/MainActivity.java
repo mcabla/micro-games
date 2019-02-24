@@ -242,112 +242,24 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
         protected Boolean doInBackground(Void... params) {
             Log.i(GlobalConstants.LOG_TAG, "Installing...");
 
-            Log.d(GlobalConstants.LOG_TAG,"setMessageProgressDialog: Please wait...");
-            createOurExternalStorageRootDir();
-
-            // Copy all resources
-            copyResourcesToLocal();
+            Utility.copyResourcesToLocal(getBaseContext());
 
             // TODO
             return true;
         }
 
         @Override
-        protected void onProgressUpdate(Integer... values) {
-        }
-
-        @Override
         protected void onPostExecute(Boolean installStatus) {
-            Log.d(GlobalConstants.LOG_TAG,"dismissProgressDialog");
 
-            if(installStatus) {
-                Log.d(GlobalConstants.LOG_TAG,"installSucceed");
-            }
-            else {
-                Log.d(GlobalConstants.LOG_TAG,"installSucceed");
+            if (installStatus) Log.d(GlobalConstants.LOG_TAG, "install Succeed");
+            else Log.d(GlobalConstants.LOG_TAG, "install Failed");
 
-            }
-
-            runScriptService();
+            scan();
         }
 
     }
 
-    private void runScriptService() {
-        if(GlobalConstants.IS_FOREGROUND_SERVICE) {
-            startService(new Intent(this, ScriptService.class));
-        }
-        else {
-            startService(new Intent(this, BackgroundScriptService.class));
-        }
-    }
-
-    private void createOurExternalStorageRootDir() {
-        Utils.createDirectoryOnExternalStorage( this.getPackageName() );
-    }
-
-    // quick and dirty: only test a file
-    private boolean isInstallNeeded() {
-        File testedFile = new File(this.getFilesDir().getAbsolutePath()+ "/" + GlobalConstants.PYTHON_MAIN_SCRIPT_NAME);
-        if(!testedFile.exists()) {
-            return true;
-        }
-        return false;
-    }
-
-
-    private void copyResourcesToLocal() {
-        String name, sFileName;
-        InputStream content;
-
-        R.raw a = new R.raw();
-        java.lang.reflect.Field[] t = R.raw.class.getFields();
-        Resources resources = getResources();
-
-        boolean succeed = true;
-
-        for (int i = 0; i < t.length; i++) {
-            try {
-                name = resources.getText(t[i].getInt(a)).toString();
-                sFileName = name.substring(name.lastIndexOf('/') + 1, name.length());
-                content = getResources().openRawResource(t[i].getInt(a));
-                content.reset();
-
-                // python project
-                if(sFileName.endsWith(GlobalConstants.PYTHON_PROJECT_ZIP_NAME)) {
-                    succeed &= Utils.unzip(content, this.getFilesDir().getAbsolutePath()+ "/", true);
-                }
-                // python -> /data/data/com.android.python32/files/python
-                else if (sFileName.endsWith(GlobalConstants.PYTHON_ZIP_NAME)) {
-                    succeed &= Utils.unzip(content, this.getFilesDir().getAbsolutePath()+ "/", true);
-                    FileUtils.chmod(new File(this.getFilesDir().getAbsolutePath()+ "/python3/bin/python3" ), 0755);
-                }
-                // python extras -> /sdcard/com.android.python32/extras/python
-                else if (sFileName.endsWith(GlobalConstants.PYTHON_EXTRAS_ZIP_NAME)) {
-                    Utils.createDirectoryOnExternalStorage( this.getPackageName() + "/" + "extras");
-                    Utils.createDirectoryOnExternalStorage( this.getPackageName() + "/" + "extras" + "/" + "tmp");
-                    succeed &= Utils.unzip(content, Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + this.getPackageName() + "/extras/", true);
-                }
-
-            } catch (Exception e) {
-                Log.e(GlobalConstants.LOG_TAG, "Failed to copyResourcesToLocal", e);
-                succeed = false;
-            }
-        } // end for all files in res/raw
-
-    }
-
-    private void startScanning() {
-
-        boolean installNeeded = isInstallNeeded();
-
-        if(installNeeded) {
-            new InstallAsyncTask().execute();
-        }
-        else {
-            runScriptService();
-        }
-
+    private void scan() {
         if (permissions_granted) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -359,7 +271,19 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
             simpleToast(getScanningMessage(),2000);
             ble_scanner.startScanning(this, SCAN_TIMEOUT);
         } else {
-            showMsg(Utility.htmlColorRed("Permission to perform Bluetooth scanning was not yet granted"));
+            showMsg(Utility.htmlColorRed("Verzoek om naar bluetooth apparaten te zoeken was afgewezen."));
+        }
+    }
+
+    private void startScanning() {
+
+        boolean installNeeded = Utility.isInstallNeeded(this);
+
+        if(installNeeded) {
+            new InstallAsyncTask().execute();
+        }
+        else {
+            scan();
         }
     }
 

@@ -22,15 +22,10 @@
 
 package com.mcabla.microbit.game.python.process;
 
-import android.os.Environment;
-import android.util.Log;
-
-import com.mcabla.microbit.game.python.config.GlobalConstants;
 import com.googlecode.android_scripting.AndroidProxy;
 import com.googlecode.android_scripting.interpreter.InterpreterConfiguration;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
 

@@ -22,8 +22,6 @@
 
 package com.mcabla.microbit.game.python.process;
 
-import android.util.Log;
-
 import com.googlecode.android_scripting.AndroidProxy;
 import com.googlecode.android_scripting.interpreter.InterpreterConfiguration;
 import com.googlecode.android_scripting.interpreter.MyInterpreter;

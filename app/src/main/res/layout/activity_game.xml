@@ -197,66 +197,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="5dip">
-
-                <androidx.gridlayout.widget.GridLayout xmlns:grid="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/button_grid"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="4dp"
-
-                    grid:alignmentMode="alignBounds"
-                    grid:columnCount="2"
-                    grid:rowOrderPreserved="false"
-                    grid:useDefaultMargins="true">
-
-                    <ImageView
-                        android:id="@+id/button1"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:gravity="center"
-                        android:src="@drawable/button_black_40"
-                        grid:layout_columnWeight="1"
-                        grid:layout_gravity="fill_horizontal"
-                        grid:layout_rowWeight="1" />
-
-                    <ImageView
-                        android:id="@+id/button2"
-                        android:layout_width="0dp"
-                        android:layout_height="100dp"
-                        android:gravity="center"
-                        android:src="@drawable/button_black_40"
-                        grid:layout_columnWeight="1"
-                        grid:layout_gravity="fill_horizontal"
-                        grid:layout_rowWeight="1" />
-
-                    <TextView
-                        android:id="@+id/button1_state"
-                        android:layout_width="0dp"
-                        android:layout_height="100dp"
-                        android:gravity="center"
-                        android:text="Niet Ingedrukt"
-                        grid:layout_columnWeight="1"
-                        grid:layout_gravity="fill_horizontal"
-                        grid:layout_rowWeight="1" />
-
-                    <TextView
-                        android:id="@+id/button2_state"
-                        android:layout_width="0dp"
-                        android:layout_height="100dp"
-                        android:gravity="center"
-                        android:text="Niet Ingedrukt"
-                        grid:layout_columnWeight="1"
-                        grid:layout_gravity="fill_horizontal"
-                        grid:layout_rowWeight="1" />
-
-                </androidx.gridlayout.widget.GridLayout>
-            </LinearLayout>
-
-            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
