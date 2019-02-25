@@ -1,1 +1,14 @@
-
+{
+  "games": [
+    {
+      "id": "1",
+      "name": "TeSt",
+      "file": "test.py"
+    },
+    {
+      "id": "2",
+      "name": "TeSt TwEe",
+      "file": "test2.py"
+    }
+  ]
+}
