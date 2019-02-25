@@ -4,13 +4,17 @@
       "id": "1",
       "name": "TeSt",
       "file": "test.py",
-      "description":"Typ je omschrijving/uitleg hier."
+      "description":"Typ je omschrijving/uitleg hier.",
+      "icon":"test.png",
+      "color":"#ffffff"
     },
     {
       "id": "2",
       "name": "TeSt TwEe",
       "file": "test2.py",
-      "description":"Typ je omschrijving/uitleg hier."
+      "description":"Typ je omschrijving/uitleg hier.",
+      "icon":"test2.png",
+      "color":"#ffffff"
     }
   ],
   "er": false
