@@ -3,12 +3,14 @@
     {
       "id": "1",
       "name": "TeSt",
-      "file": "test.py"
+      "file": "test.py",
+      "description":"Typ je omschrijving/uitleg hier."
     },
     {
       "id": "2",
       "name": "TeSt TwEe",
       "file": "test2.py"
+      "description":"Typ je omschrijving/uitleg hier."
     }
   ],
   "er": false
