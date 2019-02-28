@@ -1,31 +1,22 @@
 {
   "games": [
     {
-      "id": "1",
+      "id": 1,
       "name": "TeSt",
       "file": "test.py",
       "description":"Typ je omschrijving/uitleg hier.",
       "icon":"test.png",
       "color":"#ffffff",
-      "max_spelers":"0"
+      "max_spelers": 0
     },
     {
-      "id": "2",
+      "id": 2,
       "name": "TeSt TwEe",
       "file": "test2.py",
       "description":"Typ je omschrijving/uitleg hier.",
       "icon":"test2.png",
       "color":"#ffffff",
-      "max_spelers":"0"
-    },
-    {
-      "id": "2",
-      "name": "TeSt TwEe",
-      "file": "test2.py",
-      "description":"Typ je omschrijving/uitleg hier.",
-      "icon":"test2.png",
-      "color":"#ffffff",
-      "max_spelers":"0"
+      "max_spelers": 0
     }
   ],
   "er": false
