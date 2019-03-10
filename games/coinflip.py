@@ -1,12 +1,12 @@
 from microbit import *
-import random
+import random, time
 
 random.seed()
 
 display.scroll("Kop=A, Munt=B")
 
 droid.makeToast("Coin Flip")
-
+time.sleep(1)
 keuze = ""
 
 while True:
