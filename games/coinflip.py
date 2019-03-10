@@ -1,6 +1,8 @@
 from microbit import *
 import random
 
+random.seed()
+
 display.scroll("Kop=A, Munt=B")
 
 keuze = ""
