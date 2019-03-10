@@ -28,7 +28,7 @@
       "max_spelers": 0
     }
     {
-      "id": 3,
+      "id": 4,
       "name": "Klikspel",
       "file": "ipklikspel.py",
       "description":"Zo snel mogelijk 50 keer drukken.",
