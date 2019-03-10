@@ -10,15 +10,6 @@
       "max_spelers": 0
     },
     {
-      "id": 2,
-      "name": "TeSt TwEe",
-      "file": "test2.py",
-      "description":"Typ je omschrijving/uitleg hier.",
-      "icon":"test2.png",
-      "color":"#ffffff",
-      "max_spelers": 0
-    },
-    {
       "id": 3,
       "name": "Coin Flip",
       "file": "coinflip.py",
@@ -26,7 +17,7 @@
       "icon":"test2.png",
       "color":"#ffffff",
       "max_spelers": 0
-    }
+    },
     {
       "id": 4,
       "name": "Klikspel",
