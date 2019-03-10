@@ -1,1 +1,7 @@
 display.scroll()
+display.clear()
+running_time()    iets van time module
+display.show()    met delay enzo
+display.set_pixel(x,y,z)  (met x en y tussen 0 en 4 en z tussen 0 en 9)
+button_a.was_pressed()
+button_b.was_pressed()
