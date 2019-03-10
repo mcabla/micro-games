@@ -8,11 +8,13 @@ keuze = ""
 while True:
     if button_a.is_pressed():
         keuze = "kop"
+        droid.makeToast("TEST: A is ingedrukt!")
         break
  
 
     if button_b.is_pressed():
         keuze = "munt"
+        droid.makeToast("TEST: b is ingedrukt!")
         break
 
     
