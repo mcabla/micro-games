@@ -1,5 +1,6 @@
 #op knopjes drukken en tellen
 #winnaar heeft kortste tijd (variabele verschil)
+#winnaar heeft hoogste score (variabele score = 1/verschil)
 
 from microbit import *
 import time
@@ -41,6 +42,7 @@ while tijd:
         display.show(imgs, delay=200)
         display.scroll(str(verschil))
         sleep(1000)
+        score = 1/verschil
         break
       stra = str(aantal)
       y=int(stra[0])
