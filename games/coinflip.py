@@ -5,6 +5,8 @@ random.seed()
 
 display.scroll("Kop=A, Munt=B")
 
+droid.makeToast("Coin Flip")
+
 keuze = ""
 
 while True:
