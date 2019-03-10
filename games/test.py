@@ -6,7 +6,8 @@ droid.makeToast("test2")
 time.sleep(5)
 
 while 1:
+	x = droid.getPackageVersionCode("com.mcabla.microbit.game")
 	y = droid.button_a_was_pressed()
-	txt = "Button A was pressed: " + str(y)
+	txt = "app version is: " + str(x) + " button A was pressed: " + str(y)
 	droid.makeToast(txt)
 	time.sleep(5)
