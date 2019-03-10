@@ -4,7 +4,24 @@
 from microbit import *
 import time
 display.clear()
+img1 =  Image("99999:"
+              "95559:"
+              "95059:"
+              "95559:"
+              "99999")
 
+img2 =  Image("55555:"
+              "50005:"
+              "50905:"
+              "50005:"
+              "55555")
+
+img3 =  Image("00000:"
+              "09990:"
+              "09590:"
+              "09990:"
+              "00000")
+imgs = [img1,img2,img3]
 aantal=0
 tijd = True
 start = running_time()+1000000
@@ -20,24 +37,21 @@ while tijd:
       if aantal >=50:
         eind = running_time()
         verschil = (eind - start)/1000
+        display.show(imgs, delay=200)
+        display.show(imgs, delay=200)
         display.scroll(str(verschil))
         sleep(1000)
         break
       stra = str(aantal)
-      x=int(stra[1])/2
       y=int(stra[0])
+      if stra[1]=='0':
+        x=5
+        y-=1
+      else:
+        x=int(stra[1])/2
+      
       if aantal % 2 == 0:
-        display.set_pixel(x, y, 9)
+        display.set_pixel(x-1, y, 9)
     elif aantal < 10:
       if aantal % 2 == 0:
-        display.set_pixel(aantal/2, 0, 9)
-  
-  #if aantal < 10:
-  #  display.show('0')               #0 tot 10 laat 0 zien
-  #else:
-  #  display.show(str(aantal)[0])    # per 10 toont hij 1,2,3,...
-  
-    
-# record 3,5 tessa
-# record 3,37 lennert   (2,39 als hij cheat)
-
+        display.set_pixel(aantal/2-1, 0, 9)
