@@ -17,7 +17,7 @@ while True:
         break
 
     
-x= random.randint(1,2)
+x= random.randint(0,2)
 if x==1:
     x="kop"
 else:
