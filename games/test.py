@@ -1,13 +1,15 @@
-import android, time
+from microbit import *
+import random, time
 
-droid = android.Android()
+random.seed()
 
-droid.makeToast("test2")
-time.sleep(5)
+display.scroll("Kop=A, Munt=B")
+keuze = ""
 
-while 1:
-	x = droid.getPackageVersionCode("com.mcabla.microbit.game")
-	y = droid.button_a_was_pressed()
-	txt = "app version is: " + str(x) + " button A was pressed: " + str(y)
-	droid.makeToast(txt)
-	time.sleep(5)
+while True:
+    if button_a.is_pressed():
+        display.set_pixel(1,1,9)
+ 
+
+    if button_b.is_pressed():
+        display.set_pixel(1,2,9)
