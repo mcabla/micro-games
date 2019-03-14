@@ -16,7 +16,7 @@
       "description":"Kop of munt.",
       "icon":"test2.png",
       "color":"#ffffff",
-      "max_spelers": 0
+      "max_spelers": 1
     },
     {
       "id": 4,
@@ -26,6 +26,15 @@
       "icon":"test2.png",
       "color":"#ffffff",
       "max_spelers": 0
+    },
+    {
+      "id": 5,
+      "name": "Blad, steen, schaar",
+      "file": "blad, steen, schaar.py",
+      "description":"wisselen met A, selecteren met B",
+      "icon":"test.png",
+      "color":"#ffffff",
+      "max_spelers": 1
     }
   ],
   "er": false
