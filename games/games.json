@@ -30,7 +30,7 @@
     {
       "id": 5,
       "name": "Blad, steen, schaar",
-      "file": "blad, steen, schaar.py",
+      "file": "blad_steen_schaar.py",
       "description":"wisselen met A, selecteren met B",
       "icon":"test.png",
       "color":"#ffffff",
