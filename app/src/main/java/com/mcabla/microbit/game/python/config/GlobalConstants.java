@@ -29,6 +29,5 @@ public class GlobalConstants {
 	public static final String PYTHON_ZIP_NAME = "python3_r34.zip";
 	public static final String PYTHON_EXTRAS_ZIP_NAME = "python3_extras_r34.zip";
 
-	public static final boolean IS_FOREGROUND_SERVICE = true;
 	public static final String LOG_TAG = "Python3";
 }

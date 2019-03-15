@@ -22,6 +22,7 @@
 
 package com.mcabla.microbit.game.python.support;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -140,6 +141,30 @@ public class Utils {
 		     }
 		    
 		     return succeed;		     
+	  }
+
+
+	  public static boolean safeFile(Context context, String content, String filename) {
+		  FileOutputStream outputStream;
+
+		  try {
+			  outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
+			  outputStream.write(content.getBytes());
+			  outputStream.close();
+		  } catch (Exception e) {
+			  e.printStackTrace();
+			  return false;
+		  }
+
+		  File file = new File(context.getFilesDir().getAbsolutePath()+ "/", filename);
+
+		  try {
+			  FileUtils.chmod(file, 0755);
+		  } catch (Exception e) {
+			  e.printStackTrace();
+			  return false;
+		  }
+		  return true;
 	  }
 	  
 	  //-------------------------------------------------------------------------------------------------

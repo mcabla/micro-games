@@ -33,7 +33,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -216,7 +215,7 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
         }
     }
 
-    // Service message handler�//////////////////
+    // Service message handler
     private Handler mMessageHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {

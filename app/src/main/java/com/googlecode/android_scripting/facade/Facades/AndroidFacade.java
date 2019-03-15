@@ -278,7 +278,7 @@ public class AndroidFacade extends RpcReceiver {
     });
   }
 
-  @Rpc(description = "Displays a short-duration Toast notification.")
+  @Rpc(description = "Displays a short-duration Toast notification. And writes message to logcat.")
   public void makeLog(@RpcParameter(name = "message") final String message) {
     Log.d(message);
   }

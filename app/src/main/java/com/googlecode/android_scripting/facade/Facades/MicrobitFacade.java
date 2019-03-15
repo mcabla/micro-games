@@ -6,6 +6,7 @@ import com.googlecode.android_scripting.facade.FacadeManager;
 import com.googlecode.android_scripting.jsonrpc.RpcReceiver;
 import com.googlecode.android_scripting.rpc.Rpc;
 import com.googlecode.android_scripting.rpc.RpcParameter;
+import com.mcabla.microbit.game.Constants;
 import com.mcabla.microbit.game.ui.GameActivity;
 
 import java.lang.ref.WeakReference;
@@ -44,6 +45,30 @@ public class MicrobitFacade extends RpcReceiver {
         if (gameActivityWeakReference != null) gameActivityWeakReference.get().sendText(String.valueOf(message));
     }
 
+    @Rpc(description = "Print pixel on microbit")
+    public void display_set_pixel(@RpcParameter(name = "x") Integer x,
+                                  @RpcParameter(name = "y") Integer y,
+                                  @RpcParameter(name = "z") Integer z) throws InterruptedException {
+        mOnInitLock.await();
+        if (gameActivityWeakReference != null) gameActivityWeakReference.get().sendPixel(x,y,z);
+    }
+
+    @Rpc(description = "Print image on microbit")
+    public void display_show(@RpcParameter(name = "image") String img) throws InterruptedException {
+        char[] imgList = img.toCharArray();
+        mOnInitLock.await();
+        int i = 0;
+        if (gameActivityWeakReference != null){
+            for (int x = 0; x < 5; x++) {
+                for (int y = 0; y < 5; y++) {
+                    Log.d(Constants.TAG, "x:" +x + " y:" + y + " z:" + String.valueOf((int)  imgList[i]));
+                    gameActivityWeakReference.get().sendPixel(x,y, (int) imgList[i]);
+                    i++;
+                }
+            }
+        }
+    }
+
     /*---------------------------------------------*/
     /*-------------------BUTTONS-------------------*/
     /*---------------------------------------------*/
@@ -62,7 +87,7 @@ public class MicrobitFacade extends RpcReceiver {
     }
 
     @Rpc(description = "Get button a pressed")
-    public boolean button_a_get_pressed() throws InterruptedException {
+    public Boolean button_a_is_pressed() throws InterruptedException {
         mOnInitLock.await();
         Log.d("micro:games BUTTON","" + String.valueOf(gameActivityWeakReference.get().getPressed(1)));
         if (gameActivityWeakReference != null) return gameActivityWeakReference.get().getPressed(1);
@@ -70,11 +95,10 @@ public class MicrobitFacade extends RpcReceiver {
     }
 
     @Rpc(description = "Get button b pressed")
-    public boolean button_b_get_pressed() throws InterruptedException {
+    public boolean button_b_is_pressed() throws InterruptedException {
         mOnInitLock.await();
+        if (gameActivityWeakReference != null) return gameActivityWeakReference.get().getPressed(2);
         return false;
-        //if (gameActivityWeakReference != null) return gameActivityWeakReference.get().getPressed(2);
-        //return false;
     }
 
     @Rpc(description = "Get button a was pressed")
@@ -99,4 +123,7 @@ public class MicrobitFacade extends RpcReceiver {
     /*---------------------------------------------*/
     /*--------------------IMAGE--------------------*/
     /*---------------------------------------------*/
+
+
+
 }

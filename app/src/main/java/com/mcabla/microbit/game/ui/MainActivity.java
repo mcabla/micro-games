@@ -16,8 +16,6 @@ package com.mcabla.microbit.game.ui;
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import android.Manifest;
@@ -26,11 +24,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -51,7 +47,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.googlecode.android_scripting.FileUtils;
 import com.mcabla.microbit.game.Constants;
 import com.mcabla.microbit.game.MicroBit;
 import com.mcabla.microbit.game.R;
@@ -60,10 +55,16 @@ import com.mcabla.microbit.game.Utility;
 import com.mcabla.microbit.game.bluetooth.BleScanner;
 import com.mcabla.microbit.game.bluetooth.BleScannerFactory;
 import com.mcabla.microbit.game.bluetooth.ScanResultsConsumer;
-import com.mcabla.microbit.game.python.BackgroundScriptService;
-import com.mcabla.microbit.game.python.ScriptService;
 import com.mcabla.microbit.game.python.config.GlobalConstants;
 import com.mcabla.microbit.game.python.support.Utils;
+import com.mcabla.microbit.game.scripts.API.APICommunicator;
+import com.mcabla.microbit.game.scripts.Room.AppDatabase;
+import com.mcabla.microbit.game.scripts.Room.GameAsyncTask;
+import com.mcabla.microbit.game.scripts.Room.GameModel;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
     private static final String DEVICE_NAME_START = "BBC micro";
     private int device_count=0;
     private Toast toast;
+    private BluetoothDevice device;
 
     static class ViewHolder {
         public TextView text;
@@ -128,26 +130,13 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
                     ble_scanner.stopScanning();
                 }
 
-                BluetoothDevice device = ble_device_list_adapter.getDevice(position);
+                device = ble_device_list_adapter.getDevice(position);
                 if (device.getBondState() == BluetoothDevice.BOND_NONE && Settings.getInstance().isFilter_unpaired_devices()) {
                     device.createBond();
-                    showMsg(Utility.htmlColorRed("De geselecteerde micro:bit moete gekoppeld zijn - aan het koppelen"));
+                    showMsg(Utility.htmlColorRed("De geselecteerde micro:bit moet gekoppeld zijn - aan het koppelen"));
                     return;
                 }
-                try {
-                    MainActivity.this.unregisterReceiver(broadcastReceiver);
-                } catch (Exception e) {
-                    // ignore!
-                }
-                if (toast != null) {
-                    toast.cancel();
-                }
-                MicroBit microbit = MicroBit.getInstance();
-                microbit.setBluetooth_device(device);
-                Intent intent = new Intent(MainActivity.this, MenuActivity.class);
-                intent.putExtra(MenuActivity.EXTRA_NAME, device.getName());
-                intent.putExtra(MenuActivity.EXTRA_ID, device.getAddress());
-                startActivity(intent);
+                nextActivity();
 
             }
         });
@@ -507,6 +496,151 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
         } else {
             return Constants.NONE_FOUND;
         }
+    }
+
+    private void nextActivity(){
+        new downloadAndContinue ().execute ();
+    }
+
+
+    public class downloadAndContinue extends AsyncTask<Void, Void, JSONObject> {
+        APICommunicator apiCommunicator = APICommunicator.getInstance();
+
+        @Override
+        protected JSONObject doInBackground(Void... params) {
+            String stringAnswer = apiCommunicator.StringGet ("games.json");
+            if ("-".equals (stringAnswer)) stringAnswer = "{\"er\":true,\"et\":\"-\"}";
+            JSONObject answer;
+            try {
+                answer = new JSONObject (stringAnswer);
+            } catch (JSONException e) {
+                e.printStackTrace ();
+                answer = new JSONObject ();
+            }
+
+            return answer;
+        }
+
+        @Override
+        protected void onPostExecute(final JSONObject result) {
+            try {
+                if (!result.getBoolean ("er")) {
+                    new GameAsyncTask(getBaseContext()).deleteAllGames();
+                    JSONArray jsonArray = result.getJSONArray ("games");
+
+                    for (int i = 0; i < jsonArray.length (); i++) {
+
+                        if (!new downloadFiles ().execute (jsonArray.getJSONObject(i)).get())
+                            throw new Exception();
+
+                    }
+
+                    try {
+                        MainActivity.this.unregisterReceiver(broadcastReceiver);
+                    } catch (Exception e) {
+                        // ignore!
+                    }
+                    if (toast != null) {
+                        toast.cancel();
+                    }
+                    MicroBit microbit = MicroBit.getInstance();
+                    microbit.setBluetooth_device(device);
+                    Intent intent = new Intent(MainActivity.this, MenuActivity.class);
+                    intent.putExtra(MenuActivity.EXTRA_NAME, device.getName());
+                    intent.putExtra(MenuActivity.EXTRA_ID, device.getAddress());
+                    startActivity(intent);
+                } else {
+                    Log.d(Constants.TAG, "Failed to download games: unknown reason");
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace ();
+                Log.d(Constants.TAG, "Failed to download files: JSON is corrupt!");
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.d(Constants.TAG, "Failed to download files: fault in installing a game.");
+            }
+        }
+    }
+
+    public class downloadFiles extends AsyncTask<JSONObject, Void, Boolean> {
+        APICommunicator apiCommunicator = APICommunicator.getInstance();
+
+        @Override
+        protected Boolean doInBackground(JSONObject... params) {
+            try {
+                JSONObject obj = params[0];
+                String content = apiCommunicator.StringGet(obj.getString("file"));
+
+                if ("-".equals (content)) return false;
+
+                content = contentModifier(content);
+
+                if (Utils.safeFile(MainActivity.this, content, obj.getString ("file"))){
+                    GameModel gameModel = new GameModel(
+                            obj.getInt("id"),
+                            obj.getString("name"),
+                            obj.getString("file"),
+                            obj.getString("description"),
+                            obj.getString("icon"),
+                            obj.getString("color"),
+                            obj.getInt("max_spelers"));
+                    //new GameAsyncTask(getBaseContext()).addGame(gameModel);
+                    AppDatabase.getDatabase(MainActivity.this).gameModel().addGame(gameModel);
+                    Log.d(Constants.TAG, "Installed game: " + gameModel.getName());
+
+                    return true;
+                }
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean succes) {
+            if (!succes) Log.d(Constants.TAG, "Failed to install game");
+            super.onPostExecute(succes);
+        }
+    }
+
+    private String contentModifier(String content){
+        content = content.replace("from microbit import *","import android \n" +
+                "droid = android.Android()\n" +
+                "droid.makeToast(\"Spel gestart.\")");
+
+        if (!content.contains("import time") & !content.contains("from time import")) content = "import time\n" + content;
+
+        /*BUTTONS*/
+        content = content.replace("button_a.''(()","droid.button_a_get_presses().result");
+        content = content.replace("button_b.get_presses()","droid.button_b_get_presses().result");
+
+        content = content.replace("button_a.is_pressed()","droid.button_a_is_pressed().result");
+        content = content.replace("button_b.is_pressed()","droid.button_b_is_pressed().result");
+
+        content = content.replace("button_a.was_pressed()","droid.button_a_was_pressed().result");
+        content = content.replace("button_b.was_pressed()","droid.button_b_was_pressed().result");
+
+
+        /*DISPLAY*/
+        content = content.replaceAll("(\\s*?)display\\.scroll\\(\\\"(.*?)\\\"\\)","$1droid.display_scroll(\"$2\").result$1#time.sleep(round(len(\"$2\")*13/10))");
+        content = content.replaceAll("(\\s*?)display\\.scroll\\(\\'(.*?)\\'\\)","$1droid.display_scroll(\'$2\').result$1#time.sleep(round(len(\'$2\')*13/10))");
+        content = content.replaceAll("(\\s*?)display\\.scroll\\((.*?)\\)","$1droid.display_scroll_int($2).result$1#time.sleep(round(len(\"$2\")*13/10))");
+
+        content = content.replaceAll("(\\s*?)display\\.set_pixel\\((.*?),(.*?),(.*?)\\)","$1droid.display_set_pixel($2,$3,$4).result");
+
+        content = content.replaceAll("(\\s*?)display\\.show\\((.*?)\\)","$1droid.display_show($2).result");
+
+
+        /*IMAGE*/
+        content = content.replaceAll("\\s*?Image\\(\\\"(.*?)\\:(?:\\s*?)\"*?\\n*\\s*\"*(.*?)\\:(?:\\s*?)\"*\\n*\\s*\"*(.*?)\\:(?:\\s*?)\"*\\n*\\s*\"*(.*?)\\:(?:\\s*?)\"*\\n*\\s*\"*(.*)\\:\"\\)","\"$1$2$3$4$5\"");
+        content = content.replaceAll("\\s*?Image\\(\\\'(.*?)\\:(?:\\s*?)\'*?\\n*\\s*\'*(.*?)\\:(?:\\s*?)\'*\\n*\\s*\'*(.*?)\\:(?:\\s*?)\'*\\n*\\s*\'*(.*?)\\:(?:\\s*?)\'*\\n*\\s*\'*(.*)\\:\"\\)","\'$1$2$3$4$5\'");
+
+        Log.d("micro:games",content);
+
+        return content;
     }
 
 }

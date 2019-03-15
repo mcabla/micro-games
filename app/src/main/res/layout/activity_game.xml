@@ -572,6 +572,21 @@
                 android:onClick="onSendText"
                 android:text="Send Text" />
 
+            <EditText
+                android:id="@+id/display_text3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLength="20"
+                android:text="1" />
+
+            <Button
+                android:id="@+id/runScript"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onRunScript"
+                android:text="start script" />
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

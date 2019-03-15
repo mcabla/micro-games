@@ -105,10 +105,7 @@ public class JsonRpcServer extends SimpleServer {
   }
 
   private boolean checkHandshake(String method, JSONArray params) throws JSONException {
-    if (!method.equals("_authenticate") || !mHandshake.equals(params.getString(0))) {
-      return false;
-    }
-    return true;
+    return method.equals("_authenticate") && mHandshake.equals(params.getString(0));
   }
 
   private void send(PrintWriter writer, JSONObject result) {

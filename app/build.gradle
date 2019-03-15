@@ -24,6 +24,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.google.firebase:firebase-core:16.0.7'
+    implementation 'com.google.firebase:firebase-perf:16.2.3'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
     testImplementation 'junit:junit:4.12'
     implementation "androidx.appcompat:appcompat:1.0.2"
@@ -32,5 +33,14 @@ dependencies {
     api 'com.google.guava:guava:27.0.1-android'
     implementation files('libs/libGoogleAnalytics.jar')
     implementation files('libs/locale_platform.jar')
-    //implementation files('libs/script.jar')
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-scalars:2.4.0'
+    implementation "androidx.room:room-runtime:2.1.0-alpha04"
+    annotationProcessor "androidx.room:room-compiler:2.1.0-alpha04"
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0-alpha3', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
 }

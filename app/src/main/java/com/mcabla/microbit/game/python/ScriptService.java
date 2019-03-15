@@ -31,6 +31,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.mcabla.microbit.game.Constants;
 import com.mcabla.microbit.game.NotificationHelper;
 import com.mcabla.microbit.game.R;
 import com.mcabla.microbit.game.python.config.GlobalConstants;
@@ -40,20 +41,25 @@ import com.googlecode.android_scripting.ForegroundService;
 import com.googlecode.android_scripting.NotificationIdFactory;
 import com.googlecode.android_scripting.jsonrpc.RpcReceiverManager;
 import com.googlecode.android_scripting.interpreter.InterpreterConfiguration;
+import com.mcabla.microbit.game.scripts.Room.GameAsyncTask;
+import com.mcabla.microbit.game.scripts.Room.GameModel;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 
 public class ScriptService extends ForegroundService {
 	private final static int NOTIFICATION_ID = NotificationIdFactory.create();
 	private final CountDownLatch mLatch = new CountDownLatch(1);
 	private final IBinder mBinder;
 	private MyScriptProcess myScriptProcess;
-	
+
+	private int script_id = 0;
+	private GameModel gameModel;
+
 	private static ScriptService instance;
 	private boolean killMe;
 	  
@@ -118,8 +124,16 @@ public class ScriptService extends ForegroundService {
 		instance = this;
 		this.killMe = false;
 
-		new startMyAsyncTask().execute(startId);
-	}
+
+        script_id = intent.getIntExtra("id",0);
+        try {
+            gameModel = new GameAsyncTask(context).getGame(script_id);
+            new startMyAsyncTask().execute();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            stopSelf();
+        }
+    }
 
 	  public class startMyAsyncTask extends AsyncTask<Integer, Integer, Boolean> {
 		   @Override
@@ -128,7 +142,7 @@ public class ScriptService extends ForegroundService {
 	
 		   @Override
 		   protected Boolean doInBackground(Integer... params) {	    
-			   startMyMain(params[0]);
+			   startMyMain();
 			   
 			   // TODO
 			   return true;
@@ -144,31 +158,26 @@ public class ScriptService extends ForegroundService {
 	   
 	  }
 
-	private void startMyMain(final int startId) {
+	private void startMyMain() {
+		String scriptName;
+		if (script_id == 0) scriptName = GlobalConstants.PYTHON_MAIN_SCRIPT_NAME;
+		else{
+			try {
+				scriptName = gameModel.getFilename();
+			} catch (Exception e) {
+				e.printStackTrace();
+				scriptName = GlobalConstants.PYTHON_MAIN_SCRIPT_NAME;
+				stopSelf();
 
-		String scriptName = GlobalConstants.PYTHON_MAIN_SCRIPT_NAME;
+			}
+		}
+
 		scriptName = this.getFilesDir().getAbsolutePath() + "/" + scriptName;
 		File script = new File(scriptName);
 
 		if (!script.exists()){
-			try {
-				script = new File(context.getFilesDir().getAbsolutePath()+ "/" + GlobalConstants.PYTHON_MAIN_SCRIPT_NAME);
-
-				if(!script.exists()){
-					script.createNewFile();
-				}
-				FileWriter writer = new FileWriter(script);
-				writer.append("import android, time\n" +
-						"\n" +
-						"droid = android.Android()\n" +
-						"\n" +
-						"\tdroid.makeToast(\"Hello from Python 3.6.4 for Android\")");
-				writer.flush();
-				writer.close();
-			} catch (Exception e){
-				Log.d("NO SCRIPT", e.toString());
-				throw new RuntimeException("No such script to launch.");
-			}
+			Log.d(Constants.TAG, "NO SCRIPT TO LAUNCH!");
+			stopSelf();
 		}
 		
 		// arguments
@@ -224,6 +233,7 @@ public class ScriptService extends ForegroundService {
 		NotificationHelper notificationHelper = new NotificationHelper (this);
 
 		Notification.Builder notificationBuilder = notificationHelper.getNotification1 (this.getString(R.string.app_name), this.getString(R.string.micro_game_running), contentIntent);
+
 		return notificationBuilder.build();
 	}
 

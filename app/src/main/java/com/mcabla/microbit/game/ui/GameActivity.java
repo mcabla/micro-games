@@ -20,11 +20,9 @@ package com.mcabla.microbit.game.ui;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -37,11 +35,9 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.GridLayout;
-import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.googlecode.android_scripting.FileUtils;
 import com.googlecode.android_scripting.facade.Facades.MicrobitFacade;
 import com.mcabla.microbit.game.Constants;
 import com.mcabla.microbit.game.MicroBit;
@@ -50,13 +46,9 @@ import com.mcabla.microbit.game.Settings;
 import com.mcabla.microbit.game.Utility;
 import com.mcabla.microbit.game.bluetooth.BleAdapterService;
 import com.mcabla.microbit.game.bluetooth.ConnectionStatusListener;
-import com.mcabla.microbit.game.python.BackgroundScriptService;
 import com.mcabla.microbit.game.python.ScriptService;
 import com.mcabla.microbit.game.python.config.GlobalConstants;
-import com.mcabla.microbit.game.python.support.Utils;
 
-import java.io.File;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
@@ -327,7 +319,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                         showMsg(Utility.htmlColorGreen("Ready"),3);
 
                     }
-                    bluetooth_le_adapter.setNotificationsState(Utility.normaliseUUID(BleAdapterService.ACCELEROMETERSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.ACCELEROMETERDATA_CHARACTERISTIC_UUID), true);
+                    if (bluetooth_le_adapter != null ) bluetooth_le_adapter.setNotificationsState(Utility.normaliseUUID(BleAdapterService.ACCELEROMETERSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.ACCELEROMETERDATA_CHARACTERISTIC_UUID), true);
                     break;
                 case BleAdapterService.GATT_CHARACTERISTIC_WRITTEN:
                     Log.d(Constants.TAG, "Handler received characteristic written result");
@@ -562,7 +554,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
     public void onSendText(View view) {
         Log.d(Constants.TAG, "onSendText");
-        EditText text = (EditText) GameActivity.this.findViewById(R.id.display_text2);
+        EditText text =  GameActivity.this.findViewById(R.id.display_text2);
         Log.d(Constants.TAG, "onSendText: " + text.getText().toString());
         try {
             byte[] utf8_bytes = text.getText().toString().getBytes("UTF-8");
@@ -572,27 +564,34 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             e.printStackTrace();
             showMsg("Unable to convert text to UTF8 bytes");
         }
-        startScript();
     }
 
-    private void startScript(){
+    public void onRunScript(View view) {
+        EditText text =  GameActivity.this.findViewById(R.id.display_text3);
+        Log.d(Constants.TAG, "onRunScript with id: " + text.getText().toString());
+        startScript(Integer.valueOf(text.getText().toString()));
+    }
+
+    private void startScript(int id){
         boolean installNeeded = Utility.isInstallNeeded(this);
 
         if(installNeeded) {
-            new InstallAsyncTask().execute();
+            new InstallAsyncTask().execute(id);
         }
         else {
-            runScriptService();
+            runScriptService(id);
         }
     }
 
-    public class InstallAsyncTask extends AsyncTask<Void, Integer, Boolean> {
+    public class InstallAsyncTask extends AsyncTask<Integer, Integer, Boolean> {
+        private Integer id;
         @Override
         protected void onPreExecute() {
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Boolean doInBackground(Integer... params) {
+            id = params[0];
             Log.i(GlobalConstants.LOG_TAG, "Installing...");
 
             Utility.copyResourcesToLocal(getBaseContext());
@@ -607,19 +606,16 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             if(installStatus) Log.d(GlobalConstants.LOG_TAG, "installSucceed");
             else Log.d(GlobalConstants.LOG_TAG, "installSucceed");
 
-            runScriptService();
+            runScriptService(id);
         }
 
     }
 
-    private void runScriptService() {
-        if(GlobalConstants.IS_FOREGROUND_SERVICE) {
-            startService(new Intent(this, ScriptService.class));
-        }
-        else {
-            startService(new Intent(this, BackgroundScriptService.class));
-        }
+    private void runScriptService(int id) {
+        Intent intent = new Intent(this, ScriptService.class);
+        intent.putExtra("id",id);
 
+        startService(intent);
         b1_pressed = false;
         b2_pressed = false;
 
@@ -633,12 +629,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     }
 
     private void stopScriptService() {
-        if(GlobalConstants.IS_FOREGROUND_SERVICE) {
             stopService(new Intent(this, ScriptService.class));
-        }
-        else {
-            stopService(new Intent(this, BackgroundScriptService.class));
-        }
     }
 
     @Override
@@ -689,6 +680,57 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     public void sendText(String text) {
         byte[] utf8_bytes = text.getBytes(StandardCharsets.UTF_8);
         bluetooth_le_adapter.writeCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.LEDTEXT_CHARACTERISTIC_UUID), utf8_bytes);
+    }
+    public void sendPixel(int x, int y, int z){
+        if (led_matrix_state == null) {
+            Log.d(Constants.TAG, "onTouch - LED state array has not yet been initialised so ignoring touch");
+        } else {
+            Log.d(Constants.TAG,"Touched row "+y+", LED "+x);
+            if (z != 0) {
+                //AAN
+                led_matrix_state[y] = (byte) (led_matrix_state[y] & ~(1 << x));
+            } else {
+                //UIT
+                led_matrix_state[y] = (byte) (led_matrix_state[y] | (1 << x));
+            }
+        }
+
+        bluetooth_le_adapter.writeCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.LEDMATRIXSTATE_CHARACTERISTIC_UUID), led_matrix_state);
+
+    }
+
+
+    public void sendImage(String text){
+        if (led_matrix_state == null) {
+            Log.d(Constants.TAG, "onTouch - LED state array has not yet been initialised so ignoring touch");
+        } else {
+            GridLayout grid = GameActivity.this.findViewById(R.id.led_grid);
+            int count = grid.getChildCount();
+            int display_row = 0;
+            int led_in_row = 4;
+            for (int i = 0; i < count; i++) {
+                View child = grid.getChildAt(i);
+                if (child == child) {
+                    Log.d(Constants.TAG,"Touched row "+display_row+", LED "+led_in_row);
+                    if ((led_matrix_state[display_row] & (1 << led_in_row)) != 0) {
+                        child.setBackgroundColor(Color.parseColor("#C0C0C0"));
+                        led_matrix_state[display_row] = (byte) (led_matrix_state[display_row] & ~(1 << led_in_row));
+                    } else {
+                        child.setBackgroundColor(Color.RED);
+                        led_matrix_state[display_row] = (byte) (led_matrix_state[display_row] | (1 << led_in_row));
+                    }
+                } else {
+                    led_in_row = led_in_row - 1;
+                    if (led_in_row < 0) {
+                        led_in_row = 4;
+                        display_row++;
+                    }
+                }
+            }
+        }
+
+        bluetooth_le_adapter.writeCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.LEDMATRIXSTATE_CHARACTERISTIC_UUID), led_matrix_state);
+
     }
 
     /*-------------------BUTTONS-------------------*/

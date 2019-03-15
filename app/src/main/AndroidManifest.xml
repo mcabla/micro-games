@@ -67,21 +67,7 @@
         </service>
 
         <service
-            android:name="com.mcabla.microbit.game.python.BackgroundScriptService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="ccom.mcabla.microbit.game.python.BackgroundScriptService" />
-            </intent-filter>
-        </service>
-
-        <service
             android:name="com.mcabla.microbit.game.python.RpcServerService"
-            android:exported="false"/>
-
-        <activity
-            android:configChanges="keyboardHidden|orientation"
-            android:name="com.googlecode.android_scripting.activity.FutureActivity"
-            android:theme="@android:style/Theme.Translucent"
             android:exported="false"/>
 
         <activity
