@@ -11,6 +11,6 @@ while True:
              "09990:")
         display.show(blad)
  
-    if button_b.was_pressed():
+    elif button_b.was_pressed():
         display.set_pixel(1,1,0)
-    time.sleep(30)
+    time.sleep(0.2)
