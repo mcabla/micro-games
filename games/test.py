@@ -1,5 +1,6 @@
 from microbit import *
 import random
+import time
 
 while True:
     if button_a.was_pressed():
@@ -12,4 +13,4 @@ while True:
  
     if button_b.was_pressed():
         display.set_pixel(1,1,0)
-    sleep(30)
+    time.sleep(30)
