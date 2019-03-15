@@ -1,0 +1,42 @@
+{
+  "games": [
+    {
+      "id": 1,
+      "name": "TeSt",
+      "file": "test.py",
+      "description":"Typ je omschrijving/uitleg hier.",
+      "icon":"test.png",
+      "color":"#ffffff",
+      "max_spelers": 0
+    },
+    {
+      "id": 3,
+      "name": "Coin Flip",
+      "file": "coinflip.py",
+      "description":"Kop of munt.",
+      "icon":"test2.png",
+      "color":"#ffffff",
+      "max_spelers": 1
+    },
+    {
+      "id": 4,
+      "name": "Klikspel",
+      "file": "ipklikspel.py",
+      "description":"Zo snel mogelijk 50 keer drukken.",
+      "icon":"test2.png",
+      "color":"#ffffff",
+      "max_spelers": 0
+    },
+    {
+      "id": 5,
+      "name": "Blad, steen, schaar",
+      "file": "blad_steen_schaar.py",
+      "description":"wisselen met A, selecteren met B",
+      "icon":"test.png",
+      "color":"#ffffff",
+      "max_spelers": 1
+    }
+  ],
+  "er": false
+}
+
