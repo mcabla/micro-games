@@ -30,7 +30,7 @@ while True:
     if button_a.was_pressed():
         i -= 1
         if i == -1:
-            i = 3
+            i = 2
         display.show(keuze2[i])
  
     elif button_b.was_pressed():
