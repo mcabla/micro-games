@@ -60,9 +60,9 @@ else:
             display.scroll("gewonnen")
         elif i == 2:
             display.scroll("verloren")
-    elif keuze1 == 2:
-        if huidige == 0:
+    elif i2 == 2:
+        if i == 0:
             display.scroll("verloren")
-        elif huidige == 1:
+        elif i == 1:
             score = 2
             display.scroll("gewonnen")
