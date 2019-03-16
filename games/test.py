@@ -2,6 +2,8 @@ from microbit import *
 import random
 import time
 
+random.seed()
+
 #afbeeldingen
 blad = Image("00000:"
              "09990:"
