@@ -26,7 +26,7 @@ schaar = Image("99009:"
 
 
 #random gegenereerde keuze blad, steen, schaar
-keuze1 =(random.randint(0,2))
+keuze1 = random.randint(0,2)
 keuze2 = [blad, steen, schaar]
   
 #keuze speler
