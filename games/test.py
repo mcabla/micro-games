@@ -31,11 +31,11 @@ while True:
         i -= 1
         if i == -1:
             i = 3
-        display.show(keuze[i])
+        display.show(keuze2[i])
  
     elif button_b.was_pressed():
         i += 1
         if i == 3:
             i = 0
-        display.show(keuze[i])
+        display.show(keuze2[i])
     time.sleep(0.2)
