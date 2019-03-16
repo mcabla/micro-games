@@ -27,6 +27,8 @@ schaar = Image("99009:"
 
 keuze2 = [blad, steen, schaar]
 
+display.show(blad)
+
 i = 0
 while True:
     if button_a.was_pressed():
