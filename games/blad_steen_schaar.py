@@ -1,5 +1,6 @@
-from microbit import*
+from microbit import *
 import random
+import time
 
 #afbeeldingen
 blad = Image("00000:"
@@ -51,6 +52,8 @@ while 1:
             
     elif button_b.get_presses() != 0:
         break
+    
+    time.sleep(0.2)
       
     
 #bepalen winnaar
