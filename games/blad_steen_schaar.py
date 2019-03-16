@@ -3,20 +3,21 @@ import random
 import time
 
 #afbeeldingen
+#0
 blad = Image("00000:"
              "09990:"
              "09990:"
              "09990:"
              "09990:")
 
-
+#1
 steen = Image("00000:"
               "00000:"
               "09990:"
               "99999:"
               "99999:")
 
-
+#2
 schaar = Image("99009:"
                "99090:"
                "00900:"
@@ -25,16 +26,8 @@ schaar = Image("99009:"
 
 
 #random gegenereerde keuze blad, steen, schaar
-keuze1 =(random.randint(0,3))
+keuze1 =(random.randint(0,2))
 keuze2 = [blad, steen, schaar]
-
-
-if keuze1 == 1:
-  keuze1 = "blad" #0
-elif keuze1 == 2:
-  keuze1 = "steen" #1
-elif keuze1 == 3:
-  keuze1 = "schaar" #2
   
 #keuze speler
 display.scroll("veranderen = A, selecteren = B")
@@ -57,7 +50,7 @@ while 1:
       
     
 #bepalen winnaar
-if keuze1=="blad":
+if keuze1==0:
     if huidige == 0:
         display.scroll("gelijkspel")
     elif huidige == 1:
@@ -65,14 +58,14 @@ if keuze1=="blad":
     elif huidige == 2:
         display.scroll("gewonnen")
 
-elif keuze1 == "steen":
+elif keuze1 == 1:
     if huidige == 0:
        display.scroll("gewonnen")
     elif huidige == 1:
         display.scroll("gelijkspel")
     elif huidige == 2:
         display.scroll("verloren")
-elif keuze1 == "schaar":
+elif keuze1 == 2:
     if huidige == 0:
         display.scroll("verloren")
     elif huidige == 1:
