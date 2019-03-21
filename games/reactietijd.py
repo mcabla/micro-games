@@ -11,10 +11,10 @@ tijd *= 1000                    #milliseconden van maken
 
 gedrukt=False
 
-sleep(100)
+time.sleep(100)
 timer = 0
 display.show("R")
-sleep(100)
+time.sleep(100)
 start = running_time()
 reactietijd = 0
 score = 0
@@ -24,7 +24,7 @@ while timer<tijd:               #wachttijd
   button_a.was_pressed()
   button_b.was_pressed()
   timer= running_time() - start
-  sleep(10)
+  time.sleep(10)
 
 
 while not gedrukt:              #snel drukken na wachttijd
