@@ -1,30 +1,37 @@
-#op knopjes drukken en telleln
-
+#wie kortste reactietijd heeft wint
+#wie hoogste score(= 1/reactietijd) heeft wint
 
 from microbit import *
 import time
+import random
 
-aantal=0
-tijd = True
-start = running_time()+1000000
-eind = 0
-verschil = 0
+display.clear()
+tijd=random.randint(3,9)        #random tijd tussen 4 en 9 seconden
+tijd *= 1000                    #milliseconden van maken
 
-while tijd:
-  sleep(50)
-  if button_a.was_pressed():
-    start = min(start, running_time())
-    aantal +=1
-  if aantal < 10:
-    display.show('0')               #0 tot 10 laat 0 zien
-  else:
-    display.show(str(aantal)[0])    # per 10 toont hij 1,2,3,...
-  if aantal >=25:
-    eind = running_time()
-    verschil = (eind - start)/1000
-    display.scroll(str(verschil))
-    sleep(1000)
-    break
+gedrukt=False
+
+sleep(100)
+timer = 0
+display.show("R")
+sleep(100)
+start = running_time()
+reactietijd = 0
+score = 0
+
+while timer<tijd:               #wachttijd
+  display.show(Image("00000:00000:90909:00000:00000"))
+  button_a.was_pressed()
+  button_b.was_pressed()
+  timer= running_time() - start
+  sleep(10)
+
+
+while not gedrukt:              #snel drukken na wachttijd
+  display.show(Image("99999:99999:99999:99999:99999"))
+  if (button_a.was_pressed() or button_b.was_pressed()) and (running_time()-start)>=tijd:
+    reactietijd = running_time() - start - tijd
+    gedrukt = True
+    display.scroll(reactietijd)         #tijd in milliseconden
     
-# record 3,644 tessa
-# record 3,37 lennert
+score = 1/reactietijd
