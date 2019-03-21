@@ -30,7 +30,7 @@ eind = 0
 verschil = 0
 
 while tijd:
-  sleep(10)
+  time.sleep(10)
   if button_a.was_pressed():
     start = min(start, running_time())
     aantal +=1
@@ -41,7 +41,7 @@ while tijd:
         display.show(imgs, delay=200)
         display.show(imgs, delay=200)
         display.scroll(str(verschil))
-        sleep(1000)
+        time.sleep(1000)
         score = 1/verschil
         break
       stra = str(aantal)
