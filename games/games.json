@@ -35,6 +35,15 @@
       "icon":"test.png",
       "color":"#ffffff",
       "max_spelers": 1
+    },
+    {
+      "id": 6,
+      "name": "Reactietijd",
+      "file": "reactietijd.py",
+      "description":"Testen van de reactietijd: druk op een knop na het rode scherm",
+      "icon":"test.png",
+      "color":"#ffffff",
+      "max_spelers": 1
     }
   ],
   "er": false
