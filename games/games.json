@@ -53,6 +53,15 @@
       "icon":"test.png",
       "color":"#ffffff",
       "max_spelers": 0
+    },
+    {
+      "id": 7,
+      "name": "Vallende Appels",
+      "file": "VallendeAppels.py",
+      "description":"Beweeg naar links en rechts om de appels te vangen.",
+      "icon":"test.png",
+      "color":"#ffffff",
+      "max_spelers": 0
     }
   ],
   "er": false
