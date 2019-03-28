@@ -33,5 +33,6 @@ while not gedrukt:              #snel drukken na wachttijd
     reactietijd = running_time() - start - tijd
     gedrukt = True
     display.scroll(reactietijd)         #tijd in milliseconden
+  time.sleep(0.01)
     
 score = 1/reactietijd
