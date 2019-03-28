@@ -26,9 +26,8 @@ while timer<tijd:               #wachttijd
   timer= running_time() - start
   time.sleep(1)
 
-
+display.show(Image("99999:99999:99999:99999:99999"))
 while not gedrukt:              #snel drukken na wachttijd
-  display.show(Image("99999:99999:99999:99999:99999"))
   if (button_a.was_pressed() or button_b.was_pressed()) and (running_time()-start)>=tijd:
     reactietijd = running_time() - start - tijd
     gedrukt = True
