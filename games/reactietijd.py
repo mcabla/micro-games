@@ -11,10 +11,10 @@ tijd *= 1000                    #milliseconden van maken
 
 gedrukt=False
 
-time.sleep(100)
+time.sleep(0.100)
 timer = 0
 display.show("R")
-time.sleep(100)
+time.sleep(0.100)
 start = running_time()
 reactietijd = 0
 score = 0
