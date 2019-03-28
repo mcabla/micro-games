@@ -24,7 +24,7 @@ while timer<tijd:               #wachttijd
   button_a.was_pressed()
   button_b.was_pressed()
   timer= running_time() - start
-  time.sleep(10)
+  time.sleep(1)
 
 
 while not gedrukt:              #snel drukken na wachttijd
