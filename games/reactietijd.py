@@ -14,7 +14,7 @@ gedrukt=False
 time.sleep(0.100)
 timer = 0
 display.show("R")
-time.sleep(0.100)
+time.sleep(1)
 start = running_time()
 reactietijd = 0
 score = 0
