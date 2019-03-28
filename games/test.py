@@ -38,8 +38,18 @@ while tijd:
       if aantal >=50:
         eind = running_time()
         verschil = (eind - start)/1000
-        display.show(imgs)
-        display.show(imgs)
+        display.show(imgs[0])
+        time.sleep(0.2)
+        display.show(imgs[1])
+        time.sleep(0.2)
+        display.show(imgs[2])
+        time.sleep(0.2)
+        display.show(imgs[0])
+        time.sleep(0.2)
+        display.show(imgs[1])
+        time.sleep(0.2)
+        display.show(imgs[2])
+        time.sleep(0.2)
         display.scroll(str(verschil))
         time.sleep(1)
         score = 1/verschil
