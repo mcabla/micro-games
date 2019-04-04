@@ -23,7 +23,7 @@
       "name": "Coin Flip",
       "file": "coinflip.py",
       "description":"Kop of munt.",
-      "icon":"test2.png",
+      "icon":"coin.png",
       "color":"#ffffff",
       "max_spelers": 0
     },
