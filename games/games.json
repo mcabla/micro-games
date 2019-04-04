@@ -15,7 +15,7 @@
       "file": "reactietijd.py",
       "description":"Testen van de reactietijd: druk op een knop na het rode scherm",
       "icon":"test.png",
-      "color":"#ffffff",
+      "color":"#7c04e0",
       "max_spelers": 0
     },
     {
@@ -51,7 +51,7 @@
       "file": "hogerlager.py",
       "description":"Hoger, lager",
       "icon":"test.png",
-      "color":"#ffffff",
+      "color":"#001f87",
       "max_spelers": 0
     },
     {
