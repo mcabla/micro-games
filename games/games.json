@@ -41,7 +41,7 @@
       "name": "Blad, steen, schaar",
       "file": "blad_steen_schaar.py",
       "description":"wisselen met A, selecteren met B",
-      "icon":"test.png",
+      "icon":"schaarsteenpapier.png",
       "color":"#2f305e",
       "max_spelers": 0
     },
