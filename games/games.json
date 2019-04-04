@@ -14,7 +14,7 @@
       "name": "Reactietijd",
       "file": "reactietijd.py",
       "description":"Testen van de reactietijd: druk op een knop na het rode scherm",
-      "icon":"test.png",
+      "icon":"speedmeter.png",
       "color":"#530099",
       "max_spelers": 0
     },
