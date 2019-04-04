@@ -24,7 +24,7 @@
       "file": "coinflip.py",
       "description":"Kop of munt.",
       "icon":"coin.png",
-      "color":"#ffffff",
+      "color":"#e0bf04",
       "max_spelers": 0
     },
     {
