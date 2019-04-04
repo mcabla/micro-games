@@ -15,7 +15,7 @@
       "file": "reactietijd.py",
       "description":"Testen van de reactietijd: druk op een knop na het rode scherm",
       "icon":"test.png",
-      "color":"#7c04e0",
+      "color":"#530099",
       "max_spelers": 0
     },
     {
@@ -42,7 +42,7 @@
       "file": "blad_steen_schaar.py",
       "description":"wisselen met A, selecteren met B",
       "icon":"test.png",
-      "color":"#ffffff",
+      "color":"#2f305e",
       "max_spelers": 0
     },
     {
