@@ -1,5 +1,6 @@
 from microbit import *
-import random, time
+import random
+import time
 
 random.seed()
 

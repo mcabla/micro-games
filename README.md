@@ -1,13 +1,19 @@
-# micro:bit Game
+# Micro:games
 
 ## Summary
-todo
+Micro:games is a multiplayer app for the micro:bit that runs python games writen for the micro:bit.
 
+The concept is simple:
+ * Program a game like you normally would for the micro:bit.
+ * Make your game end with an integer stored in a variable called score.
+ * The person with the highest score gets a point.
+ * Multiply games get played and the person with the highest amount of points wins.
 
-##Useful links
+## Useful links
  * (https://github.com/ainsophical/DROID_PYTHON)
  * (https://github.com/kuri65536/sl4a/releases)
  * (https://github.com/kuri65536/python-for-android/releases)
+ * (https://microbit-micropython.readthedocs.io/en/v1.0.1/microbit_micropython_api.html)
 
 ## Copyright
  * Copyright (c) 2016-2017 Martin Woolley (@bluetooth_mdw)

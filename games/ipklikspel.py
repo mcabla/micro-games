@@ -9,19 +9,19 @@ img1 =  Image("99999:"
               "95559:"
               "95059:"
               "95559:"
-              "99999")
+              "99999:")
 
 img2 =  Image("55555:"
               "50005:"
               "50905:"
               "50005:"
-              "55555")
+              "55555:")
 
 img3 =  Image("00000:"
               "09990:"
               "09590:"
               "09990:"
-              "00000")
+              "00000:")
 imgs = [img1,img2,img3]
 aantal=0
 tijd = True
@@ -30,7 +30,7 @@ eind = 0
 verschil = 0
 
 while tijd:
-  sleep(10)
+  time.sleep(0.01)
   if button_a.was_pressed():
     start = min(start, running_time())
     aantal +=1
@@ -38,10 +38,20 @@ while tijd:
       if aantal >=50:
         eind = running_time()
         verschil = (eind - start)/1000
-        display.show(imgs, delay=200)
-        display.show(imgs, delay=200)
+        display.show(imgs[0])
+        time.sleep(0.2)
+        display.show(imgs[1])
+        time.sleep(0.2)
+        display.show(imgs[2])
+        time.sleep(0.2)
+        display.show(imgs[0])
+        time.sleep(0.2)
+        display.show(imgs[1])
+        time.sleep(0.2)
+        display.show(imgs[2])
+        time.sleep(0.2)
         display.scroll(str(verschil))
-        sleep(1000)
+        time.sleep(1)
         score = 1/verschil
         break
       stra = str(aantal)
