@@ -235,6 +235,11 @@ public class Utility {
         return s;
     }
 
+    public static String htmlColorWhite(String s) {
+        s = "<font color=\"#ffffff\">" + s + "</font>";
+        return s;
+    }
+
     public static String htmlColorBlue(String s) {
         s = "<font color=\"#3300CC\">" + s + "</font> ";
         return s;

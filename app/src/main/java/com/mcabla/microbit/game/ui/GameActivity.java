@@ -54,7 +54,14 @@ import java.nio.charset.StandardCharsets;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import ibt.ortc.extensibility.*;
+import ibt.ortc.api.*;
+
 public class GameActivity extends AppCompatActivity implements ConnectionStatusListener, View.OnTouchListener {
+
+    private OrtcFactory factory;
+    private OrtcClient client;
+    private String mChannel;
 
     private static final int ACCELEROMETER_G_RANGE = 2;
     private static final int ACCELEROMETER_DIVISOR = 512;
@@ -160,11 +167,51 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
         // read intent data
         final Intent intent = getIntent();
+        int mode = intent.getIntExtra("mode",0);
+
         MicroBit.getInstance().setConnection_status_listener(this);
 
         // connect to the Bluetooth smart service
         Intent gattServiceIntent = new Intent(this, BleAdapterService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+
+        Ortc ortc = new Ortc();
+        try {
+            factory = ortc.loadOrtcFactory("IbtRealtimeSJ");
+            client = factory.createClient();
+            client.setClusterUrl("http://ortc-developers.realtime.co/server/2.1");
+            client.connect("9dQp0d", "testToken");
+        } catch (Exception e) {
+            System.out.println(String.format("Realtime Error: %s", e.toString()));
+        }
+
+
+    }
+
+
+    private  void subscribeToChannel(final String channel){
+        mChannel = channel;
+
+        client.onConnected = new OnConnected() {
+            @Override
+            public void run(final OrtcClient sender) {
+                // Messaging client connected
+
+                // Now subscribe the channel
+                client.subscribe(channel, true, new OnMessage() {
+                    // This function is the message handler
+                    // It will be invoked for each message received in myChannel
+                    public void run(OrtcClient sender, String channel, String message) {
+                        // Received a message
+                        System.out.println(message);
+                    }
+                });
+            }
+        };
+    }
+
+    private void sendToChannel(String message){
+        client.send(mChannel, message);
     }
 
     @Override
@@ -213,6 +260,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                     try {
                         unbindService(mServiceConnection);
                     } catch (Exception e) {
+                        Log.d(Constants.TAG, e.toString());
                     }
 
             }
@@ -221,6 +269,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             try {
                 unbindService(mServiceConnection);
             } catch (Exception e) {
+                Log.d(Constants.TAG, e.toString());
             }
         }
     }
@@ -683,15 +732,15 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     }
     public void sendPixel(int x, int y, int z){
         if (led_matrix_state == null) {
-            Log.d(Constants.TAG, "onTouch - LED state array has not yet been initialised so ignoring touch");
+            Log.d(Constants.TAG, "sendPixel - LED state array has not yet been initialised so ignoring touch");
         } else {
-            Log.d(Constants.TAG,"Touched row "+y+", LED "+x);
-            if (z != 0) {
+            Log.d(Constants.TAG, "x:" +x + " y:" + y + " z:" + z);
+            if (z > 0) {
                 //AAN
-                led_matrix_state[y] = (byte) (led_matrix_state[y] & ~(1 << x));
+                led_matrix_state[x] = (byte) (led_matrix_state[x] | (1 << y));
             } else {
                 //UIT
-                led_matrix_state[y] = (byte) (led_matrix_state[y] | (1 << x));
+                led_matrix_state[x] = (byte) (led_matrix_state[x] & ~(1 << y));
             }
         }
 
@@ -699,34 +748,27 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
     }
 
-
-    public void sendImage(String text){
+    public void sendImage(String img){
+        if (img.equals("R")) img = Constants.IMAGE_R;
         if (led_matrix_state == null) {
-            Log.d(Constants.TAG, "onTouch - LED state array has not yet been initialised so ignoring touch");
+            Log.d(Constants.TAG, "sendImage - LED state array has not yet been initialised so ignoring touch");
         } else {
-            GridLayout grid = GameActivity.this.findViewById(R.id.led_grid);
-            int count = grid.getChildCount();
-            int display_row = 0;
-            int led_in_row = 4;
-            for (int i = 0; i < count; i++) {
-                View child = grid.getChildAt(i);
-                if (child == child) {
-                    Log.d(Constants.TAG,"Touched row "+display_row+", LED "+led_in_row);
-                    if ((led_matrix_state[display_row] & (1 << led_in_row)) != 0) {
-                        child.setBackgroundColor(Color.parseColor("#C0C0C0"));
-                        led_matrix_state[display_row] = (byte) (led_matrix_state[display_row] & ~(1 << led_in_row));
+            char[] imgList = img.toCharArray();
+            int i = 0;
+            for (int y = 0; y < 5; y++) {
+                for (int x = 0; x < 5; x++) {
+                    Log.d(Constants.TAG, "x:" +x + " y:" + y + " z:" + String.valueOf((int)  imgList[i]));
+                    if (imgList[i] > 48) {
+                        //AAN
+                        led_matrix_state[y] = (byte) (led_matrix_state[y] | (1 << (4-x)));
                     } else {
-                        child.setBackgroundColor(Color.RED);
-                        led_matrix_state[display_row] = (byte) (led_matrix_state[display_row] | (1 << led_in_row));
+                        //UIT
+                        led_matrix_state[y] = (byte) (led_matrix_state[y] & ~(1 << (4-x)));
                     }
-                } else {
-                    led_in_row = led_in_row - 1;
-                    if (led_in_row < 0) {
-                        led_in_row = 4;
-                        display_row++;
-                    }
+                    i++;
                 }
             }
+
         }
 
         bluetooth_le_adapter.writeCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.LEDMATRIXSTATE_CHARACTERISTIC_UUID), led_matrix_state);

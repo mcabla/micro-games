@@ -47,10 +47,6 @@
             android:screenOrientation="portrait"
             android:label="@string/app_name"/>
         <activity
-            android:name="com.mcabla.microbit.game.ui.DeviceInformationActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/app_name"/>
-        <activity
             android:name="com.mcabla.microbit.game.ui.GameActivity"
             android:screenOrientation="portrait"
             android:label="@string/app_name"/>

@@ -23,20 +23,22 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.google.firebase:firebase-core:16.0.7'
-    implementation 'com.google.firebase:firebase-perf:16.2.3'
+    implementation 'com.google.firebase:firebase-core:16.0.8'
+    implementation 'com.google.firebase:firebase-perf:16.2.4'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
     testImplementation 'junit:junit:4.12'
     implementation "androidx.appcompat:appcompat:1.0.2"
-    implementation "com.google.android.material:material:1.1.0-alpha03"
+    implementation "com.google.android.material:material:1.1.0-alpha05"
+    implementation "androidx.constraintlayout:constraintlayout:1.1.3"
     implementation "androidx.gridlayout:gridlayout:1.0.0"
     api 'com.google.guava:guava:27.0.1-android'
     implementation files('libs/libGoogleAnalytics.jar')
     implementation files('libs/locale_platform.jar')
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-scalars:2.4.0'
-    implementation "androidx.room:room-runtime:2.1.0-alpha04"
-    annotationProcessor "androidx.room:room-compiler:2.1.0-alpha04"
+    implementation "androidx.room:room-runtime:2.1.0-alpha06"
+    annotationProcessor "androidx.room:room-compiler:2.1.0-alpha06"
+    implementation 'co.realtime:messaging-android:2.1.78'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'

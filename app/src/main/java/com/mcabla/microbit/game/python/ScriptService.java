@@ -212,7 +212,7 @@ public class ScriptService extends ForegroundService {
 //				        }
 
 					}
-				}, script.getParent(),  this.getFilesDir().getAbsolutePath() + "/" + this.getPackageName(), args, environmentVariables, pythonBinary);
+				}, script.getParent(),  this.getFilesDir().getAbsolutePath() + "/" + this.getPackageName(), args, environmentVariables, pythonBinary,this);
 	}
 
 	RpcReceiverManager getRpcReceiverManager() throws InterruptedException {

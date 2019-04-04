@@ -22,6 +22,7 @@
 
 package com.mcabla.microbit.game.python.process;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -122,7 +123,7 @@ public class Process {
     return mIn;
   }
 
-  public void start(final Runnable shutdownHook) {
+  public void start(final Runnable shutdownHook, Context c) {
     if (isAlive()) {
       throw new RuntimeException("Attempted to start process that is already running.");
     }
@@ -134,7 +135,8 @@ public class Process {
     int[] pid = new int[1];
     String[] argumentsArray = mArguments.toArray(new String[mArguments.size()]);
 
-    mLog = new File(String.format("%s/%s.log", Environment.getExternalStorageDirectory().getAbsolutePath() + "/microgames/", getName()));
+    if (c != null) mLog = new File(String.format("%s/%s.log", c.getFilesDir().getAbsolutePath() + "/logs/", getName()));
+    else mLog = new File(String.format("%s/%s.log", Environment.getExternalStorageDirectory().getAbsolutePath() + "/microgames/logs/", getName()));
     mFd = Exec.createSubprocess(binaryPath, argumentsArray, getEnvironmentArray(), getWorkingDirectory(), pid);
     mPid.set(pid[0]);
     mOut = new FileOutputStream(mFd);

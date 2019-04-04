@@ -31,11 +31,14 @@ public class Constants {
     public static final String NO_PAIRED_FOUND = "Geen gekoppelde micro:bits gevonden. Heb je er gekoppeld? Zie de helppagina in het menu";
     public static final String NONE_FOUND = "Geen zichtbare micro:bits gevonden";
     public static final String STOP_SCANNING = "Stop met scannen";
+    public static final String START_SCANNING = "Zoek gekoppelde BBC Micro:Bits";
 
     public static final long GATT_OPERATION_TIME_OUT = 5000;
     public static final long CONNECTION_KEEP_ALIVE_FREQUENCY = 10000;
 
     public static final String SERVICE_PRESENT_COLOUR = "#228B22";
     public static final String SERVICE_ABSENT_COLOUR = "#FF0000";
+
+    public static final String IMAGE_R = "9990090090999009009090009";
 
 }

@@ -22,6 +22,7 @@
 
 package com.mcabla.microbit.game.python.process;
 
+import android.content.Context;
 import android.os.Environment;
 
 import com.mcabla.microbit.game.App;
@@ -105,8 +106,8 @@ public class InterpreterProcess extends Process {
   }
 
   @Override
-  public void start(final Runnable shutdownHook) {
-    start(shutdownHook, null);
+  public void start(final Runnable shutdownHook,Context c) {
+    start(shutdownHook, null,c);
   }
   
   public RpcReceiverManagerFactory getRpcReceiverManagerFactory()
@@ -114,13 +115,13 @@ public class InterpreterProcess extends Process {
     return this.mProxy.getRpcReceiverManagerFactory();
   }
   
-  public void start(Runnable paramRunnable, List<String> paramList)
+  public void start(Runnable paramRunnable, List<String> paramList, Context c)
   {
     if (!this.mCommand.equals(""))
       addArgument(this.mCommand);
     if (paramList != null)
       addAllArguments(paramList);
-    super.start(paramRunnable);
+    super.start(paramRunnable, c);
   }
   
   @Override

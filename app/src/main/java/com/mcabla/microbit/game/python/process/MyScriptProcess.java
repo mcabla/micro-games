@@ -22,6 +22,8 @@
 
 package com.mcabla.microbit.game.python.process;
 
+import android.content.Context;
+
 import com.googlecode.android_scripting.AndroidProxy;
 import com.googlecode.android_scripting.interpreter.InterpreterConfiguration;
 
@@ -40,7 +42,7 @@ public class MyScriptProcess extends PythonScriptProcess {
 	    this.sdcardPackageDirectory = sdcardPackageDirectory;
 	  }
 
-	  public static MyScriptProcess launchScript(File script, InterpreterConfiguration configuration, final AndroidProxy proxy, Runnable shutdownHook, String workingDir, String sdcardPackageDirectory, List<String> args, Map<String, String> envVars, File binary) {
+	  public static MyScriptProcess launchScript(File script, InterpreterConfiguration configuration, final AndroidProxy proxy, Runnable shutdownHook, String workingDir, String sdcardPackageDirectory, List<String> args, Map<String, String> envVars, File binary, Context c) {
 	    if (!script.exists()) {
 			throw new RuntimeException("No such script to launch.");
 	      }
@@ -55,9 +57,9 @@ public class MyScriptProcess extends PythonScriptProcess {
 	          public void run() {
 	            proxy.shutdown();
 	          }
-	        }, args);
+	        }, args,c);
 	      } else {
-	    	  localScriptProcess.start(shutdownHook, args);
+	    	  localScriptProcess.start(shutdownHook, args,c);
 	      }
 	      return localScriptProcess;
 	    }

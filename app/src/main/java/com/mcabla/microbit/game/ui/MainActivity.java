@@ -257,7 +257,6 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
                     ble_device_list_adapter.notifyDataSetChanged();
                 }
             });
-            simpleToast(getScanningMessage(),2000);
             ble_scanner.startScanning(this, SCAN_TIMEOUT);
         } else {
             showMsg(Utility.htmlColorRed("Verzoek om naar bluetooth apparaten te zoeken was afgewezen."));
@@ -324,15 +323,9 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
         builder.show();
     }
 
-    private void simpleToast(String message, int duration) {
-        toast = Toast.makeText(this, message, duration);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.show();
-    }
-
     private void setScanState(boolean value) {
         ble_scanning = value;
-        ((Button) this.findViewById(R.id.scanButton)).setText(value ? Constants.STOP_SCANNING : "Find paired BBC micro:bits");
+        ((Button) this.findViewById(R.id.scanButton)).setText(value ? Constants.STOP_SCANNING : Constants.START_SCANNING);
     }
 
     @Override
@@ -507,6 +500,12 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
         APICommunicator apiCommunicator = APICommunicator.getInstance();
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            setLoading(true);
+        }
+
+        @Override
         protected JSONObject doInBackground(Void... params) {
             String stringAnswer = apiCommunicator.StringGet ("games.json");
             if ("-".equals (stringAnswer)) stringAnswer = "{\"er\":true,\"et\":\"-\"}";
@@ -560,7 +559,21 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
                 e.printStackTrace();
                 Log.d(Constants.TAG, "Failed to download files: fault in installing a game.");
             }
+            setLoading(false);
         }
+    }
+
+    private void setLoading(Boolean isLoading){
+        if (isLoading){
+            findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+            findViewById(R.id.linearLayout).setVisibility(View.GONE);
+            getSupportActionBar().hide();
+        } else{
+            findViewById(R.id.progressBar).setVisibility(View.GONE);
+            findViewById(R.id.linearLayout).setVisibility(View.VISIBLE);
+            getSupportActionBar().show();
+        }
+
     }
 
     public class downloadFiles extends AsyncTask<JSONObject, Void, Boolean> {
@@ -609,12 +622,22 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
     private String contentModifier(String content){
         content = content.replace("from microbit import *","import android \n" +
                 "droid = android.Android()\n" +
-                "droid.makeToast(\"Spel gestart.\")");
+                "droid.makeLog(\"Spel gestart.\")");
 
-        if (!content.contains("import time") & !content.contains("from time import")) content = "import time\n" + content;
+        content = content.replace("from microbit import*","import android \n" +
+                "droid = android.Android()\n" +
+                "droid.makeLog(\"Spel gestart.\")");
+
+        /*IMAGE*/
+        content = content.replaceAll("\\s*?Image\\(\\\"(.*?)\\:(?:\\s*?)\"*?\\n*\\s*\"*(.*?)\\:(?:\\s*?)\"*\\n*\\s*\"*(.*?)\\:(?:\\s*?)\"*\\n*\\s*\"*(.*?)\\:(?:\\s*?)\"*\\n*\\s*\"*(.*)\\:\"\\)","\"$1$2$3$4$5\"");
+        content = content.replaceAll("\\s*?Image\\(\\\'(.*?)\\:(?:\\s*?)\'*?\\n*\\s*\'*(.*?)\\:(?:\\s*?)\'*\\n*\\s*\'*(.*?)\\:(?:\\s*?)\'*\\n*\\s*\'*(.*?)\\:(?:\\s*?)\'*\\n*\\s*\'*(.*)\\:\"\\)","\'$1$2$3$4$5\'");
+        content = content.replaceAll("\\s*?Image\\(\\\"(.*?)\\:(?:\\s*?)\"*?\\n*\\s*\"*(.*?)\\:(?:\\s*?)\"*\\n*\\s*\"*(.*?)\\:(?:\\s*?)\"*\\n*\\s*\"*(.*?)\\:(?:\\s*?)\"*\\n*\\s*\"*(.*)\"\\)","\"$1$2$3$4$5\"");
+        content = content.replaceAll("\\s*?Image\\(\\\'(.*?)\\:(?:\\s*?)\'*?\\n*\\s*\'*(.*?)\\:(?:\\s*?)\'*\\n*\\s*\'*(.*?)\\:(?:\\s*?)\'*\\n*\\s*\'*(.*?)\\:(?:\\s*?)\'*\\n*\\s*\'*(.*)\"\\)","\'$1$2$3$4$5\'");
+
+
 
         /*BUTTONS*/
-        content = content.replace("button_a.''(()","droid.button_a_get_presses().result");
+        content = content.replace("button_a.get_presses()","droid.button_a_get_presses().result");
         content = content.replace("button_b.get_presses()","droid.button_b_get_presses().result");
 
         content = content.replace("button_a.is_pressed()","droid.button_a_is_pressed().result");
@@ -627,16 +650,19 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
         /*DISPLAY*/
         content = content.replaceAll("(\\s*?)display\\.scroll\\(\\\"(.*?)\\\"\\)","$1droid.display_scroll(\"$2\").result$1#time.sleep(round(len(\"$2\")*13/10))");
         content = content.replaceAll("(\\s*?)display\\.scroll\\(\\'(.*?)\\'\\)","$1droid.display_scroll(\'$2\').result$1#time.sleep(round(len(\'$2\')*13/10))");
-        content = content.replaceAll("(\\s*?)display\\.scroll\\((.*?)\\)","$1droid.display_scroll_int($2).result$1#time.sleep(round(len(\"$2\")*13/10))");
+        content = content.replaceAll("(\\s*?)display\\.scroll\\(str\\((.*?)\\)\\)","$1droid.display_scroll(str($2)).result$1#time.sleep(round(len(\'$2\')*13/10))");
+        content = content.replaceAll("(\\s*?)display\\.scroll\\((.*?)\\)","$1droid.display_scroll(str($2)).result$1#time.sleep(round(len(\"$2\")*13/10))");
 
         content = content.replaceAll("(\\s*?)display\\.set_pixel\\((.*?),(.*?),(.*?)\\)","$1droid.display_set_pixel($2,$3,$4).result");
 
         content = content.replaceAll("(\\s*?)display\\.show\\((.*?)\\)","$1droid.display_show($2).result");
 
+        content = content.replace("display.clear()","droid.display_clear().result");
 
-        /*IMAGE*/
-        content = content.replaceAll("\\s*?Image\\(\\\"(.*?)\\:(?:\\s*?)\"*?\\n*\\s*\"*(.*?)\\:(?:\\s*?)\"*\\n*\\s*\"*(.*?)\\:(?:\\s*?)\"*\\n*\\s*\"*(.*?)\\:(?:\\s*?)\"*\\n*\\s*\"*(.*)\\:\"\\)","\"$1$2$3$4$5\"");
-        content = content.replaceAll("\\s*?Image\\(\\\'(.*?)\\:(?:\\s*?)\'*?\\n*\\s*\'*(.*?)\\:(?:\\s*?)\'*\\n*\\s*\'*(.*?)\\:(?:\\s*?)\'*\\n*\\s*\'*(.*?)\\:(?:\\s*?)\'*\\n*\\s*\'*(.*)\\:\"\\)","\'$1$2$3$4$5\'");
+
+        /*MISC*/
+        content = content.replace("running_time()","droid.running_time().result");
+
 
         Log.d("micro:games",content);
 

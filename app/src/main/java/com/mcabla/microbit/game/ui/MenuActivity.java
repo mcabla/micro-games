@@ -86,6 +86,58 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
         // connect to the Bluetooth service
         Intent gattServiceIntent = new Intent(this, BleAdapterService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+
+        findViewById(R.id.join).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!MicroBit.getInstance().isMicrobit_connected()|| !MicroBit.getInstance().isMicrobit_services_discovered() ) {
+                    Log.d(Constants.TAG, "onDemoSelected - micro:bit is not connected or service discovery has not completed so ignoring");
+                    showMsg(Utility.htmlColorRed("Niet verbonden met micro:bit - probeer opnieuw"));
+                    return;
+                }
+                if (MicroBit.getInstance().hasService(BleAdapterService.ACCELEROMETERSERVICE_SERVICE_UUID)) {
+                    if (MicroBit.getInstance().hasService(BleAdapterService.LEDSERVICE_SERVICE_UUID)) {
+                        if (MicroBit.getInstance().hasService(BleAdapterService.BUTTONSERVICE_SERVICE_UUID)) {
+                            Intent intent = new Intent(MenuActivity.this, GameActivity.class);
+                            intent.putExtra("mode",0);
+                            startActivity(intent);
+                        } else {
+                            showMsg(Utility.htmlColorRed("Knoppen Service is niet toegankelijk op deze micro:bit"));
+                        }
+                    } else {
+                        showMsg(Utility.htmlColorRed("LED Service is niet toegankelijk op deze micro:bit"));
+                    }
+                } else {
+                    showMsg(Utility.htmlColorRed("Accelerometer Service is niet toegankelijk op deze micro:bit"));
+                }
+            }
+        });
+
+        findViewById(R.id.make).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!MicroBit.getInstance().isMicrobit_connected()|| !MicroBit.getInstance().isMicrobit_services_discovered() ) {
+                    Log.d(Constants.TAG, "onDemoSelected - micro:bit is not connected or service discovery has not completed so ignoring");
+                    showMsg(Utility.htmlColorRed("Niet verbonden met micro:bit - probeer opnieuw"));
+                    return;
+                }
+                if (MicroBit.getInstance().hasService(BleAdapterService.ACCELEROMETERSERVICE_SERVICE_UUID)) {
+                    if (MicroBit.getInstance().hasService(BleAdapterService.LEDSERVICE_SERVICE_UUID)) {
+                        if (MicroBit.getInstance().hasService(BleAdapterService.BUTTONSERVICE_SERVICE_UUID)) {
+                            Intent intent = new Intent(MenuActivity.this, GameActivity.class);
+                            intent.putExtra("mode",1);
+                            startActivity(intent);
+                        } else {
+                            showMsg(Utility.htmlColorRed("Knoppen Service is niet toegankelijk op deze micro:bit"));
+                        }
+                    } else {
+                        showMsg(Utility.htmlColorRed("LED Service is niet toegankelijk op deze micro:bit"));
+                    }
+                } else {
+                    showMsg(Utility.htmlColorRed("Accelerometer Service is niet toegankelijk op deze micro:bit"));
+                }
+            }
+        });
     }
 
     @Override
@@ -121,7 +173,7 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
 
     private void refreshBluetoothServices() {
         if (MicroBit.getInstance().isMicrobit_connected()) {
-            Toast toast = Toast.makeText(this, "GATT services aan het venieuwen", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, "Connectie aan het venieuwen", Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
             MicroBit.getInstance().resetAttributeTables();
@@ -149,7 +201,7 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
     protected void onResume() {
         super.onResume();
         if (MicroBit.getInstance().isMicrobit_connected()) {
-            showMsg(Utility.htmlColorGreen("Verbonden"));
+            showMsg(Utility.htmlColorWhite("Verbonden"));
         } else {
             showMsg(Utility.htmlColorRed("Niet verbonden"));
         }
@@ -176,45 +228,6 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
         }
     }
 
-    public void onDemoSelected(View view) {
-        Log.d(Constants.TAG, "onDemoSelected ");
-        if (!MicroBit.getInstance().isMicrobit_connected()|| !MicroBit.getInstance().isMicrobit_services_discovered() ) {
-            Log.d(Constants.TAG, "onDemoSelected - micro:bit is not connected or service discovery has not completed so ignoring");
-            showMsg(Utility.htmlColorRed("Niet verbonden met micro:bit - probeer opnieuw"));
-            return;
-        }
-        ImageView iw = (ImageView) view;
-        Intent intent;
-        switch (iw.getId()) {
-            case R.id.btn_information:
-                Log.d(Constants.TAG, "onDemoSelected Information");
-                if (MicroBit.getInstance().hasService(BleAdapterService.DEVICEINFORMATION_SERVICE_UUID)) {
-                    intent = new Intent(MenuActivity.this, DeviceInformationActivity.class);
-                    startActivity(intent);
-                } else {
-                    showMsg(Utility.htmlColorRed("Apparaat Informatie Service is niet toegankelijk op deze micro:bit"));
-                }
-                break;
-            case R.id.btn_game:
-                Log.d(Constants.TAG, "onDemoSelected Game");
-                if (MicroBit.getInstance().hasService(BleAdapterService.ACCELEROMETERSERVICE_SERVICE_UUID)) {
-                    if (MicroBit.getInstance().hasService(BleAdapterService.LEDSERVICE_SERVICE_UUID)) {
-                        if (MicroBit.getInstance().hasService(BleAdapterService.BUTTONSERVICE_SERVICE_UUID)) {
-                            intent = new Intent(MenuActivity.this, GameActivity.class);
-                            startActivity(intent);
-                        } else {
-                            showMsg(Utility.htmlColorRed("Knoppen Service is niet toegankelijk op deze micro:bit"));
-                        }
-                    } else {
-                        showMsg(Utility.htmlColorRed("LED Service is niet toegankelijk op deze micro:bit"));
-                    }
-                } else {
-                    showMsg(Utility.htmlColorRed("Accelerometer Service is niet toegankelijk op deze micro:bit"));
-                }
-                break;
-        }
-    }
-
     // Service message handler
     private Handler mMessageHandler = new Handler() {
         @Override
@@ -227,18 +240,15 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
 
             switch (msg.what) {
                 case BleAdapterService.GATT_CONNECTED:
-                    showMsg(Utility.htmlColorGreen("Verbonden"));
-                    showMsg(Utility.htmlColorGreen("Zoeken naar services..."));
+                    showMsg(Utility.htmlColorWhite("Zoeken naar services..."));
                     bluetooth_le_adapter.discoverServices();
                     break;
                 case BleAdapterService.GATT_DISCONNECT:
                     showMsg(Utility.htmlColorRed("Niet verbonden"));
-                    ( MenuActivity.this.findViewById(R.id.menu_items_area)).setVisibility(View.VISIBLE);
                     break;
                 case BleAdapterService.GATT_SERVICES_DISCOVERED:
-                    Log.d(Constants.TAG, "XXXX Services discovered");
-                    showMsg(Utility.htmlColorGreen("Klaar"));
-                    ( MenuActivity.this.findViewById(R.id.menu_items_area)).setVisibility(View.VISIBLE);
+                    Log.d(Constants.TAG, "Services discovered");
+                    showMsg(Utility.htmlColorWhite("Verbonden"));
                     List<BluetoothGattService> slist = bluetooth_le_adapter.getSupportedGattServices();
                     for (BluetoothGattService svc : slist) {
                         Log.d(Constants.TAG, "UUID=" + svc.getUuid().toString().toUpperCase() + " INSTANCE=" + svc.getInstanceId());
@@ -269,7 +279,7 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
     @Override
     public void connectionStatusChanged(boolean connected) {
         if (connected) {
-            showMsg(Utility.htmlColorGreen("Verbonden"));
+            showMsg(Utility.htmlColorWhite("Verbonden"));
         } else {
             showMsg(Utility.htmlColorRed("Niet verbonden"));
         }

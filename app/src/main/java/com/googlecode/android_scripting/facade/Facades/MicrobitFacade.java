@@ -10,16 +10,19 @@ import com.mcabla.microbit.game.Constants;
 import com.mcabla.microbit.game.ui.GameActivity;
 
 import java.lang.ref.WeakReference;
+import java.util.Calendar;
 import java.util.concurrent.CountDownLatch;
 
 public class MicrobitFacade extends RpcReceiver {
     private static WeakReference<GameActivity> gameActivityWeakReference;
     private final CountDownLatch mOnInitLock;
+    private long startTime = 0;
 
     public MicrobitFacade(FacadeManager manager) {
     super(manager);
     mOnInitLock = new CountDownLatch(1);
     mOnInitLock.countDown();
+    startTime = Calendar.getInstance().getTimeInMillis();
     }
 
     public void shutdown() {
@@ -55,18 +58,14 @@ public class MicrobitFacade extends RpcReceiver {
 
     @Rpc(description = "Print image on microbit")
     public void display_show(@RpcParameter(name = "image") String img) throws InterruptedException {
-        char[] imgList = img.toCharArray();
         mOnInitLock.await();
-        int i = 0;
-        if (gameActivityWeakReference != null){
-            for (int x = 0; x < 5; x++) {
-                for (int y = 0; y < 5; y++) {
-                    Log.d(Constants.TAG, "x:" +x + " y:" + y + " z:" + String.valueOf((int)  imgList[i]));
-                    gameActivityWeakReference.get().sendPixel(x,y, (int) imgList[i]);
-                    i++;
-                }
-            }
-        }
+        if (gameActivityWeakReference != null) gameActivityWeakReference.get().sendImage(img);
+    }
+
+    @Rpc(description = "Print image on microbit")
+    public void display_clear() throws InterruptedException {
+        mOnInitLock.await();
+        if (gameActivityWeakReference != null) gameActivityWeakReference.get().sendImage("0000000000000000000000000");
     }
 
     /*---------------------------------------------*/
@@ -111,7 +110,8 @@ public class MicrobitFacade extends RpcReceiver {
     @Rpc(description = "Get button b was pressed")
     public boolean button_b_was_pressed() throws InterruptedException {
         mOnInitLock.await();
-        if (gameActivityWeakReference != null) return gameActivityWeakReference.get().getWasPressed(2);
+        if (gameActivityWeakReference != null)
+            return gameActivityWeakReference.get().getWasPressed(2);
         return false;
     }
 
@@ -121,8 +121,15 @@ public class MicrobitFacade extends RpcReceiver {
 
 
     /*---------------------------------------------*/
-    /*--------------------IMAGE--------------------*/
+    /*---------------------MISC--------------------*/
     /*---------------------------------------------*/
+
+
+    @Rpc(description = "Get time")
+    public int running_time() throws InterruptedException {
+        mOnInitLock.await();
+        return (int)  (Calendar.getInstance().getTimeInMillis() - startTime);
+    }
 
 
 
