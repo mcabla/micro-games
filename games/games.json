@@ -32,8 +32,8 @@
       "name": "Klikspel",
       "file": "ipklikspel.py",
       "description":"Zo snel mogelijk 50 keer drukken.",
-      "icon":"test2.png",
-      "color":"#ffffff",
+      "icon":"klik.png",
+      "color":"#A0A0A0",
       "max_spelers": 0
     },
     {
