@@ -65,10 +65,10 @@
     },
     {
       "id": 8,
-      "name": "Running Man",
-      "file": "runningman.py",
+      "name": "Pixel Jump",
+      "file": "Pixel_Jump.py",
       "description":"Druk op A om over de opstakels te springen.",
-      "icon":"test.png",
+      "icon":"runningman.png",
       "color":"#000000",
       "max_spelers": 0
     }
