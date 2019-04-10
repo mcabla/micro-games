@@ -6,7 +6,7 @@
       "file": "test.py",
       "description":"Typ je omschrijving/uitleg hier.",
       "icon":"test.png",
-      "color":"#ffffff",
+      "color":"#000000",
       "max_spelers": 0
     },
     {
