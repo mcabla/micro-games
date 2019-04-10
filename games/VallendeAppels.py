@@ -10,11 +10,11 @@ import random
 bezig = True
 appel_aanwezig = False
 score = 0 
-tics = 11
+tics = 11   #variabele die toelaat om de appels sneller te laten vallen
 
 
 
-def linksrechts():
+def linksrechts():        #functie om met knoppen A en B naar links en rechts te bewegen
   global x
   if button_a.was_pressed():
     if x>0:
@@ -26,12 +26,10 @@ def linksrechts():
       display.set_pixel(x,4,0)
       x+=1
       display.set_pixel(x,4,9)
-
   time.sleep(0.05)
     
 
-tijdval=1
-def nieuwe_appel():
+def nieuwe_appel():   #genereren van een nieuwe appel
   global appel_aanwezig
   global xa
   global ya
@@ -59,14 +57,11 @@ def appel_valt():
         appel_aanwezig=False
         break
     i+=1
-
   display.set_pixel(xa,ya,0)
   appel_aanwezig=False
 
 def check():
   global score
-  global xa
-  global ya
   global x
   global bezig 
   
@@ -77,9 +72,8 @@ def check():
     bezig = False
   
 
-bezigint=0
 
-display.show('3')
+display.show('3')   #aftellen voor spel
 time.sleep(1)
 display.show('2')
 time.sleep(1)
@@ -87,7 +81,9 @@ display.show('1')
 time.sleep(1)
 display.show(Image("00000:00000:00000:00000:00000"))
 x=2
-display.set_pixel(x,4,9)
+display.set_pixel(x,4,9)     #pixel onderaan midden zetten
+
+bezigint=0
 
 while bezig:
   linksrechts()
@@ -95,11 +91,10 @@ while bezig:
     nieuwe_appel()
   appel_valt()
   check()
-  if tics>1 and bezigint%2==0:
+  if tics>1 and bezigint%2==0:    #1 op 2 bezigint de snelheid verhogen
     tics-=1
   bezigint+=1
 
-display.scroll(score)
-
+display.scroll(score)       #score laten zien
 
   

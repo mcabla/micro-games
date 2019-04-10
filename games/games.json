@@ -2,11 +2,11 @@
   "games": [
     {
       "id": 1,
-      "name": "TeSt",
-      "file": "test.py",
-      "description":"Typ je omschrijving/uitleg hier.",
-      "icon":"test.png",
-      "color":"#ffffff",
+      "name": "Pixel Jump",
+      "file": "Pixel_Jump.py",
+      "description":"Druk op A om over de opstakels te springen.",
+      "icon":"runningman.png",
+      "color":"#000000",
       "max_spelers": 0
     },
     {
@@ -14,8 +14,8 @@
       "name": "Reactietijd",
       "file": "reactietijd.py",
       "description":"Testen van de reactietijd: druk op een knop na het rode scherm",
-      "icon":"test.png",
-      "color":"#ffffff",
+      "icon":"speedmeter.png",
+      "color":"#ba6d14",
       "max_spelers": 0
     },
     {
@@ -23,8 +23,8 @@
       "name": "Coin Flip",
       "file": "coinflip.py",
       "description":"Kop of munt.",
-      "icon":"test2.png",
-      "color":"#ffffff",
+      "icon":"coin.png",
+      "color":"#e0bf04",
       "max_spelers": 0
     },
     {
@@ -32,8 +32,8 @@
       "name": "Klikspel",
       "file": "ipklikspel.py",
       "description":"Zo snel mogelijk 50 keer drukken.",
-      "icon":"test2.png",
-      "color":"#ffffff",
+      "icon":"klik.png",
+      "color":"#4f4f4f",
       "max_spelers": 0
     },
     {
@@ -41,8 +41,8 @@
       "name": "Blad, steen, schaar",
       "file": "blad_steen_schaar.py",
       "description":"wisselen met A, selecteren met B",
-      "icon":"test.png",
-      "color":"#ffffff",
+      "icon":"schaarsteenpapier.png",
+      "color":"#2f305e",
       "max_spelers": 0
     },
     {
@@ -50,8 +50,8 @@
       "name": "Hoger, Lager",
       "file": "hogerlager.py",
       "description":"Hoger, lager",
-      "icon":"test.png",
-      "color":"#ffffff",
+      "icon":"hogerlager.png",
+      "color":"#1b7700",
       "max_spelers": 0
     },
     {
@@ -61,6 +61,15 @@
       "description":"Beweeg naar links en rechts om de appels te vangen.",
       "icon":"appel.png",
       "color":"#af2a2a",
+      "max_spelers": 0
+    },
+    {
+      "id": 8,
+      "name": "Kermis",
+      "file": "kermis.py",
+      "description":"Beschrijving toevoegen!",
+      "icon":"test.png",
+      "color":"#000000",
       "max_spelers": 0
     }
   ],
