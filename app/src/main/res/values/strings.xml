@@ -21,6 +21,7 @@
     <string name="app_name">micro:games</string>
     <string name="menu_settings">Instellingen</string>
     <string name="menu_help">Help</string>
+    <string name="menu_dev">Ontwikkelaar</string>
     <string name="menu_about">Over</string>
     <string name="menu_profile">Bluetooth Profiel</string>
     <string name="menu_services">Bluetooth Services</string>

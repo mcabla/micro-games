@@ -16,577 +16,120 @@
  *  limitations under the License.
  */
 -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:paddingBottom="10dip"
-    android:paddingStart="10dip"
-    android:paddingTop="10dip">
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/message1"
-        android:layout_width="fill_parent"
+        android:id="@+id/message"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingStart="10dip"
         android:paddingEnd="10dip"
-        android:background="@color/message_background"
+        android:text=""
         android:textSize="16sp"
-        android:text="" />
-
-    <TextView
-        android:id="@+id/message2"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingStart="10dip"
-        android:paddingEnd="10dip"
-        android:background="@color/message_background"
-        android:textSize="16sp"
-        android:text="" />
-
-    <TextView
-        android:id="@+id/message3"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingStart="10dip"
-        android:paddingEnd="10dip"
-        android:background="@color/message_background"
-        android:textSize="16sp"
-        android:text="" />
+        app:layout_constraintBottom_toTopOf="@id/scrollView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/message">
 
-        <LinearLayout
-            android:id="@+id/deviceView"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical"
-            android:paddingBottom="10dip"
-            android:paddingStart="10dip"
-            android:paddingEnd="10dip"
-            android:paddingTop="10dip">
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="vertical"
-                android:paddingBottom="5dip">
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:src="@mipmap/ic_launcher" />
 
-                <ImageView
-                    android:id="@+id/microbit"
-                    android:layout_width="fill_parent"
-                    android:layout_height="270dp"
-                    android:gravity="center"
-                    android:paddingTop="60dip"
-                    android:paddingBottom="60dip"
-                    android:src="@drawable/microbit2_150" />
-
-                <GridLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:columnCount="1">
-
-                    <TextView
-                        android:id="@+id/accel_period"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:paddingStart="10dip"
-                        android:paddingTop="5dip"
-                        android:paddingEnd="10dip"
-                        android:text=""
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/accel_x"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:paddingStart="10dip"
-                        android:paddingTop="5dip"
-                        android:paddingEnd="10dip"
-                        android:text=""
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/accel_y"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:paddingStart="10dip"
-                        android:paddingTop="5dip"
-                        android:paddingEnd="10dip"
-                        android:text=""
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/accel_z"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:paddingStart="10dip"
-                        android:paddingTop="5dip"
-                        android:paddingEnd="10dip"
-                        android:text=""
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/pitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:paddingStart="10dip"
-                        android:paddingTop="5dip"
-                        android:paddingEnd="10dip"
-                        android:text=""
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/roll"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:paddingStart="10dip"
-                        android:paddingTop="5dip"
-                        android:paddingEnd="10dip"
-                        android:text=""
-                        android:textSize="16sp" />
-
-                </GridLayout>
-
-                <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:orientation="vertical"
-                    android:paddingBottom="5dip">
-
-                    <Switch
-                        android:id="@+id/smoothing"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:checked="true"
-                        android:onClick="onApplySmoothingChanged"
-                        android:text="Apply Smoothing"
-                        android:textSize="16sp" />
-                </RelativeLayout>
-
-                <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:orientation="vertical"
-                    android:paddingBottom="5dip">
-
-                    <Switch
-                        android:id="@+id/accel_log"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:checked="false"
-                        android:onClick="onApplyAccelLogsChanged"
-                        android:text="Acceleration logs"
-                        android:textSize="16sp" />
-                </RelativeLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:paddingBottom="5dip">
-
-
-                <GridLayout
-                    android:id="@+id/led_grid"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:columnCount="5">
-
-                    <TextView
-                        android:id="@+id/led0"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led1"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led2"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led3"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led4"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-
-                    <TextView
-                        android:id="@+id/led5"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led6"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led7"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led8"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led9"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led10"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led11"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led12"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led13"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led14"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-
-                    <TextView
-                        android:id="@+id/led15"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led16"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led17"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led18"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led19"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led20"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led21"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led22"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led23"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                    <TextView
-                        android:id="@+id/led24"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:width="50dip"
-                        android:height="50dip"
-                        android:background="@color/silver"
-                        android:gravity="center"
-                        android:paddingTop="10dip"
-                        android:paddingBottom="10dip" />
-
-                </GridLayout>
-
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/setDisplay2"
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onSetDisplay"
-                android:text="Set Display" />
+                android:gravity="center_horizontal"
+                android:padding="8dp"
+                android:text="Titel"
+                android:textColor="@color/white"
+                android:textSize="30sp" />
 
-            <TextView
-                android:id="@+id/textView2"
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:text="@string/display_text"
-                android:textSize="18dp"
-                android:textStyle="bold" />
+                android:gravity="center_horizontal"
+                android:padding="8dp"
+                android:text="Omschrijving"
+                android:textColor="@color/white"
+                android:textSize="24sp" />
+
 
             <EditText
-                android:id="@+id/display_text2"
-                android:layout_width="match_parent"
+                android:id="@+id/input"
+                android:layout_width="128dp"
                 android:layout_height="wrap_content"
-                android:maxLength="20"
-                android:text="Hello!" />
-
-            <Button
-                android:id="@+id/setText2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onSendText"
-                android:text="Send Text" />
-
-            <EditText
-                android:id="@+id/display_text3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                app:backgroundTint="@color/white"
                 android:inputType="number"
                 android:maxLength="20"
-                android:text="1" />
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:hint="Groepsnummer" />
+
+            <EditText
+                android:id="@+id/input2"
+                android:layout_width="128dp"
+                android:layout_height="wrap_content"
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ '"
+                android:hint="Naam"
+                android:inputType="textPersonName"
+                android:maxLength="20"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                app:backgroundTint="@color/white" />
 
             <Button
-                android:id="@+id/runScript"
-                android:layout_width="match_parent"
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="onRunScript"
-                android:text="start script" />
+                android:onClick="run"
+                android:text="Start" />
 
-        </LinearLayout>
+            <ListView
+                android:id="@+id/deviceList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
     </ScrollView>
-</LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

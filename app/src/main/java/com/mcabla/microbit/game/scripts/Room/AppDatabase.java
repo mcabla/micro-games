@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase;
  * Created by Casper Haems on 15/06/2018.
  * Copyright (c) 2019 Casper Haems. All rights reserved.
  */
-@Database(entities = {GameModel.class}, version = 1)
+@Database(entities = {GameModel.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 /*    private static final Migration MIGRATION_1_2 = new Migration (1, 2) {
         @Override

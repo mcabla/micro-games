@@ -17,24 +17,27 @@ package com.mcabla.microbit.game.ui;
  *  limitations under the License.
  */
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -48,30 +51,64 @@ import com.mcabla.microbit.game.bluetooth.BleAdapterService;
 import com.mcabla.microbit.game.bluetooth.ConnectionStatusListener;
 import com.mcabla.microbit.game.python.ScriptService;
 import com.mcabla.microbit.game.python.config.GlobalConstants;
+import com.mcabla.microbit.game.scripts.Room.GameAsyncTask;
+import com.mcabla.microbit.game.scripts.Room.GameModel;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadLocalRandom;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import ibt.ortc.extensibility.*;
 import ibt.ortc.api.*;
 
-public class GameActivity extends AppCompatActivity implements ConnectionStatusListener, View.OnTouchListener {
+public class GameActivity extends AppCompatActivity implements ConnectionStatusListener{
+    public static int MODE_DEV = 0;
+    public static int MODE_JOIN = 1;
+    public static int MODE_MAKE = 2;
+
+    private ConstraintLayout constraintLayout;
+
+    private ActionBar actionBar;
+    private ImageView image;
+    private TextView title;
+    private TextView description;
+    private EditText input;
+    private EditText input2;
+    private Button button;
+
+    private int mode = 0;
+
+    private int rondes = 0;
+
 
     private OrtcFactory factory;
     private OrtcClient client;
     private String mChannel;
+    private String mName;
+    private String mID;
 
-    private static final int ACCELEROMETER_G_RANGE = 2;
-    private static final int ACCELEROMETER_DIVISOR = 512;
+    private ArrayList<String> IDs = new ArrayList<>();
+    private ArrayList<String> names = new ArrayList<>();
+    private ArrayList<Integer> scores = new ArrayList<>();
+    private ArrayList<Integer> tempScores = new ArrayList<>();
 
-    private float[] accel_input = new float[3];
 
     private BleAdapterService bluetooth_le_adapter;
 
     private boolean exiting=false;
-    private int accelerometer_period;
 
     private boolean notifications_on =false;
     private long start_time;
@@ -93,12 +130,6 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
     private boolean b1_was_pressed = false;
     private boolean b2_was_pressed = false;
-
-    //Accelerometer
-    private double acel_pitch = 0;
-    private double acel_roll = 0;
-
-    private float[] accel_output = new float[3];
 
     //LEDs
     private short scrolling_delay;
@@ -125,27 +156,18 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             notification_count=0;
             bluetooth_le_adapter = ((BleAdapterService.LocalBinder) service).getService();
             bluetooth_le_adapter.setActivityHandler(mMessageHandler);
-            bluetooth_le_adapter.readCharacteristic(Utility.normaliseUUID(BleAdapterService.ACCELEROMETERSERVICE_SERVICE_UUID),Utility.normaliseUUID(BleAdapterService.ACCELEROMETERPERIOD_CHARACTERISTIC_UUID));
+            bluetooth_le_adapter.setNotificationsState(
+                Utility.normaliseUUID(BleAdapterService.BUTTONSERVICE_SERVICE_UUID),
+                Utility.normaliseUUID(BleAdapterService.BUTTON1STATE_CHARACTERISTIC_UUID), true);
 
-            if (bluetooth_le_adapter.setNotificationsState(
-                    Utility.normaliseUUID(BleAdapterService.BUTTONSERVICE_SERVICE_UUID),
-                    Utility.normaliseUUID(BleAdapterService.BUTTON1STATE_CHARACTERISTIC_UUID), true)) {
-                showMsg(Utility.htmlColorGreen("Button 1 State notifications ON"),2);
-            } else {
-                showMsg(Utility.htmlColorRed("Failed to set Button 1 State notifications ON"),2);
-            }
-
-            if (bluetooth_le_adapter.readCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.LEDMATRIXSTATE_CHARACTERISTIC_UUID))) {
-                showMsg(Utility.htmlColorGreen("Reading LED matrix state"),3);
-            } else {
-                showMsg(Utility.htmlColorRed("Failed to readLED matrix state"),3);
-            }
+            bluetooth_le_adapter.readCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.LEDMATRIXSTATE_CHARACTERISTIC_UUID));
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             bluetooth_le_adapter = null;
         }
+
 
     };
 
@@ -154,22 +176,49 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         super.onCreate(savedInstanceState);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.activity_game);
-        getSupportActionBar().setTitle(R.string.screen_title_game);
+        actionBar = getSupportActionBar();
+        actionBar.setTitle(R.string.screen_title_game);
+        actionBar.setElevation(0);
+
+        constraintLayout = findViewById(R.id.constraintLayout);
+
+        image = findViewById(R.id.image);
+        title = findViewById(R.id.title);
+        description = findViewById(R.id.description);
+        input = findViewById(R.id.input);
+        input2 = findViewById(R.id.input2);
+        button = findViewById(R.id.button);
+
+
+
 
         exiting = false;
 
-        GridLayout led_grid = GameActivity.this.findViewById(R.id.led_grid);
-        int count = led_grid.getChildCount();
-        for (int i = 0; i < count; i++) {
-            View child = led_grid.getChildAt(i);
-            child.setOnTouchListener(this);
-        }
-
         // read intent data
         final Intent intent = getIntent();
-        int mode = intent.getIntExtra("mode",0);
+        mode = intent.getIntExtra("mode",0);
+
 
         MicroBit.getInstance().setConnection_status_listener(this);
+        mID = MicroBit.getInstance().getMicrobit_address();
+
+        if (mode == MODE_JOIN){
+            setBackgroundColor("#FF4081");
+            setText("Deelnemen aan een groep","Vul hieronder het groepsnummer in waaraan je wilt deelnemen.");
+            input.setHint("Groepsnummer");
+            button.setText("Deelnemen");
+        }
+        else {
+            button.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+            if(mode == MODE_MAKE){
+                setText("Een groep maken",  "Vul hieronder het aantal rondes in dat je wilt spelen.");
+                input.setHint("Aantal rondes");
+                button.setText("Maak");
+            } else {
+                setText("Deelnemen aan een groep","Vul hieronder het groepsnummer in waaraan je wilt deelnemen.");
+                input2.setVisibility(View.GONE);
+            }
+        }
 
         // connect to the Bluetooth smart service
         Intent gattServiceIntent = new Intent(this, BleAdapterService.class);
@@ -183,14 +232,29 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             client.connect("9dQp0d", "testToken");
         } catch (Exception e) {
             System.out.println(String.format("Realtime Error: %s", e.toString()));
+            finish();
+        }
+        if(mode == MODE_MAKE) {
+            IDs.add(mID);
+            names.add("maker");
+            scores.add(0);
+            subscribeToChannel(String.valueOf(ThreadLocalRandom.current().nextInt(1000, 999999)));
+            setText("Een groep maken", "Vul hieronder het aantal rondes in dat je wilt spelen.");
+            new Handler ().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    setText("Een groep maken", "Vul hieronder het aantal rondes in dat je wilt spelen. Jouw groepsnummer is: " + mChannel);
+                }
+            }, 3000);
         }
 
 
     }
 
-
     private  void subscribeToChannel(final String channel){
         mChannel = channel;
+        Log.d(Constants.TAG,mChannel);
 
         client.onConnected = new OnConnected() {
             @Override
@@ -202,24 +266,75 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                     // This function is the message handler
                     // It will be invoked for each message received in myChannel
                     public void run(OrtcClient sender, String channel, String message) {
+                        if (scores != null)
+                            for(int i = 0; i < IDs.size(); i++)
+                            {
+                                System.out.println("SCORES: "+IDs.get(i) + ";"+names.get(i) + ";"+scores.get(i));
+                            }
+
                         // Received a message
-                        System.out.println(message);
+                        String[] data = message.split(";");
+                        Log.d(Constants.TAG,"RECIEVED: 0="+data[0] );
+                        Log.d(Constants.TAG,"RECIEVED: 1="+data[1] );
+                        Log.d(Constants.TAG,"RECIEVED: 2="+data[2] );
+                        if (mode == MODE_MAKE){
+                            if (Objects.equals(data[0], "ADD") && !Objects.equals(data[1], mID)){
+                                if (!IDs.contains(data[1])){
+                                    IDs.add(data[1]);
+                                    names.add(data[2]);
+                                    scores.add(0);
+                                    Log.d(Constants.TAG,"ADDED: "+data[1]+" "+ data[2] + " 0");
+
+                                } else {
+                                    names.set(IDs.indexOf(data[1]),data[2]);
+                                    Log.d(Constants.TAG,"MODIFIED: "+data[1]+" "+ data[2] + " 0");
+                                }
+                                sendToChannel("STATUSNAMES",
+                                        TextUtils.join("|", IDs),
+                                        TextUtils.join("|", names));
+
+                            } else if (data[0] == "SET"){
+
+                                tempScores.set(IDs.indexOf(data[1]), Integer.valueOf(data[2]));
+
+                                if (!tempScores.contains(-1)) {
+                                    System.out.println(scores);
+                                    for(int i = 0; i < IDs.size(); i++)
+                                    {
+                                        System.out.println("SCORES: "+IDs.get(i) + ";"+names.get(i) + ";"+scores.get(i));
+                                    }
+                                    System.out.println(scores);
+                                    sendToChannel("STATUSSCORES",
+                                            TextUtils.join("|", IDs),
+                                            TextUtils.join("|", scores));
+                                }
+
+                            }
+                        } else if (data[0] == "STATUSNAMES"){
+                            IDs = new ArrayList(Arrays.asList(data[1].split("|")));
+                            names = new ArrayList(Arrays.asList(data[2].split("|")));
+                            for(int i = 0; i < IDs.size(); i++)
+                            {
+                                scores.add(i,-1);
+                            }
+                        } else if (data[0] == "STATUSSCORES"){
+                            scores = new ArrayList(Arrays.asList(data[2].split("|")));
+                        }
                     }
                 });
+
+                if (mode != MODE_MAKE) sendToChannel("ADD",mID,mName);
             }
         };
     }
 
-    private void sendToChannel(String message){
-        client.send(mChannel, message);
+    private void sendToChannel(String type,String message, String message2){
+        client.send(mChannel, type+";"+message+";"+message2);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //if (notifications_on) {
-            bluetooth_le_adapter.setNotificationsState(Utility.normaliseUUID(BleAdapterService.ACCELEROMETERSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.ACCELEROMETERDATA_CHARACTERISTIC_UUID), false);
-        //}
         try {
             // may already have unbound. No API to check state so....
             unbindService(mServiceConnection);
@@ -232,9 +347,6 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
     public void onBackPressed() {
         Log.d(Constants.TAG, "onBackPressed");
-        if (MicroBit.getInstance().isMicrobit_connected() && notifications_on) {
-            bluetooth_le_adapter.setNotificationsState(Utility.normaliseUUID(BleAdapterService.ACCELEROMETERSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.ACCELEROMETERDATA_CHARACTERISTIC_UUID), false);
-        }
         shutdownSteps();
     }
 
@@ -300,14 +412,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         Log.d(Constants.TAG, "onActivityResult");
     }
 
-    public void onApplySmoothingChanged(View v) {
-        apply_smoothing = ((Switch) v).isChecked();
-    }
-
-    public void onApplyAccelLogsChanged(View v) {
-        accel_logs = ((Switch) v).isChecked();
-    }
-
+    @SuppressLint("HandlerLeak")
     private Handler mMessageHandler = new Handler() {
 
         @Override
@@ -329,46 +434,23 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                     b = bundle.getByteArray(BleAdapterService.PARCEL_VALUE);
                     Log.d(Constants.TAG, "characteristic " + characteristic_uuid + " of service " + service_uuid + " read OK");
                     Log.d(Constants.TAG, "Value=" + Utility.byteArrayAsHexString(b));
-                    if (characteristic_uuid.equalsIgnoreCase(Utility.normaliseUUID(BleAdapterService.ACCELEROMETERPERIOD_CHARACTERISTIC_UUID))) {
-                        boolean got_accelerometer_period = false;
-                        byte [] period_bytes = new byte[2];
-                        if (b.length == 2) {
-                            period_bytes[0] = b[0];
-                            period_bytes[1] = b[1];
-                            got_accelerometer_period = true;
-                        } else {
-                            if (b.length == 1) {
-                                period_bytes[0] = b[0];
-                                period_bytes[1] = 0x00;
-                                got_accelerometer_period = true;
-                            } else {
-                                Log.d(Constants.TAG,"Couldn't obtain value of accelerometer period");
-                            }
-                        }
-                        if (got_accelerometer_period) {
-                            accelerometer_period = (int) Utility.shortFromLittleEndianBytes(period_bytes);
-                            Settings.getInstance().setAccelerometer_period((short) accelerometer_period);
-                            showAccelerometerPeriod();
-                        }
-                    } else if (characteristic_uuid.equalsIgnoreCase(Utility.normaliseUUID(BleAdapterService.LEDMATRIXSTATE_CHARACTERISTIC_UUID))) {
+                    if (characteristic_uuid.equalsIgnoreCase(Utility.normaliseUUID(BleAdapterService.LEDMATRIXSTATE_CHARACTERISTIC_UUID))) {
                         if (b.length > 4) {
                             led_matrix_state = b;
                             Log.d(Constants.TAG, "LED matrix state=" + Utility.byteArrayAsHexString(b));
-                            setUiFromMatrixState(led_matrix_state);
                         }
                         // now read the Scrolling Delay and store in the Settings singleton
                         bluetooth_le_adapter.readCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.SCROLLINGDELAY_CHARACTERISTIC_UUID));
-                        showMsg(Utility.htmlColorGreen("Ready"),3);
+                        showMsg(Utility.htmlColorWhite("Verbonden"));
                     } else if (characteristic_uuid.equalsIgnoreCase(Utility.normaliseUUID(BleAdapterService.SCROLLINGDELAY_CHARACTERISTIC_UUID))) {
                         if (b.length > 1) {
                             scrolling_delay = Utility.shortFromLittleEndianBytes(b);
                             Log.d(Constants.TAG,"Read Scrolling Delay from micro:bit="+scrolling_delay);
                             Settings.getInstance().setScrolling_delay(scrolling_delay);
                         }
-                        showMsg(Utility.htmlColorGreen("Ready"),3);
+                        showMsg(Utility.htmlColorWhite("Verbonden"));
 
                     }
-                    if (bluetooth_le_adapter != null ) bluetooth_le_adapter.setNotificationsState(Utility.normaliseUUID(BleAdapterService.ACCELEROMETERSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.ACCELEROMETERDATA_CHARACTERISTIC_UUID), true);
                     break;
                 case BleAdapterService.GATT_CHARACTERISTIC_WRITTEN:
                     Log.d(Constants.TAG, "Handler received characteristic written result");
@@ -376,8 +458,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                     service_uuid = bundle.getString(BleAdapterService.PARCEL_SERVICE_UUID);
                     characteristic_uuid = bundle.getString(BleAdapterService.PARCEL_CHARACTERISTIC_UUID);
                     Log.d(Constants.TAG, "characteristic " + characteristic_uuid + " of service " + service_uuid + " written OK");
-                    showAccelerometerPeriod();
-                    showMsg(Utility.htmlColorGreen("Ready"));
+                    showMsg(Utility.htmlColorWhite("Verbonden"));
                     break;
                 case BleAdapterService.GATT_DESCRIPTOR_WRITTEN:
                     Log.d(Constants.TAG, "Handler received descriptor written result");
@@ -388,16 +469,15 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                     b = bundle.getByteArray(BleAdapterService.PARCEL_VALUE);
                     Log.d(Constants.TAG, "descriptor " + descriptor_uuid + " of characteristic " + characteristic_uuid + " of service " + service_uuid + " written OK");
                     if (!exiting) {
-                        showMsg(Utility.htmlColorGreen("Accelerometer Data notifications ON"));
                         notifications_on=true;
                         start_time = System.currentTimeMillis();
                         if (characteristic_uuid.equalsIgnoreCase(Utility.normaliseUUID(BleAdapterService.BUTTON1STATE_CHARACTERISTIC_UUID))) {
                             b1_notifications_on = true;
                             Log.d(Constants.TAG, "Enabling Button 2 State notifications");
                             if (bluetooth_le_adapter.setNotificationsState(Utility.normaliseUUID(BleAdapterService.BUTTONSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.BUTTON2STATE_CHARACTERISTIC_UUID), true)) {
-                                showMsg(Utility.htmlColorGreen("Button 2 State notifications ON"),2);
+                                showMsg(Utility.htmlColorGreen("Button 2 State notifications ON"));
                             } else {
-                                showMsg(Utility.htmlColorRed("Failed to set Button 2 State notifications ON"),2);
+                                showMsg(Utility.htmlColorRed("Failed to set Button 2 State notifications ON"));
                             }
                         }
                         if (characteristic_uuid.equalsIgnoreCase(Utility.normaliseUUID(BleAdapterService.BUTTON2STATE_CHARACTERISTIC_UUID))) {
@@ -411,7 +491,6 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                             b2_notifications_on = false;
                             shutdownSteps();
                         }
-                        showMsg(Utility.htmlColorGreen("Accelerometer Data notifications OFF"));
                         notifications_on=false;
                         finish();
                     }
@@ -423,53 +502,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                     characteristic_uuid = bundle.getString(BleAdapterService.PARCEL_CHARACTERISTIC_UUID);
                     b = bundle.getByteArray(BleAdapterService.PARCEL_VALUE);
                     byte btn_state = b[0];
-                    if(accel_logs || !characteristic_uuid.equalsIgnoreCase((Utility.normaliseUUID(BleAdapterService.ACCELEROMETERDATA_CHARACTERISTIC_UUID))))
-                        Log.d(Constants.TAG, "Value=" + Utility.byteArrayAsHexString(b));
-                    if (characteristic_uuid.equalsIgnoreCase((Utility.normaliseUUID(BleAdapterService.ACCELEROMETERDATA_CHARACTERISTIC_UUID)))) {
-                        notification_count++;
-                        if (System.currentTimeMillis() - start_time >= 60000) {
-                            notification_count = 0;
-                            minute_number++;
-                            start_time = System.currentTimeMillis();
-                        }
-                        byte[] x_bytes = new byte[2];
-                        byte[] y_bytes = new byte[2];
-                        byte[] z_bytes = new byte[2];
-                        System.arraycopy(b, 0, x_bytes, 0, 2);
-                        System.arraycopy(b, 2, y_bytes, 0, 2);
-                        System.arraycopy(b, 4, z_bytes, 0, 2);
-                        short raw_x = Utility.shortFromLittleEndianBytes(x_bytes);
-                        short raw_y = Utility.shortFromLittleEndianBytes(y_bytes);
-                        short raw_z = Utility.shortFromLittleEndianBytes(z_bytes);
-                        if(accel_logs) Log.d(Constants.TAG, "Accelerometer Data received: x=" + raw_x + " y=" + raw_y + " z=" + raw_z);
-
-
-                        // range is -1024 : +1024
-                        // Starting with the LED display face up and level (perpendicular to gravity) and edge connector towards your body:
-                        // A negative X value means tilting left, a positive X value means tilting right
-                        // A negative Y value means tilting away from you, a positive Y value means tilting towards you
-                        // A negative Z value means ?
-
-                        accel_input[0] = raw_x / 1000f;
-                        accel_input[1] = raw_y / 1000f;
-                        accel_input[2] = raw_z / 1000f;
-                        if (apply_smoothing) {
-                            accel_output = Utility.lowPass(accel_input, accel_output);
-                        } else {
-                            accel_output[0] = accel_input[0];
-                            accel_output[1] = accel_input[1];
-                            accel_output[2] = accel_input[2];
-                        }
-
-                        double pitch = Math.atan(accel_output[0] / Math.sqrt(Math.pow(accel_output[1], 2) + Math.pow(accel_output[2], 2)));
-                        double roll = Math.atan(accel_output[1] / Math.sqrt(Math.pow(accel_output[0], 2) + Math.pow(accel_output[2], 2)));
-                        //convert radians into degrees
-                        acel_pitch = pitch * (180.0 / Math.PI);
-                        acel_roll = -1 * roll * (180.0 / Math.PI);
-
-                        showAccelerometerData(accel_output,acel_pitch,acel_roll);
-
-                    } else if (characteristic_uuid.equalsIgnoreCase((Utility.normaliseUUID(BleAdapterService.BUTTON1STATE_CHARACTERISTIC_UUID)))) {
+                    if (characteristic_uuid.equalsIgnoreCase((Utility.normaliseUUID(BleAdapterService.BUTTON1STATE_CHARACTERISTIC_UUID)))) {
                         switch (btn_state) {
                             case 0:
                                 //Niet ingedrukt
@@ -515,69 +548,18 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                 case BleAdapterService.MESSAGE:
                     bundle = msg.getData();
                     String text = bundle.getString(BleAdapterService.PARCEL_TEXT);
-                    showMsg(Utility.htmlColorRed(text));
+                    showMsg(Utility.htmlColorWhite(text));
             }
         }
     };
 
-    private void setUiFromMatrixState(byte[] matrix_state) {
-        GridLayout grid = GameActivity.this.findViewById(R.id.led_grid);
-        int count = grid.getChildCount();
-        int display_row = 0;
-        int led_in_row = 4;
-        for (int i = 0; i < count; i++) {
-            Log.d(Constants.TAG, "display_row=" + display_row + ",led_in_row=" + led_in_row);
-            View child = grid.getChildAt(i);
-            if ((matrix_state[display_row] & (1 << led_in_row)) != 0) {
-                child.setBackgroundColor(Color.RED);
-            } else {
-                child.setBackgroundColor(Color.parseColor("#C0C0C0"));
-            }
-            led_in_row = led_in_row - 1;
-            if (led_in_row < 0) {
-                led_in_row = 4;
-                display_row++;
-            }
-        }
-    }
 
     private void showMsg(final String msg) {
-        showMsg(msg,1);
-    }
-
-    private void showMsg(final String msg, final int box) {
         Log.d(Constants.TAG, msg);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (box == 1) ((TextView) GameActivity.this.findViewById(R.id.message1)).setText(Html.fromHtml(msg));
-                if (box == 2) ((TextView) GameActivity.this.findViewById(R.id.message2)).setText(Html.fromHtml(msg));
-                if (box == 3) ((TextView) GameActivity.this.findViewById(R.id.message3)).setText(Html.fromHtml(msg));
-            }
-        });
-    }
-
-    private void showAccelerometerPeriod() {
-        Log.d(Constants.TAG, "Accelerometer Period: "+accelerometer_period+"ms");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((TextView) GameActivity.this.findViewById(R.id.accel_period)).setText("Polling: "+Integer.toString(accelerometer_period)+"ms");
-            }
-        });
-    }
-
-    private void showAccelerometerData(final float [] accel_data, final double pitch, final double roll) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((TextView) GameActivity.this.findViewById(R.id.accel_x)).setText("X: " + String.format("%.3f", accel_data[0]));
-                ((TextView) GameActivity.this.findViewById(R.id.accel_y)).setText("Y: " + String.format("%.3f", accel_data[1]));
-                ((TextView) GameActivity.this.findViewById(R.id.accel_z)).setText("Z: " + String.format("%.3f", accel_data[2]));
-                ((TextView) GameActivity.this.findViewById(R.id.pitch)).setText("PITCH: " + String.format("%.1f", pitch));
-                ((TextView) GameActivity.this.findViewById(R.id.roll)).setText("ROLL: " + String.format("%.1f", roll));
-                GameActivity.this.findViewById(R.id.microbit).setRotationX((float) roll);
-                GameActivity.this.findViewById(R.id.microbit).setRotationY((float) pitch);
+                ((TextView) GameActivity.this.findViewById(R.id.message)).setText(Html.fromHtml(msg));
             }
         });
     }
@@ -585,9 +567,9 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     @Override
     public void connectionStatusChanged(boolean connected) {
         if (connected) {
-            showMsg(Utility.htmlColorGreen("Verbonden"));
+            showMsg(Utility.htmlColorWhite("Verbonden"));
         } else {
-            showMsg(Utility.htmlColorRed("Verbinding verbroken"));
+            showMsg(Utility.htmlColorWhite("Verbinding verbroken"));
         }
     }
 
@@ -596,29 +578,29 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
     }
 
-    public void onSetDisplay(View view) {
-        Log.d(Constants.TAG, "onSetDisplay");
-        bluetooth_le_adapter.writeCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.LEDMATRIXSTATE_CHARACTERISTIC_UUID), led_matrix_state);
-    }
-
-    public void onSendText(View view) {
-        Log.d(Constants.TAG, "onSendText");
-        EditText text =  GameActivity.this.findViewById(R.id.display_text2);
-        Log.d(Constants.TAG, "onSendText: " + text.getText().toString());
-        try {
-            byte[] utf8_bytes = text.getText().toString().getBytes("UTF-8");
-            Log.d(Constants.TAG, "UTF8 bytes: 0x" + Utility.byteArrayAsHexString(utf8_bytes));
-            bluetooth_le_adapter.writeCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.LEDTEXT_CHARACTERISTIC_UUID), utf8_bytes);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            showMsg("Unable to convert text to UTF8 bytes");
+    public void run(View view) {
+        if (mode == MODE_DEV){
+            int number = 1;
+            try {
+                number = Integer.parseInt(((EditText) GameActivity.this.findViewById(R.id.input)).getText().toString());
+            } catch (Exception ignored) {
+            }
+            Log.d(Constants.TAG, "onRunScript with id: " + number);
+            startScript(number);
+        } else {
+            input.setVisibility(View.GONE);
+            input2.setVisibility(View.GONE);
+            button.setVisibility(View.GONE);
+            mName = input2.getText().toString();
+            if (mode == MODE_JOIN) {
+                subscribeToChannel(input.getText().toString());
+            } else {
+                names.set(0,mName);
+                sendToChannel("STATUSNAMES",
+                        TextUtils.join("|", IDs),
+                        TextUtils.join("|", names));
+            }
         }
-    }
-
-    public void onRunScript(View view) {
-        EditText text =  GameActivity.this.findViewById(R.id.display_text3);
-        Log.d(Constants.TAG, "onRunScript with id: " + text.getText().toString());
-        startScript(Integer.valueOf(text.getText().toString()));
     }
 
     private void startScript(int id){
@@ -660,9 +642,43 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
     }
 
+    private void setBackgroundColor(String colorString){
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor(colorString)));
+        constraintLayout.setBackgroundColor(Color.parseColor(colorString));
+    }
+
+    private void setText(String titleString, String descriptionString) {
+        title.setText(titleString);
+        description.setText(descriptionString);
+
+    }
+
     private void runScriptService(int id) {
+        tempScores = new ArrayList<>();
+        for(int i = 0; i < IDs.size(); i++)
+        {
+            tempScores.add(i,-1);
+        }
+
         Intent intent = new Intent(this, ScriptService.class);
         intent.putExtra("id",id);
+
+        try {
+            GameModel gameModel = new GameAsyncTask(this).getGame(id);
+            setBackgroundColor(gameModel.getColor());
+            setText(gameModel.getName(),gameModel.getDescription());
+            Picasso.get()
+                    .load("https://raw.githubusercontent.com/minecabla/micro-games/master/games/"+gameModel.getIcon())
+                    .placeholder(R.mipmap.ic_launcher)
+                    .error(R.mipmap.ic_launcher)
+                    .into(image);
+
+
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         startService(intent);
         b1_pressed = false;
@@ -681,46 +697,6 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             stopService(new Intent(this, ScriptService.class));
     }
 
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        Log.d(Constants.TAG, "onTouch - " + event.actionToString((event.getAction())));
-        if (led_matrix_state == null) {
-            Log.d(Constants.TAG, "onTouch - LED state array has not yet been initialised so ignoring touch");
-            return true;
-        }
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            GridLayout grid = GameActivity.this.findViewById(R.id.led_grid);
-            int count = grid.getChildCount();
-            int display_row = 0;
-            int led_in_row = 4;
-            for (int i = 0; i < count; i++) {
-                View child = grid.getChildAt(i);
-                if (child == v) {
-                    Log.d(Constants.TAG,"Touched row "+display_row+", LED "+led_in_row);
-                    if ((led_matrix_state[display_row] & (1 << led_in_row)) != 0) {
-                        child.setBackgroundColor(Color.parseColor("#C0C0C0"));
-                        led_matrix_state[display_row] = (byte) (led_matrix_state[display_row] & ~(1 << led_in_row));
-                    } else {
-                        child.setBackgroundColor(Color.RED);
-                        led_matrix_state[display_row] = (byte) (led_matrix_state[display_row] | (1 << led_in_row));
-                    }
-                    return true;
-                }
-                led_in_row = led_in_row - 1;
-                if (led_in_row < 0) {
-                    led_in_row = 4;
-                    display_row++;
-                }
-            }
-            return true;
-        }
-        return false;
-    }
-
-
-
-
-
     /*---------------------------------------------*/
     /*------------------MICRO:BIT------------------*/
     /*---------------------------------------------*/
@@ -730,6 +706,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         byte[] utf8_bytes = text.getBytes(StandardCharsets.UTF_8);
         bluetooth_le_adapter.writeCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.LEDTEXT_CHARACTERISTIC_UUID), utf8_bytes);
     }
+
     public void sendPixel(int x, int y, int z){
         if (led_matrix_state == null) {
             Log.d(Constants.TAG, "sendPixel - LED state array has not yet been initialised so ignoring touch");
@@ -737,10 +714,10 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             Log.d(Constants.TAG, "x:" +x + " y:" + y + " z:" + z);
             if (z > 0) {
                 //AAN
-                led_matrix_state[x] = (byte) (led_matrix_state[x] | (1 << y));
+                led_matrix_state[y] = (byte) (led_matrix_state[y] | (1 << (4-x)));
             } else {
                 //UIT
-                led_matrix_state[x] = (byte) (led_matrix_state[x] & ~(1 << y));
+                led_matrix_state[y] = (byte) (led_matrix_state[y] & ~(1 << (4-x)));
             }
         }
 
@@ -806,7 +783,5 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         }
         return false;
     }
-
-    /*----------------ACCELEROMETER----------------*/
 
 }

@@ -59,10 +59,9 @@ public class App extends BaseApplication implements ConfigurationObserver {
 //    mConfiguration.registerObserver(this);
 //    mConfiguration.startDiscovering(InterpreterConstants.MIME + Utils.getFileExtension("foo.py"));
 		
-	  // dirty way to access some needed info in GlobalConstants
       FirebaseAnalytics.getInstance (this);
 
-
+      // dirty way to access some needed info in GlobalConstants
       App.context = getApplicationContext();
 	  App.theFilesDir = this.getFilesDir().getAbsolutePath();
 	  App.thePackageName = this.getPackageName();

@@ -338,7 +338,7 @@ public class BleAdapterService extends Service implements Runnable{
                             if (operation_queue.size() > 0) {
                                 Log.d(Constants.TAG, "waiting for executing operation to complete");
                             } else {
-                                Log.d(Constants.TAG, "waiting for operation to process");
+                                //Log.d(Constants.TAG, "waiting for operation to process");
                             }
                             mutex.wait(Constants.GATT_OPERATION_TIME_OUT);
                         } catch (InterruptedException e) {
