@@ -1,6 +1,15 @@
 {
   "games": [
     {
+      "id": 1,
+      "name": "Pixel Jump",
+      "file": "Pixel_Jump.py",
+      "description":"Druk op A om over de opstakels te springen.",
+      "icon":"runningman.png",
+      "color":"#000000",
+      "max_spelers": 0
+    },
+    {
       "id": 2,
       "name": "Reactietijd",
       "file": "reactietijd.py",
@@ -60,15 +69,6 @@
       "file": "kermis.py",
       "description":"Beschrijving toevoegen!",
       "icon":"test.png",
-      "color":"#000000",
-      "max_spelers": 0
-    },
-    {
-      "id": 8,
-      "name": "Pixel Jump",
-      "file": "Pixel_Jump.py",
-      "description":"Druk op A om over de opstakels te springen.",
-      "icon":"runningman.png",
       "color":"#000000",
       "max_spelers": 0
     }
