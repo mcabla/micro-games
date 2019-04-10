@@ -1,15 +1,6 @@
 {
   "games": [
     {
-      "id": 1,
-      "name": "TeSt",
-      "file": "test.py",
-      "description":"Typ je omschrijving/uitleg hier.",
-      "icon":"test.png",
-      "color":"#000000",
-      "max_spelers": 0
-    },
-    {
       "id": 2,
       "name": "Reactietijd",
       "file": "reactietijd.py",
@@ -61,6 +52,24 @@
       "description":"Beweeg naar links en rechts om de appels te vangen.",
       "icon":"appel.png",
       "color":"#af2a2a",
+      "max_spelers": 0
+    },
+    {
+      "id": 8,
+      "name": "Kermis",
+      "file": "kermis.py",
+      "description":"Beschrijving toevoegen!",
+      "icon":"test.png",
+      "color":"#000000",
+      "max_spelers": 0
+    },
+    {
+      "id": 8,
+      "name": "Running Man",
+      "file": "runningman.py",
+      "description":"Druk op A om over de opstakels te springen.",
+      "icon":"test.png",
+      "color":"#000000",
       "max_spelers": 0
     }
   ],
