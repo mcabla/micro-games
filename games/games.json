@@ -5,7 +5,7 @@
       "name": "Pixel Jump",
       "file": "Pixel_Jump.py",
       "description":"Druk op A om over de opstakels te springen.",
-      "icon":"runningman.png",
+      "icon":"runningman.jpg",
       "color":"#000000",
       "max_spelers": 0
     },
