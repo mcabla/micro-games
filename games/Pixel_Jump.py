@@ -169,18 +169,18 @@ while in_leven:
     if i ==(10):
 # hier is j RE met tempo versnellen        
         if j % 20 == 0:
-          versnelling += 1
+            versnelling += 1
         
-          if j >= 400:
-              versnelling -=1
+        if j >= 400:
+            versnelling -=1
           
         i = versnelling
         
         bewegend_obstakel()
     
     if ObstakelX == 0 and hoogteP1 == 4:
-      display.scroll("Game over")
-      in_leven = False
+        display.scroll("Game over")
+        in_leven = False
         
     i += 1
     j +=1
