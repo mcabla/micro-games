@@ -93,4 +93,5 @@ while 1:
 
 
 score = lengte
-display.show(score)
+score_str = str(score)
+display.show(score_str)
