@@ -60,7 +60,7 @@ def zetNieuweLijn(y,lengte):
 
 display.show(bodem)
 i = 0
-k = 15
+k = 30
 mag_plaatsen = True
 
 
@@ -71,14 +71,14 @@ while 1:
       if not mag_plaatsen:
           button_b.was_pressed()
           mag_plaatsen = True
-  if button_b.was_pressed() and mag_plaatsen:
+  if i % 2 == 0 and button_b.was_pressed() and mag_plaatsen:
     krijgLengte(huidige_x,huidige_y)
     if lengte == 0:
       break
     huidige_y -= 1
     huidige_x = 0
     if huidige_y == 2:
-      k = 7
+      k = 10
     elif huidige_y == 1:
       k = 5
     elif huidige_y == 0:
@@ -89,7 +89,7 @@ while 1:
     mag_plaatsen = False
     i == 0
   i += 1
-  time.sleep(0.02)
+  time.sleep(0.01)
 
 
 score = lengte
