@@ -187,3 +187,4 @@ while in_leven:
     
 display.scroll("Game over")
 score = running_time()
+time.sleep(5)
