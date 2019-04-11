@@ -28,6 +28,8 @@ else:
 score = 0
 if keuze==x:
     display.scroll("Geraden")
+    time.sleep(3)
     score = 1
 else:
     display.scroll("Nope")
+    time.sleep(2)
