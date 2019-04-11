@@ -179,6 +179,7 @@ while in_leven:
         bewegend_obstakel()
     
     if ObstakelX == 0 and hoogteP1 == 4:
+        time.sleep(0.05)
         display.scroll("Game over")
         in_leven = False
         
