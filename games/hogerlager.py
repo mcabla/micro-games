@@ -9,7 +9,8 @@ run = True
 while run:
     getal = random.randrange(0,9)
     willekeurig = random.randrange(0,9)
-    display.show(str(getal))
+    getal_str = str(getal)
+    display.show(getal_str)
     while True:
 
         if button_a.was_pressed():
