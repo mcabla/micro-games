@@ -40,5 +40,15 @@ public class Constants {
     public static final String SERVICE_ABSENT_COLOUR = "#FF0000";
 
     public static final String IMAGE_R = "9990090090999009009090009";
+    public static final String IMAGE_1 = "0090009900009000090009990";
+    public static final String IMAGE_2 = "0999090009000900090099999";
+    public static final String IMAGE_3 = "0999090009009909000909990";
+    public static final String IMAGE_4 = "0090009000909009999000900";
+    public static final String IMAGE_5 = "0999009000099900009009900";
+    public static final String IMAGE_6 = "0999009000099900909009990";
+    public static final String IMAGE_7 = "9999000090009000900090000";
+    public static final String IMAGE_8 = "9999090090999909009099990";
+    public static final String IMAGE_9 = "9999090090999900009099990";
+    public static final String IMAGE_10= "9099990909909099090990999";
 
 }

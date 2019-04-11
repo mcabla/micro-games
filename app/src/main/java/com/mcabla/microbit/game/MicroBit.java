@@ -120,7 +120,7 @@ public class MicroBit {
     public boolean hasService(String service_uuid) {
         String svc_uuid = Utility.normaliseUUID(service_uuid).toLowerCase();
         for (BluetoothGattService service : services.values()) {
-            Log.d(Constants.TAG,"hasService: "+svc_uuid+"="+service.getUuid().toString()+"?");
+            //Log.d(Constants.TAG,"hasService: "+svc_uuid+"="+service.getUuid().toString()+"?");
             if (service.getUuid().toString().equalsIgnoreCase(svc_uuid)) {
                 return true;
             }

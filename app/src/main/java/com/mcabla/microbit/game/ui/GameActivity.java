@@ -38,7 +38,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.googlecode.android_scripting.facade.Facades.MicrobitFacade;
@@ -55,10 +54,6 @@ import com.mcabla.microbit.game.scripts.Room.GameAsyncTask;
 import com.mcabla.microbit.game.scripts.Room.GameModel;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -103,7 +98,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     private ArrayList<String> IDs = new ArrayList<>();
     private ArrayList<String> names = new ArrayList<>();
     private ArrayList<Integer> scores = new ArrayList<>();
-    private ArrayList<Integer> tempScores = new ArrayList<>();
+    private ArrayList<Float> tempScores = new ArrayList<>();
 
 
     private BleAdapterService bluetooth_le_adapter;
@@ -138,6 +133,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     //    Octet 2, LED Row 3: bit4 bit3 bit2 bit1 bit0
     //    Octet 3, LED Row 4: bit4 bit3 bit2 bit1 bit0
     //    Octet 4, LED Row 5: bit4 bit3 bit2 bit1 bit0
+    private int[][] leds = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};
     private byte[] led_matrix_state;
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -246,7 +242,10 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                 public void run() {
                     setText("Een groep maken", "Vul hieronder het aantal rondes in dat je wilt spelen. Jouw groepsnummer is: " + mChannel);
                 }
-            }, 3000);
+            }, 5000);
+        } else if(mode == MODE_DEV) {
+            setText("Ontwikkelaarsmodus", "Vul hieronder het ID in van het spel dat je wilt spelen.");
+            input.setHint("ID");
         }
 
 
@@ -295,9 +294,9 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
                             } else if (data[0] == "SET"){
 
-                                tempScores.set(IDs.indexOf(data[1]), Integer.valueOf(data[2]));
+                                tempScores.set(IDs.indexOf(data[1]), Float.valueOf(data[2]));
 
-                                if (!tempScores.contains(-1)) {
+                                if (!tempScores.contains((float) -1.00)) {
                                     System.out.println(scores);
                                     for(int i = 0; i < IDs.size(); i++)
                                     {
@@ -331,6 +330,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     private void sendToChannel(String type,String message, String message2){
         client.send(mChannel, type+";"+message+";"+message2);
     }
+
 
     @Override
     protected void onDestroy() {
@@ -427,17 +427,17 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
             switch (msg.what) {
                 case BleAdapterService.GATT_CHARACTERISTIC_READ:
-                    Log.d(Constants.TAG, "Handler received characteristic read result");
+                    //Log.d(Constants.TAG, "Handler received characteristic read result");
                     bundle = msg.getData();
                     service_uuid = bundle.getString(BleAdapterService.PARCEL_SERVICE_UUID);
                     characteristic_uuid = bundle.getString(BleAdapterService.PARCEL_CHARACTERISTIC_UUID);
                     b = bundle.getByteArray(BleAdapterService.PARCEL_VALUE);
-                    Log.d(Constants.TAG, "characteristic " + characteristic_uuid + " of service " + service_uuid + " read OK");
+                    //Log.d(Constants.TAG, "characteristic " + characteristic_uuid + " of service " + service_uuid + " read OK");
                     Log.d(Constants.TAG, "Value=" + Utility.byteArrayAsHexString(b));
                     if (characteristic_uuid.equalsIgnoreCase(Utility.normaliseUUID(BleAdapterService.LEDMATRIXSTATE_CHARACTERISTIC_UUID))) {
                         if (b.length > 4) {
                             led_matrix_state = b;
-                            Log.d(Constants.TAG, "LED matrix state=" + Utility.byteArrayAsHexString(b));
+                            //Log.d(Constants.TAG, "LED matrix state=" + Utility.byteArrayAsHexString(b));
                         }
                         // now read the Scrolling Delay and store in the Settings singleton
                         bluetooth_le_adapter.readCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.SCROLLINGDELAY_CHARACTERISTIC_UUID));
@@ -445,7 +445,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                     } else if (characteristic_uuid.equalsIgnoreCase(Utility.normaliseUUID(BleAdapterService.SCROLLINGDELAY_CHARACTERISTIC_UUID))) {
                         if (b.length > 1) {
                             scrolling_delay = Utility.shortFromLittleEndianBytes(b);
-                            Log.d(Constants.TAG,"Read Scrolling Delay from micro:bit="+scrolling_delay);
+                            //Log.d(Constants.TAG,"Read Scrolling Delay from micro:bit="+scrolling_delay);
                             Settings.getInstance().setScrolling_delay(scrolling_delay);
                         }
                         showMsg(Utility.htmlColorWhite("Verbonden"));
@@ -453,32 +453,28 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                     }
                     break;
                 case BleAdapterService.GATT_CHARACTERISTIC_WRITTEN:
-                    Log.d(Constants.TAG, "Handler received characteristic written result");
+                    //Log.d(Constants.TAG, "Handler received characteristic written result");
                     bundle = msg.getData();
                     service_uuid = bundle.getString(BleAdapterService.PARCEL_SERVICE_UUID);
                     characteristic_uuid = bundle.getString(BleAdapterService.PARCEL_CHARACTERISTIC_UUID);
-                    Log.d(Constants.TAG, "characteristic " + characteristic_uuid + " of service " + service_uuid + " written OK");
+                    //Log.d(Constants.TAG, "characteristic " + characteristic_uuid + " of service " + service_uuid + " written OK");
                     showMsg(Utility.htmlColorWhite("Verbonden"));
                     break;
                 case BleAdapterService.GATT_DESCRIPTOR_WRITTEN:
-                    Log.d(Constants.TAG, "Handler received descriptor written result");
+                    //Log.d(Constants.TAG, "Handler received descriptor written result");
                     bundle = msg.getData();
                     service_uuid = bundle.getString(BleAdapterService.PARCEL_SERVICE_UUID);
                     characteristic_uuid = bundle.getString(BleAdapterService.PARCEL_CHARACTERISTIC_UUID);
                     descriptor_uuid = bundle.getString(BleAdapterService.PARCEL_DESCRIPTOR_UUID);
                     b = bundle.getByteArray(BleAdapterService.PARCEL_VALUE);
-                    Log.d(Constants.TAG, "descriptor " + descriptor_uuid + " of characteristic " + characteristic_uuid + " of service " + service_uuid + " written OK");
+                    //Log.d(Constants.TAG, "descriptor " + descriptor_uuid + " of characteristic " + characteristic_uuid + " of service " + service_uuid + " written OK");
                     if (!exiting) {
                         notifications_on=true;
                         start_time = System.currentTimeMillis();
                         if (characteristic_uuid.equalsIgnoreCase(Utility.normaliseUUID(BleAdapterService.BUTTON1STATE_CHARACTERISTIC_UUID))) {
                             b1_notifications_on = true;
-                            Log.d(Constants.TAG, "Enabling Button 2 State notifications");
-                            if (bluetooth_le_adapter.setNotificationsState(Utility.normaliseUUID(BleAdapterService.BUTTONSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.BUTTON2STATE_CHARACTERISTIC_UUID), true)) {
-                                showMsg(Utility.htmlColorGreen("Button 2 State notifications ON"));
-                            } else {
-                                showMsg(Utility.htmlColorRed("Failed to set Button 2 State notifications ON"));
-                            }
+                            //Log.d(Constants.TAG, "Enabling Button 2 State notifications");
+                            bluetooth_le_adapter.setNotificationsState(Utility.normaliseUUID(BleAdapterService.BUTTONSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.BUTTON2STATE_CHARACTERISTIC_UUID), true);
                         }
                         if (characteristic_uuid.equalsIgnoreCase(Utility.normaliseUUID(BleAdapterService.BUTTON2STATE_CHARACTERISTIC_UUID))) {
                             b2_notifications_on = true;
@@ -521,7 +517,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                         }
 
                     } else if (characteristic_uuid.equalsIgnoreCase((Utility.normaliseUUID(BleAdapterService.BUTTON2STATE_CHARACTERISTIC_UUID)))) {
-                        Log.d(Constants.TAG, "Button 2 State received: " + btn_state);
+                        //Log.d(Constants.TAG, "Button 2 State received: " + btn_state);
                         switch (btn_state) {
                             case 0:
                                 //Niet ingedrukt
@@ -555,7 +551,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
 
     private void showMsg(final String msg) {
-        Log.d(Constants.TAG, msg);
+        //Log.d(Constants.TAG, msg);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -657,7 +653,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         tempScores = new ArrayList<>();
         for(int i = 0; i < IDs.size(); i++)
         {
-            tempScores.add(i,-1);
+            tempScores.add(i, (float) -1.00);
         }
 
         Intent intent = new Intent(this, ScriptService.class);
@@ -709,37 +705,83 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
     public void sendPixel(int x, int y, int z){
         if (led_matrix_state == null) {
-            Log.d(Constants.TAG, "sendPixel - LED state array has not yet been initialised so ignoring touch");
+            //Log.d(Constants.TAG, "sendPixel - LED state array has not yet been initialised so ignoring touch");
         } else {
-            Log.d(Constants.TAG, "x:" +x + " y:" + y + " z:" + z);
+            //Log.d(Constants.TAG, "x:" +x + " y:" + y + " z:" + z);
             if (z > 0) {
                 //AAN
+                leds[y][x] = 9;
                 led_matrix_state[y] = (byte) (led_matrix_state[y] | (1 << (4-x)));
             } else {
                 //UIT
+                leds[y][x] = 0;
                 led_matrix_state[y] = (byte) (led_matrix_state[y] & ~(1 << (4-x)));
             }
         }
 
         bluetooth_le_adapter.writeCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.LEDMATRIXSTATE_CHARACTERISTIC_UUID), led_matrix_state);
+    }
 
+    public int getPixel(int x, int y){
+        if (led_matrix_state != null){
+            Log.d(Constants.TAG,"GET PIXEL: x:"+String.valueOf(x)+" y:"+String.valueOf(y)+" z:"+String.valueOf(leds[y][x]));
+            return leds[y][x];
+        }
+        return 0;
     }
 
     public void sendImage(String img){
-        if (img.equals("R")) img = Constants.IMAGE_R;
+        switch (img) {
+            case "R":
+                img = Constants.IMAGE_R;
+                break;
+            case "1":
+                img = Constants.IMAGE_1;
+                break;
+            case "2":
+                img = Constants.IMAGE_2;
+                break;
+            case "3":
+                img = Constants.IMAGE_3;
+                break;
+            case "4":
+                img = Constants.IMAGE_4;
+                break;
+            case "5":
+                img = Constants.IMAGE_5;
+                break;
+            case "6":
+                img = Constants.IMAGE_6;
+                break;
+            case "7":
+                img = Constants.IMAGE_7;
+                break;
+            case "8":
+                img = Constants.IMAGE_8;
+                break;
+            case "9":
+                img = Constants.IMAGE_9;
+                break;
+            case "10":
+                img = Constants.IMAGE_10;
+                break;
+        }
+
         if (led_matrix_state == null) {
-            Log.d(Constants.TAG, "sendImage - LED state array has not yet been initialised so ignoring touch");
+            //Log.d(Constants.TAG, "sendImage - LED state array has not yet been initialised so ignoring touch");
         } else {
             char[] imgList = img.toCharArray();
             int i = 0;
             for (int y = 0; y < 5; y++) {
                 for (int x = 0; x < 5; x++) {
-                    Log.d(Constants.TAG, "x:" +x + " y:" + y + " z:" + String.valueOf((int)  imgList[i]));
+                    //Log.d(Constants.TAG, "x:" +x + " y:" + y + " z:" + String.valueOf((int)  imgList[i]));
                     if (imgList[i] > 48) {
                         //AAN
+                        leds[y][x] = 9;
                         led_matrix_state[y] = (byte) (led_matrix_state[y] | (1 << (4-x)));
                     } else {
                         //UIT
+                        leds[y][x] = 0;
                         led_matrix_state[y] = (byte) (led_matrix_state[y] & ~(1 << (4-x)));
                     }
                     i++;
@@ -782,6 +824,13 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             return true;
         }
         return false;
+    }
+
+
+    /*---------------------MISC--------------------*/
+    public void sendScore(String score) {
+        if (mode == MODE_DEV) Log.d(Constants.TAG, "SCORE: "+score);
+        else sendToChannel("SET", mID, score);
     }
 
 }

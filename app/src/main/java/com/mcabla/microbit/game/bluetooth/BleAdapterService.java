@@ -133,20 +133,20 @@ public class BleAdapterService extends Service implements Runnable{
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status,
                                             int newState) {
-            Log.d(Constants.TAG, "onConnectionStateChange: status=" + status);
+            //Log.d(Constants.TAG, "onConnectionStateChange: status=" + status);
             timestamp();
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                Log.d(Constants.TAG, "onConnectionStateChange: CONNECTED");
+                //Log.d(Constants.TAG, "onConnectionStateChange: CONNECTED");
                 MicroBit.getInstance().setMicrobit_connected(true);
                 Message msg = Message.obtain(activity_handler, GATT_CONNECTED);
                 msg.sendToTarget();
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                Log.d(Constants.TAG, "onConnectionStateChange: DISCONNECTED");
+                //Log.d(Constants.TAG, "onConnectionStateChange: DISCONNECTED");
                 MicroBit.getInstance().setMicrobit_connected(false);
                 Message msg = Message.obtain(activity_handler, GATT_DISCONNECT);
                 msg.sendToTarget();
                 if (bluetooth_gatt != null) {
-                    Log.d(Constants.TAG,"Closing and destroying BluetoothGatt object");
+                    //Log.d(Constants.TAG,"Closing and destroying BluetoothGatt object");
                     bluetooth_gatt.close();
                     bluetooth_gatt = null;
                 }
@@ -163,7 +163,7 @@ public class BleAdapterService extends Service implements Runnable{
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt,
                                          BluetoothGattCharacteristic characteristic, int status) {
-            Log.d(Constants.TAG, "onCharacteristicRead");
+            //Log.d(Constants.TAG, "onCharacteristicRead");
             timestamp();
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Bundle bundle = new Bundle();
@@ -253,42 +253,42 @@ public class BleAdapterService extends Service implements Runnable{
     private final IBinder mBinder = new LocalBinder();
 
     public void startRequestProcessor() {
-        Log.d(Constants.TAG,"startRequestProcessor");
+        //Log.d(Constants.TAG,"startRequestProcessor");
         Thread t = new Thread(this);
         request_processor_running = true;
         t.start();
     }
 
     public void stopRequestProcessor() {
-        Log.d(Constants.TAG,"stopRequestProcessor");
+        //Log.d(Constants.TAG,"stopRequestProcessor");
         request_processor_running = false;
         Operation stop = new Operation(Operation.OPERATION_EXIT_QUEUE_PROCESSING_REQUEST);
         addOperation(stop);
     }
 
     private boolean isRequestInProgress() {
-        Log.d(Constants.TAG,"isRequestInProgress called");
+        //Log.d(Constants.TAG,"isRequestInProgress called");
         boolean busy = false;
         synchronized (mutex) {
             busy = (operation_queue.size() > 0);
-            Log.d(Constants.TAG, "isRequestInProgress: busy=" + busy);
+            //Log.d(Constants.TAG, "isRequestInProgress: busy=" + busy);
         }
         return busy;
     }
 
     private void addOperation(Operation op) {
-        Log.d(Constants.TAG, "addOperation called");
+        //Log.d(Constants.TAG, "addOperation called");
         synchronized (mutex) {
             while (operation_queue.size() > 0) {
                 try {
-                    Log.d(Constants.TAG,"Waiting for queue to be empty");
+                    Log.d(Constants.TAG,"Waiting for queue ("+String.valueOf(operation_queue.size())+") to be empty");
                     mutex.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
             if (operation_queue.size() == 0) {
-                Log.d(Constants.TAG,"Adding operation to queue");
+                //Log.d(Constants.TAG,"Adding operation to queue");
                 operation_queue.add(op);
                 mutex.notifyAll();
             }
@@ -298,10 +298,10 @@ public class BleAdapterService extends Service implements Runnable{
     private void operationCompleted() {
         // operations are always processed one at a time in strict order. An operation completing must be the one currently with "executing" status and this must be the one
         // at index position 0 in the operation queue
-        Log.d(Constants.TAG, "operationCompleted called");
+        //Log.d(Constants.TAG, "operationCompleted called");
         synchronized (mutex) {
             if (operation_queue.size() > 0) {
-                Log.d(Constants.TAG, "Removing completed operation from queue");
+                //Log.d(Constants.TAG, "Removing completed operation from queue");
                 operation_queue.remove(0);
                 mutex.notifyAll();
             }
@@ -309,7 +309,7 @@ public class BleAdapterService extends Service implements Runnable{
     }
 
     private void emptyOperationQueue() {
-        Log.d(Constants.TAG, "emptyOperationQueue called");
+        //Log.d(Constants.TAG, "emptyOperationQueue called");
         synchronized (mutex) {
             if (operation_queue.size() > 0) {
                 operation_queue.clear();
@@ -328,7 +328,7 @@ public class BleAdapterService extends Service implements Runnable{
 
     @Override
     public void run() {
-        Log.d(Constants.TAG, "GATT Request processor thread starting");
+        //Log.d(Constants.TAG, "GATT Request processor thread starting");
         Operation current_op = null;
         try {
             while (request_processor_running) {
@@ -348,14 +348,14 @@ public class BleAdapterService extends Service implements Runnable{
                     if (operation_queue.size() > 0) {
                         Operation op = operation_queue.get(0);
                         if (current_op == op) {
-                            Log.d(Constants.TAG, "Looks like GATT operation was not processed - timing out to clear the queue");
+                            //Log.d(Constants.TAG, "Looks like GATT operation was not processed - timing out to clear the queue");
                             sendConsoleMessage("Previous operation timed out");
                             operationCompleted();
                             continue;
                         }
                         op.setOperation_status(Operation.OPERATION_EXECUTING);
                         current_op = op;
-                        Log.d(Constants.TAG, "processing operation: " + operation_queue.toString());
+                        //Log.d(Constants.TAG, "processing operation: " + operation_queue.toString());
                         boolean ok=false;
                         switch (op.getOperation_type()) {
                             case Operation.OPERATION_READ_CHARACTERISTIC_REQUEST:
@@ -381,13 +381,13 @@ public class BleAdapterService extends Service implements Runnable{
                 }
             }
         } catch (Exception e) {
-            Log.d(Constants.TAG, "ERROR in operation queue processing thread:" + e.getClass().getName() + ":" + e.getMessage());
+            //Log.d(Constants.TAG, "ERROR in operation queue processing thread:" + e.getClass().getName() + ":" + e.getMessage());
             sendConsoleMessage("ERROR: serious problem in Bluetooth request processor");
         }
 
         emptyOperationQueue();
 
-        Log.d(Constants.TAG, "GATT Request processor thread exiting");
+        //Log.d(Constants.TAG, "GATT Request processor thread exiting");
     }
 
     class KeepAlive implements Runnable {
@@ -407,7 +407,7 @@ public class BleAdapterService extends Service implements Runnable{
 
         @Override
         public void run() {
-            Log.d(Constants.TAG,"Keep alive thread starting");
+            //Log.d(Constants.TAG,"Keep alive thread starting");
             running = true;
             try {
                 // random delay
@@ -426,12 +426,12 @@ public class BleAdapterService extends Service implements Runnable{
                     // we assume the current Activity has informed the user so they can find and connect again
                     if (MicroBit.getInstance().isMicrobit_connected()) {
                         // then there has been no GATT activity for some time so we make sure the connection doesn't close by reading the firmware revision string
-                        Log.d(Constants.TAG, "KeepAlive thread is reading firmware revision string");
+                        //Log.d(Constants.TAG, "KeepAlive thread is reading firmware revision string");
                         readCharacteristic(Utility.normaliseUUID(DEVICEINFORMATION_SERVICE_UUID), Utility.normaliseUUID(FIRMWAREREVISIONSTRING_CHARACTERISTIC_UUID));
                     }
                 }
             }
-            Log.d(Constants.TAG,"Keep alive thread exiting");
+            //Log.d(Constants.TAG,"Keep alive thread exiting");
         }
     }
 
@@ -526,7 +526,7 @@ public class BleAdapterService extends Service implements Runnable{
 
     public boolean readCharacteristic(String serviceUuid, String characteristicUuid) {
         if (!MicroBit.getInstance().isMicrobit_connected()) {
-            Log.d(Constants.TAG, "IGNORING readCharacteristic serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+" - not currently connected");
+            //Log.d(Constants.TAG, "IGNORING readCharacteristic serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+" - not currently connected");
             return true;
         }
         if (bluetooth_adapter == null || bluetooth_gatt == null) {
@@ -564,10 +564,10 @@ public class BleAdapterService extends Service implements Runnable{
     // called from the request processor thread
     private boolean executeReadCharacteristic(String serviceUuid, String characteristicUuid) {
         if (!MicroBit.getInstance().isMicrobit_connected()) {
-            Log.d(Constants.TAG, "IGNORING executeReadCharacteristic serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+" - not currently connected");
+            //Log.d(Constants.TAG, "IGNORING executeReadCharacteristic serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+" - not currently connected");
             return true;
         }
-        Log.d(Constants.TAG, "executeReadCharacteristic");
+        //Log.d(Constants.TAG, "executeReadCharacteristic");
         if (bluetooth_adapter == null || bluetooth_gatt == null) {
             sendConsoleMessage("readCharacteristic: bluetooth_adapter|bluetooth_gatt null");
             return false;
@@ -589,10 +589,10 @@ public class BleAdapterService extends Service implements Runnable{
 
     public boolean writeCharacteristic(String serviceUuid, String characteristicUuid, byte[] value) {
         if (!MicroBit.getInstance().isMicrobit_connected()) {
-            Log.d(Constants.TAG, "IGNORING writeCharacteristic serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+" - not currently connected");
+            //Log.d(Constants.TAG, "IGNORING writeCharacteristic serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+" - not currently connected");
             return true;
         }
-        Log.d(Constants.TAG, "writeCharacteristic serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+ " value="+ Utility.byteArrayAsHexString(value));
+        //Log.d(Constants.TAG, "writeCharacteristic serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+ " value="+ Utility.byteArrayAsHexString(value));
         if (bluetooth_adapter == null || bluetooth_gatt == null) {
             sendConsoleMessage("writeCharacteristic: bluetooth_adapter|bluetooth_gatt null");
             return false;
@@ -627,11 +627,11 @@ public class BleAdapterService extends Service implements Runnable{
 
     private boolean executeWriteCharacteristic(String serviceUuid, String characteristicUuid, byte[] value) {
         if (!MicroBit.getInstance().isMicrobit_connected()) {
-            Log.d(Constants.TAG, "IGNORING executeWriteCharacteristic serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+" - not currently connected");
+            //Log.d(Constants.TAG, "IGNORING executeWriteCharacteristic serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+" - not currently connected");
             return true;
         }
 
-        Log.d(Constants.TAG, "executeWriteCharacteristic: serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+ " value="+ Utility.byteArrayAsHexString(value));
+        //Log.d(Constants.TAG, "executeWriteCharacteristic: serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+ " value="+ Utility.byteArrayAsHexString(value));
         boolean result = false;
         if (bluetooth_adapter == null || bluetooth_gatt == null) {
             sendConsoleMessage("writeCharacteristic: bluetooth_adapter|bluetooth_gatt null");
@@ -660,7 +660,7 @@ public class BleAdapterService extends Service implements Runnable{
     public boolean setNotificationsState(String serviceUuid, String characteristicUuid, boolean enabled) {
 
         if (!MicroBit.getInstance().isMicrobit_connected()) {
-            Log.d(Constants.TAG, "IGNORING setNotificationsState serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+" - not currently connected");
+            //Log.d(Constants.TAG, "IGNORING setNotificationsState serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+" - not currently connected");
             return true;
         }
 
@@ -704,7 +704,7 @@ public class BleAdapterService extends Service implements Runnable{
     public boolean setIndicationsState(String serviceUuid, String characteristicUuid, boolean enabled) {
 
         if (!MicroBit.getInstance().isMicrobit_connected()) {
-            Log.d(Constants.TAG, "IGNORING setIndicationsState serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+" - not currently connected");
+            //Log.d(Constants.TAG, "IGNORING setIndicationsState serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+" - not currently connected");
             return true;
         }
 
@@ -749,7 +749,7 @@ public class BleAdapterService extends Service implements Runnable{
     private boolean executeSetCccdState(String serviceUuid, String characteristicUuid, boolean enabled, byte [] cccd_enable) {
 
         if (!MicroBit.getInstance().isMicrobit_connected()) {
-            Log.d(Constants.TAG, "IGNORING executeSetCccdState serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+" - not currently connected");
+            //Log.d(Constants.TAG, "IGNORING executeSetCccdState serviceUuid=" + serviceUuid + " characteristicUuid=" + characteristicUuid+" - not currently connected");
             return true;
         }
 
@@ -773,7 +773,7 @@ public class BleAdapterService extends Service implements Runnable{
         descriptor = gattChar.getDescriptor(UUID.fromString(CLIENT_CHARACTERISTIC_CONFIG));
 
         if (enabled) {
-            Log.d(Constants.TAG,"XXXX setting descriptor "+descriptor+" to "+Utility.byteArrayAsHexString(cccd_enable));
+            //Log.d(Constants.TAG,"XXXX setting descriptor "+descriptor+" to "+Utility.byteArrayAsHexString(cccd_enable));
             descriptor.setValue(cccd_enable);
         } else {
             descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
@@ -792,6 +792,7 @@ public class BleAdapterService extends Service implements Runnable{
     }
 
     private void sendConsoleMessage(String text) {
+        if (true) return;
         Message msg = Message.obtain(activity_handler, MESSAGE);
         Bundle data = new Bundle();
         data.putString(PARCEL_TEXT, text);
@@ -809,7 +810,7 @@ public class BleAdapterService extends Service implements Runnable{
             }
         }
         catch (Exception e) {
-            Log.e(Constants.TAG, "Exception refreshing GATT services:"+e.getClass().getName()+":"+e.getMessage());
+            //Log.e(Constants.TAG, "Exception refreshing GATT services:"+e.getClass().getName()+":"+e.getMessage());
         }
         return false;
     }

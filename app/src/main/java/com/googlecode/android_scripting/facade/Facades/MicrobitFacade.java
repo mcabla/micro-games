@@ -56,6 +56,14 @@ public class MicrobitFacade extends RpcReceiver {
         if (gameActivityWeakReference != null) gameActivityWeakReference.get().sendPixel(x,y,z);
     }
 
+    @Rpc(description = "Get pixel from microbit")
+    public int display_get_pixel(@RpcParameter(name = "x") Integer x,
+                                  @RpcParameter(name = "y") Integer y) throws InterruptedException {
+        mOnInitLock.await();
+        if (gameActivityWeakReference != null) return gameActivityWeakReference.get().getPixel(x,y);
+        return 0;
+    }
+
     @Rpc(description = "Print image on microbit")
     public void display_show(@RpcParameter(name = "image") String img) throws InterruptedException {
         mOnInitLock.await();
@@ -124,6 +132,13 @@ public class MicrobitFacade extends RpcReceiver {
     public int running_time() throws InterruptedException {
         mOnInitLock.await();
         return (int)  (Calendar.getInstance().getTimeInMillis() - startTime);
+    }
+
+
+    @Rpc(description = "Sent score")
+    public void send_score(@RpcParameter(name = "score") String score) throws InterruptedException {
+        mOnInitLock.await();
+        if (gameActivityWeakReference != null) gameActivityWeakReference.get().sendScore(score);
     }
 
 

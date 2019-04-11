@@ -654,6 +654,7 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
         content = content.replaceAll("(\\s*?)display\\.scroll\\((.*?)\\)","$1droid.display_scroll(str($2)).result$1#time.sleep(round(len(\"$2\")*13/10))");
 
         content = content.replaceAll("(\\s*?)display\\.set_pixel\\((.*?),(.*?),(.*?)\\)","$1droid.display_set_pixel($2,$3,$4).result");
+        content = content.replaceAll("(\\s*?)display\\.get_pixel\\((.*?),(.*?)\\)","$1droid.display_get_pixel($2,$3).result");
 
         content = content.replaceAll("(\\s*?)display\\.show\\((.*?)\\)","$1droid.display_show($2).result");
 
@@ -662,6 +663,12 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
 
         /*MISC*/
         content = content.replace("running_time()","droid.running_time().result");
+
+        content = content.replace("str(\"","\"");
+
+        content += "\n\ndroid.send_score(str(score)).result";
+        content += "\n\ntime.sleep(3)";
+        content += "\n\ndroid.display_show(\"0909099999999990999000900\").result";
 
 
         Log.d("micro:games",content);
