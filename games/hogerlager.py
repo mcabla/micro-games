@@ -5,58 +5,38 @@ import time
 
 score = 0
 
-for i in range(0,4):
-    time.sleep(1)
+run = True
+while run:
     getal = random.randrange(0,9)
-    # display.scroll("Kies A voor Lager, B voor Hoger")
-
     willekeurig = random.randrange(0,9)
-    display.show(str(willekeurig))
-    
-    
-
+    getal_str = str(getal)
+    display.show(getal_str)
     while True:
 
-      if button_a.is_pressed() and int(willekeurig) > int(getal):
-
-        display.clear()
-        score += 1
-        display.scroll("JUIST!")
-        display.scroll(int(getal))
-        break
-        
-      elif button_a.is_pressed() and int(willekeurig) < int(getal) :
-        display.scroll("FOUT!")
-        display.scroll(int(getal))
-        break
+        if button_a.was_pressed():
+            if int(willekeurig) >= int(getal):
+                score += 1
+                display.scroll("JUIST!")
+                #time.sleep(3)        
+            else:
+                display.scroll("FOUT!")
+                #time.sleep(3)
+                run = False
+            break
         
         
-      if button_b.is_pressed() and int(willekeurig) < int(getal):
+        elif button_b.was_pressed():
+            if int(willekeurig) <= int(getal):
+                score += 1
+                display.scroll("JUIST!")
+                #time.sleep(3)
+            else:
+                display.scroll("FOUT!")
+                #time.sleep(3)
+                run = False
+            break
+        
+        time.sleep(0.02)
 
-        display.clear()
-        score += 1
-        display.scroll("JUIST!")
-        display.scroll(int(getal))
-        break
-
-      elif button_b.is_pressed() and int(willekeurig) > int(getal):
-
-        display.clear()
-        display.scroll("FOUT!")
-        display.scroll(int(getal))
-        break
-
-display.scroll("SCORE:")
-display.show(str(score))
-               
-              
-             
-
-
-  
-
-             
-
-
-  
- 
+display.scroll("SCORE: " + str(score))
+time.sleep(4)

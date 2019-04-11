@@ -34,4 +34,4 @@ while not gedrukt:              #snel drukken na wachttijd
     display.scroll(reactietijd)         #tijd in milliseconden
   time.sleep(0.01)
     
-score = 1/reactietijd
+score = (1/reactietijd)*1000

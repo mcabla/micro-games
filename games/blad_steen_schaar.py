@@ -66,3 +66,4 @@ else:
         elif i == 1:
             score = 2
             display.scroll("gewonnen")
+time.sleep(3)
