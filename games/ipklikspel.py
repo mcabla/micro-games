@@ -52,7 +52,7 @@ while tijd:
         time.sleep(0.2)
         display.scroll(str(verschil))
         time.sleep(1)
-        score = 1/verschil
+        score = (1/verschil)*1000
         break
       stra = str(aantal)
       y=int(stra[0])
