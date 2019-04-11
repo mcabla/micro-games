@@ -25,8 +25,9 @@ else:
     x="munt"
 
 
-
+score = 0
 if keuze==x:
     display.scroll("Geraden")
+    score = 1
 else:
     display.scroll("Nope")
