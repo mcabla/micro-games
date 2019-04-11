@@ -39,4 +39,4 @@ while run:
         time.sleep(0.02)
 
 display.scroll("SCORE: " + str(score))
-time.sleep(3)
+time.sleep(4)
