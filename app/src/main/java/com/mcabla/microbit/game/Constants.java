@@ -23,11 +23,10 @@ public class Constants {
     public static final String MAIN_HELP = "file:///android_res/raw/main_help.html";
     public static final String MAIN_ABOUT = "file:///android_res/raw/main_about.html";
     public static final String GAME_HELP = "file:///android_res/raw/game_help.html";
-    public static final String DEVICE_INFORMATION_HELP = "file:///android_res/raw/device_information_help.html";
     public static final String MENU_HELP = "file:///android_res/raw/menu_help.html";
 
-    public static final String FIND_PAIRED = "FIND PAIRED BBC MICRO:BIT(S)";
-    public static final String FIND_ANY = "FIND BBC MICRO:BIT(S)";
+    public static final String FIND_PAIRED = "Zoek gekoppelde Micro:bit(s)";
+    public static final String FIND_ANY = "Zoek Micro:bit(s)";
     public static final String NO_PAIRED_FOUND = "Geen gekoppelde micro:bits gevonden. Heb je er gekoppeld? Zie de helppagina in het menu";
     public static final String NONE_FOUND = "Geen zichtbare micro:bits gevonden";
     public static final String STOP_SCANNING = "Stop met scannen";
