@@ -17,38 +17,43 @@ for i in range(0,4):
 
     while True:
 
-      if button_a.is_pressed() and int(willekeurig) > int(getal):
+      if button_a.was_pressed() and int(willekeurig) > int(getal):
 
         display.clear()
         score += 1
         display.scroll("JUIST!")
-        display.scroll(int(getal))
+        time.sleep(3)
+        display.scroll(str(getal))
         break
         
-      elif button_a.is_pressed() and int(willekeurig) < int(getal) :
+      elif button_a.was_pressed() and int(willekeurig) < int(getal) :
         display.scroll("FOUT!")
-        display.scroll(int(getal))
+        time.sleep(3)
+        display.scroll(str(getal))
         break
         
         
-      if button_b.is_pressed() and int(willekeurig) < int(getal):
+      if button_b.was_pressed() and int(willekeurig) < int(getal):
 
         display.clear()
         score += 1
         display.scroll("JUIST!")
-        display.scroll(int(getal))
+        time.sleep(3)
+        display.scroll(str(getal))
         break
 
-      elif button_b.is_pressed() and int(willekeurig) > int(getal):
+      elif button_b.was_pressed() and int(willekeurig) > int(getal):
 
         display.clear()
         display.scroll("FOUT!")
-        display.scroll(int(getal))
+        time.sleep(3)
+        display.scroll(str(getal))
         break
+        
+      time.sleep(0.02)
 
-display.scroll("SCORE:")
-display.show(str(score))
-               
+display.scroll("SCORE: " + str(score))
+              
               
              
 
