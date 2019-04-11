@@ -82,7 +82,7 @@ while 1:
     elif huidige_y == 1:
       k = 5
     elif huidige_y == 0:
-      k = 2
+      k = 4
     else:
       break
     zetNieuweLijn(huidige_y,lengte)
