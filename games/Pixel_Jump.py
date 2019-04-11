@@ -186,3 +186,4 @@ while in_leven:
     time.sleep(0.02)
     
 display.scroll("Game over")
+score = running_time()
