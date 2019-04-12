@@ -69,9 +69,10 @@ while 1:
       verplaats()
       i = 0
       if not mag_plaatsen:
+          button_a.was_pressed()
           button_b.was_pressed()
           mag_plaatsen = True
-  if i % 2 == 0 and button_b.was_pressed() and mag_plaatsen:
+  if i % 2 == 0 and (button_a.was_pressed() or button_b.was_pressed()) and mag_plaatsen:
     krijgLengte(huidige_x,huidige_y)
     if lengte == 0:
       break
