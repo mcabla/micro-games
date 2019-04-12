@@ -78,7 +78,6 @@ while 1:
       break
     huidige_y -= 1
     huidige_x = 0
-    dx = 1
     if huidige_y == 2:
       k = 10
     elif huidige_y == 1:
