@@ -74,6 +74,7 @@ while 1:
           button_a.was_pressed() #we resetten deze booleans wel eerst
           button_b.was_pressed() #zo kan een speler minder makkelijk valsspelen
           mag_plaatsen = True
+  time.sleep(0.01) #we werken met 1 sleep timer, de lus loopt dus om de 0.01 seconden
   if i % 2 == 0 and (button_a.was_pressed() or button_b.was_pressed()) and mag_plaatsen: #worden pas om de twee lussen uitgevoerd
     krijgLengte(huidige_x,huidige_y) #stel de nieuwe lengte in en verwijder de hangende pixels
     if lengte == 0:
@@ -92,9 +93,7 @@ while 1:
     mag_plaatsen = False
     i == 0
   i += 1
-  time.sleep(0.01) #we werken met 1 sleep timer, de lus loopt dus om de 0.01 seconden
-
-
+  
 score = lengte
 score_str = str(score) #een moeilijke fout in de app zorgt ervoor dat we eerst een string moeten maken vooraleer we deze showen
 display.show(score_str)
