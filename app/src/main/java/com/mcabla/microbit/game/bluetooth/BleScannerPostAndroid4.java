@@ -46,7 +46,7 @@ public class BleScannerPostAndroid4 extends BleScanner {
     @Override
     public void startScanning(ScanResultsConsumer scan_results_consumer) {
         if (scanning) {
-            Log.d(Constants.TAG,"Already scanning so ignoring startScanning request");
+            //Log.d(Constants.TAG,"Already scanning so ignoring startScanning request");
             return;
         }
         this.scan_results_consumer = scan_results_consumer;
@@ -57,12 +57,12 @@ public class BleScannerPostAndroid4 extends BleScanner {
     @Override
     public void startScanning(final ScanResultsConsumer scan_results_consumer, long stop_after_ms) {
         if (scanning) {
-            Log.d(Constants.TAG, "Already scanning so ignoring startScanning request");
+            //Log.d(Constants.TAG, "Already scanning so ignoring startScanning request");
             return;
         }
         if (scanner == null) {
             scanner = bluetooth_adapter.getBluetoothLeScanner();
-            Log.d(Constants.TAG, "Created BluetoothScanner object");
+            //Log.d(Constants.TAG, "Created BluetoothScanner object");
         }
         handler.postDelayed(new Runnable() {
             @Override

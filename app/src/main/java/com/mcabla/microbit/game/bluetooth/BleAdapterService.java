@@ -183,7 +183,7 @@ public class BleAdapterService extends Service implements Runnable{
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt,
                                           BluetoothGattCharacteristic characteristic, int status) {
-            Log.d(Constants.TAG, "onCharacteristicWrite");
+            //Log.d(Constants.TAG, "onCharacteristicWrite");
             timestamp();
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Bundle bundle = new Bundle();
@@ -503,7 +503,7 @@ public class BleAdapterService extends Service implements Runnable{
         keep_alive.stop();
 
         if (bluetooth_gatt != null) {
-            Log.d(Constants.TAG,"Disconnecting");
+            //Log.d(Constants.TAG,"Disconnecting");
             bluetooth_gatt.disconnect();
         }
     }

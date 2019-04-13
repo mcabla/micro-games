@@ -75,7 +75,7 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
         setContentView(R.layout.activity_menu);
         getSupportActionBar().setTitle(R.string.screen_title_menu);
 
-        Log.d(Constants.TAG, "MenuActivity onCreate");
+        //Log.d(Constants.TAG, "MenuActivity onCreate");
 
         // read intent data
         final Intent intent = getIntent();
@@ -153,7 +153,7 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
                 startActivity(intent);
                 return true;
             } else {
-                Log.d(Constants.TAG,"Services not yet discovered");
+                //Log.d(Constants.TAG,"Services not yet discovered");
             }
         }
         if (id == R.id.menu_menu_services) {
@@ -225,7 +225,7 @@ public class MenuActivity extends AppCompatActivity implements ConnectionStatusL
     }
 
     public void onBackPressed() {
-        Log.d(Constants.TAG, "onBackPressed");
+        //Log.d(Constants.TAG, "onBackPressed");
         if (MicroBit.getInstance().isMicrobit_connected()) {
             try {
                 bluetooth_le_adapter.disconnect();

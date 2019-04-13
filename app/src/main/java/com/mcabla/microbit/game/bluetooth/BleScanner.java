@@ -47,12 +47,12 @@ abstract public class BleScanner {
 
         // check bluetooth is available and on
         if (bluetooth_adapter == null || !bluetooth_adapter.isEnabled()) {
-            Log.d(Constants.TAG, "Bluetooth is NOT switched on");
+            //Log.d(Constants.TAG, "Bluetooth is NOT switched on");
             Intent enableBtIntent = new Intent(	BluetoothAdapter.ACTION_REQUEST_ENABLE);
             enableBtIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(enableBtIntent);
         }
-        Log.d(Constants.TAG, "Bluetooth is switched on");
+        //Log.d(Constants.TAG, "Bluetooth is switched on");
     }
 
     abstract public void startScanning(ScanResultsConsumer scan_results_consumer);

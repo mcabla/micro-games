@@ -40,12 +40,12 @@ public class MainSettingsActivity extends AppCompatActivity {
         cb_fud = this.findViewById(R.id.cb_scan_filter_unpaired);
         cb_fud.setChecked(Settings.getInstance().isFilter_unpaired_devices());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Save");
+        getSupportActionBar().setTitle("Opslaan");
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(Constants.TAG, "MainSettingsActivity onOptionsItemSelected");
+        //Log.d(Constants.TAG, "MainSettingsActivity onOptionsItemSelected");
         switch (item.getItemId()) {
             case android.R.id.home:
                 this.setResult(RESULT_OK);
@@ -57,7 +57,7 @@ public class MainSettingsActivity extends AppCompatActivity {
     }
 
     public void onFilterChange(View view) {
-        Log.d(Constants.TAG,"onFilterChange: "+cb_fud.isChecked());
+        //Log.d(Constants.TAG,"onFilterChange: "+cb_fud.isChecked());
         boolean checked = cb_fud.isChecked();
         Settings settings = Settings.getInstance();
         settings.setFilter_unpaired_devices(checked);

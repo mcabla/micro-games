@@ -56,7 +56,7 @@ public class ServicesPresentActivity extends AppCompatActivity {
     }
 
     private void indicatePresence(TextView tv , boolean present) {
-        Log.d(Constants.TAG, "indicatePresence: "+tv.getText().toString()+" "+present);
+        //Log.d(Constants.TAG, "indicatePresence: "+tv.getText().toString()+" "+present);
         if (present) {
             tv.setTextColor(Color.parseColor(Constants.SERVICE_PRESENT_COLOUR));
         } else {
@@ -66,7 +66,7 @@ public class ServicesPresentActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(Constants.TAG, "ServicesPresentActivity onOptionsItemSelected");
+       // Log.d(Constants.TAG, "ServicesPresentActivity onOptionsItemSelected");
         switch (item.getItemId()) {
             case android.R.id.home:
                 this.setResult(RESULT_OK);

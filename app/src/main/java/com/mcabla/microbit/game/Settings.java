@@ -42,7 +42,7 @@ public class Settings {
     }
 
     public void save(Context context) {
-        Log.d(Constants.TAG,"Saving preferences");
+        //Log.d(Constants.TAG,"Saving preferences");
         SharedPreferences sharedPref = context.getSharedPreferences(SETTINGS_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt(ACCELEROMETER_PERIOD, accelerometer_period);
@@ -53,7 +53,7 @@ public class Settings {
 
 
     public void restore(Context context) {
-        Log.d(Constants.TAG,"Restoring preferences");
+        //Log.d(Constants.TAG,"Restoring preferences");
         SharedPreferences sharedPref = context.getSharedPreferences(SETTINGS_FILE, Context.MODE_PRIVATE);
         accelerometer_period = (short) sharedPref.getInt(ACCELEROMETER_PERIOD,20);
         scrolling_delay = (short)  sharedPref.getInt(SCROLLING_DELAY,500);

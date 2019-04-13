@@ -40,6 +40,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.card.MaterialCardView;
 import com.googlecode.android_scripting.facade.Facades.MicrobitFacade;
 import com.mcabla.microbit.game.Constants;
 import com.mcabla.microbit.game.MicroBit;
@@ -57,6 +58,7 @@ import com.squareup.picasso.Picasso;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
@@ -64,8 +66,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import ibt.ortc.extensibility.*;
 import ibt.ortc.api.*;
 
@@ -83,10 +86,16 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     private EditText input;
     private EditText input2;
     private Button button;
+    private MaterialCardView card;
+    private RecyclerView deviceList;
 
     private int mode = 0;
 
-    private int rondes = 0;
+    private int rondes = 1;
+    private int huidigeRonde = 1;
+    private boolean gestart = false;
+    private GameAsyncTask gameAsyncTask;
+    private boolean einde = false;
 
 
     private OrtcFactory factory;
@@ -98,19 +107,13 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     private ArrayList<String> IDs = new ArrayList<>();
     private ArrayList<String> names = new ArrayList<>();
     private ArrayList<Integer> scores = new ArrayList<>();
-    private ArrayList<Float> tempScores = new ArrayList<>();
+    private ArrayList<Integer> tempScores = new ArrayList<>();
+    private ArrayList<String> winnaars = new ArrayList<>();
 
 
     private BleAdapterService bluetooth_le_adapter;
 
     private boolean exiting=false;
-
-    private boolean notifications_on =false;
-    private long start_time;
-    private int minute_number;
-    private int notification_count;
-    private boolean apply_smoothing=true;
-    private boolean accel_logs=false;
 
     //Buttons
     private int exit_step=0;
@@ -140,16 +143,12 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
-            Log.d(Constants.TAG,"onServiceConnected");
+            //Log.d(Constants.TAG,"onServiceConnected");
 
             //buttons
             b1_notifications_on=false;
             b2_notifications_on=false;
 
-            notifications_on=false;
-            start_time = System.currentTimeMillis();
-            minute_number=1;
-            notification_count=0;
             bluetooth_le_adapter = ((BleAdapterService.LocalBinder) service).getService();
             bluetooth_le_adapter.setActivityHandler(mMessageHandler);
             bluetooth_le_adapter.setNotificationsState(
@@ -176,6 +175,8 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         actionBar.setTitle(R.string.screen_title_game);
         actionBar.setElevation(0);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         constraintLayout = findViewById(R.id.constraintLayout);
 
         image = findViewById(R.id.image);
@@ -184,9 +185,14 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         input = findViewById(R.id.input);
         input2 = findViewById(R.id.input2);
         button = findViewById(R.id.button);
+        card = findViewById(R.id.card);
+        deviceList = findViewById(R.id.deviceList);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        deviceList.setLayoutManager(layoutManager);
 
 
-
+        gameAsyncTask = new GameAsyncTask(this);
 
         exiting = false;
 
@@ -203,16 +209,12 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             setText("Deelnemen aan een groep","Vul hieronder het groepsnummer in waaraan je wilt deelnemen.");
             input.setHint("Groepsnummer");
             button.setText("Deelnemen");
-        }
-        else {
+        } else {
             button.setBackgroundColor(getResources().getColor(R.color.colorAccent));
             if(mode == MODE_MAKE){
                 setText("Een groep maken",  "Vul hieronder het aantal rondes in dat je wilt spelen.");
                 input.setHint("Aantal rondes");
                 button.setText("Maak");
-            } else {
-                setText("Deelnemen aan een groep","Vul hieronder het groepsnummer in waaraan je wilt deelnemen.");
-                input2.setVisibility(View.GONE);
             }
         }
 
@@ -231,21 +233,33 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             finish();
         }
         if(mode == MODE_MAKE) {
-            IDs.add(mID);
-            names.add("maker");
-            scores.add(0);
             subscribeToChannel(String.valueOf(ThreadLocalRandom.current().nextInt(1000, 999999)));
             setText("Een groep maken", "Vul hieronder het aantal rondes in dat je wilt spelen.");
+            button.setVisibility(View.GONE);
             new Handler ().postDelayed(new Runnable() {
 
                 @Override
                 public void run() {
                     setText("Een groep maken", "Vul hieronder het aantal rondes in dat je wilt spelen. Jouw groepsnummer is: " + mChannel);
+                    button.setVisibility(View.VISIBLE);
                 }
-            }, 5000);
+            }, 7000);
         } else if(mode == MODE_DEV) {
-            setText("Ontwikkelaarsmodus", "Vul hieronder het ID in van het spel dat je wilt spelen.");
-            input.setHint("ID");
+            setText("Oefenmodus", "Selecteer het spel dat je wilt oefenen.");
+            input2.setVisibility(View.GONE);
+            input.setVisibility(View.GONE);
+            button.setVisibility(View.GONE);
+            card.setVisibility(View.VISIBLE);
+            deviceList.setVisibility(View.VISIBLE);
+            try {
+                names = gameAsyncTask.getGameTitles();
+                scores = gameAsyncTask.getGameIds();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            deviceList.setAdapter(new GameAdapter(names,scores, true,GameActivity.this));
         }
 
 
@@ -253,7 +267,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
     private  void subscribeToChannel(final String channel){
         mChannel = channel;
-        Log.d(Constants.TAG,mChannel);
+        //Log.d(Constants.TAG,mChannel);
 
         client.onConnected = new OnConnected() {
             @Override
@@ -265,59 +279,164 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                     // This function is the message handler
                     // It will be invoked for each message received in myChannel
                     public void run(OrtcClient sender, String channel, String message) {
-                        if (scores != null)
-                            for(int i = 0; i < IDs.size(); i++)
-                            {
-                                System.out.println("SCORES: "+IDs.get(i) + ";"+names.get(i) + ";"+scores.get(i));
-                            }
-
                         // Received a message
-                        String[] data = message.split(";");
+                        final String[] data = message.split(";");
                         Log.d(Constants.TAG,"RECIEVED: 0="+data[0] );
-                        Log.d(Constants.TAG,"RECIEVED: 1="+data[1] );
-                        Log.d(Constants.TAG,"RECIEVED: 2="+data[2] );
-                        if (mode == MODE_MAKE){
-                            if (Objects.equals(data[0], "ADD") && !Objects.equals(data[1], mID)){
+                        try {
+                            Log.d(Constants.TAG,"RECIEVED: 1="+data[1] );
+                            Log.d(Constants.TAG,"RECIEVED: 2="+data[2] );
+                        } catch ( ArrayIndexOutOfBoundsException ignored){}
+
+
+                        if (Objects.equals(data[0], "STATUSNAMES")){
+                            IDs = new ArrayList(Arrays.asList(data[1].split("\\|")));
+                            names = new ArrayList(Arrays.asList(data[2].split("\\|")));
+                            scores = new ArrayList<>();
+                            for(int i = 0; i < IDs.size(); i++)
+                                scores.add(i, 0);
+
+                            runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    //System.out.println(IDs);
+                                    //System.out.println(names);
+                                    GameAdapter mAdapter = new GameAdapter(names,scores,false,GameActivity.this);
+                                    deviceList.setAdapter(mAdapter);
+                                    card.setVisibility(View.VISIBLE);
+                                }
+                            });
+                        } else if (Objects.equals(data[0], "STATUSSCORES")){
+                            scores = new ArrayList(Arrays.asList(data[2].split("\\|")));
+                            runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    GameAdapter mAdapter = new GameAdapter(names,scores, false,GameActivity.this);
+                                    deviceList.setAdapter(mAdapter);
+                                    card.setVisibility(View.VISIBLE);
+                                }
+                            });
+                        } else if (Objects.equals(data[0], "START")){
+                            runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    startScript(Integer.valueOf(data[1]));
+                                }
+                            });
+                        } else if (Objects.equals(data[0], "END")){
+                            runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    einde = true;
+                                    winnaars = new ArrayList(Arrays.asList(data[1].split("\\|")));
+                                    StringBuilder winnaarsnamen = new StringBuilder();
+                                    for(int i = 0; i < winnaars.size(); i++)
+                                    {
+                                        if (i != 0){
+                                            if (i == winnaars.size() - 1) winnaarsnamen.append(" en");
+                                            else winnaarsnamen.append(",");
+                                        }
+                                        winnaarsnamen.append(" ").append(winnaars.get(i));
+                                    }
+                                    setText("Einde", "Proficiat" + winnaarsnamen.toString() + "!");
+                                    button.setText("Sluiten");
+                                    button.setVisibility(View.VISIBLE);
+                                    image.setImageDrawable(getDrawable(R.mipmap.ic_launcher));
+                                    setBackgroundColor("#006E65");
+                                }
+                            });
+                        } else if (mode == MODE_MAKE){
+                            if (Objects.equals(data[0], "ADD") && !Objects.equals(data[1], mID) && !gestart){
                                 if (!IDs.contains(data[1])){
                                     IDs.add(data[1]);
                                     names.add(data[2]);
                                     scores.add(0);
-                                    Log.d(Constants.TAG,"ADDED: "+data[1]+" "+ data[2] + " 0");
+                                    //Log.d(Constants.TAG,"ADDED: "+data[1]+" "+ data[2] + " 0");
 
                                 } else {
                                     names.set(IDs.indexOf(data[1]),data[2]);
-                                    Log.d(Constants.TAG,"MODIFIED: "+data[1]+" "+ data[2] + " 0");
+                                    //Log.d(Constants.TAG,"MODIFIED: "+data[1]+" "+ data[2] + " 0");
                                 }
                                 sendToChannel("STATUSNAMES",
                                         TextUtils.join("|", IDs),
                                         TextUtils.join("|", names));
 
-                            } else if (data[0] == "SET"){
+                            } else if (Objects.equals(data[0], "SET")){
 
-                                tempScores.set(IDs.indexOf(data[1]), Float.valueOf(data[2]));
+                                tempScores.set(IDs.indexOf(data[1]),Math.round(Float.valueOf(data[2])*1000));
 
-                                if (!tempScores.contains((float) -1.00)) {
-                                    System.out.println(scores);
-                                    for(int i = 0; i < IDs.size(); i++)
-                                    {
-                                        System.out.println("SCORES: "+IDs.get(i) + ";"+names.get(i) + ";"+scores.get(i));
+                                if (!tempScores.contains(-1)) {
+
+                                    Integer max = Collections.max(tempScores);
+                                    for (int i = 0; i < tempScores.size(); i++) {
+
+                                        if (Objects.equals(tempScores.get(i), max)){
+                                            scores.set(i,Integer.parseInt(String.valueOf(scores.get(i)))+1);
+                                        }
                                     }
-                                    System.out.println(scores);
+
                                     sendToChannel("STATUSSCORES",
                                             TextUtils.join("|", IDs),
                                             TextUtils.join("|", scores));
-                                }
 
+
+                                    if (huidigeRonde == rondes){
+                                        Integer max2 =  0;
+                                        for (int i = 0; i < scores.size(); i++) {
+                                            Integer tempInt = Integer.parseInt(String.valueOf(scores.get(i)));
+                                            if (tempInt > max2) max2 = tempInt;
+                                        }
+                                        System.out.println("MAX: " + String.valueOf(max2));
+                                        for (int i = 0; i < scores.size(); i++) {
+
+                                            Log.d(Constants.TAG,names.get(i) +" heeft " + String.valueOf(scores.get(i)));
+                                            // accessing each element of array
+                                            if (Integer.parseInt(String.valueOf(scores.get(i))) == max2){
+                                                Log.d(Constants.TAG, "is gewonnen!");
+                                                winnaars.add(names.get(i));
+                                            }
+                                        }
+                                        sendToChannel("END",
+                                                TextUtils.join("|", winnaars),
+                                                "");
+                                    } else {
+                                        huidigeRonde++;
+
+                                        runOnUiThread(new Runnable() {
+
+                                            @Override
+                                            public void run() {
+
+                                                new Handler().postDelayed(new Runnable() {
+
+                                                    @Override
+                                                    public void run() {
+
+                                                        tempScores = new ArrayList<>();
+                                                        for (int i = 0; i < IDs.size(); i++) {
+                                                            tempScores.add(i, -1);
+                                                        }
+
+                                                        try {
+                                                            sendToChannel("START",
+                                                                    String.valueOf(gameAsyncTask.getRandomId()),
+                                                                    "");
+                                                        } catch (ExecutionException | InterruptedException e) {
+                                                            e.printStackTrace();
+                                                            sendToChannel("START",
+                                                                    "1",
+                                                                    "");
+                                                        }
+                                                    }
+                                                }, 5000);
+                                            }
+                                        });
+                                    }
+                                }
                             }
-                        } else if (data[0] == "STATUSNAMES"){
-                            IDs = new ArrayList(Arrays.asList(data[1].split("|")));
-                            names = new ArrayList(Arrays.asList(data[2].split("|")));
-                            for(int i = 0; i < IDs.size(); i++)
-                            {
-                                scores.add(i,-1);
-                            }
-                        } else if (data[0] == "STATUSSCORES"){
-                            scores = new ArrayList(Arrays.asList(data[2].split("|")));
                         }
                     }
                 });
@@ -346,7 +465,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     }
 
     public void onBackPressed() {
-        Log.d(Constants.TAG, "onBackPressed");
+        //Log.d(Constants.TAG, "onBackPressed");
         shutdownSteps();
     }
 
@@ -357,13 +476,13 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             switch (exit_step) {
                 case 1:
                     if (b1_notifications_on) {
-                        Log.d(Constants.TAG, "Disabling Button 1 State notifications");
+                        //Log.d(Constants.TAG, "Disabling Button 1 State notifications");
                         bluetooth_le_adapter.setNotificationsState(Utility.normaliseUUID(BleAdapterService.BUTTONSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.BUTTON1STATE_CHARACTERISTIC_UUID), false);
                     }
                     break;
                 case 2:
                     if (b2_notifications_on) {
-                        Log.d(Constants.TAG, "Disabling Button 2 State notifications");
+                        //Log.d(Constants.TAG, "Disabling Button 2 State notifications");
                         bluetooth_le_adapter.setNotificationsState(Utility.normaliseUUID(BleAdapterService.BUTTONSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.BUTTON2STATE_CHARACTERISTIC_UUID), false);
                     }
                     break;
@@ -409,7 +528,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(Constants.TAG, "onActivityResult");
+        //Log.d(Constants.TAG, "onActivityResult");
     }
 
     @SuppressLint("HandlerLeak")
@@ -433,7 +552,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                     characteristic_uuid = bundle.getString(BleAdapterService.PARCEL_CHARACTERISTIC_UUID);
                     b = bundle.getByteArray(BleAdapterService.PARCEL_VALUE);
                     //Log.d(Constants.TAG, "characteristic " + characteristic_uuid + " of service " + service_uuid + " read OK");
-                    Log.d(Constants.TAG, "Value=" + Utility.byteArrayAsHexString(b));
+                    //Log.d(Constants.TAG, "Value=" + Utility.byteArrayAsHexString(b));
                     if (characteristic_uuid.equalsIgnoreCase(Utility.normaliseUUID(BleAdapterService.LEDMATRIXSTATE_CHARACTERISTIC_UUID))) {
                         if (b.length > 4) {
                             led_matrix_state = b;
@@ -469,8 +588,6 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                     b = bundle.getByteArray(BleAdapterService.PARCEL_VALUE);
                     //Log.d(Constants.TAG, "descriptor " + descriptor_uuid + " of characteristic " + characteristic_uuid + " of service " + service_uuid + " written OK");
                     if (!exiting) {
-                        notifications_on=true;
-                        start_time = System.currentTimeMillis();
                         if (characteristic_uuid.equalsIgnoreCase(Utility.normaliseUUID(BleAdapterService.BUTTON1STATE_CHARACTERISTIC_UUID))) {
                             b1_notifications_on = true;
                             //Log.d(Constants.TAG, "Enabling Button 2 State notifications");
@@ -487,7 +604,6 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                             b2_notifications_on = false;
                             shutdownSteps();
                         }
-                        notifications_on=false;
                         finish();
                     }
                     break;
@@ -584,22 +700,46 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             Log.d(Constants.TAG, "onRunScript with id: " + number);
             startScript(number);
         } else {
-            input.setVisibility(View.GONE);
-            input2.setVisibility(View.GONE);
             button.setVisibility(View.GONE);
-            mName = input2.getText().toString();
-            if (mode == MODE_JOIN) {
-                subscribeToChannel(input.getText().toString());
-            } else {
-                names.set(0,mName);
-                sendToChannel("STATUSNAMES",
-                        TextUtils.join("|", IDs),
-                        TextUtils.join("|", names));
+            if (einde) finish();
+            else {
+                gestart = true;
+                input.setVisibility(View.GONE);
+                input2.setVisibility(View.GONE);
+                mName = input2.getText().toString();
+                if (mode == MODE_JOIN) {
+                    subscribeToChannel(input.getText().toString());
+                } else {
+                    IDs.add(0, mID);
+                    names.add(0, mName);
+                    scores.add(0, 0);
+                    rondes = Integer.valueOf(input.getText().toString());
+                    sendToChannel("STATUSNAMES",
+                            TextUtils.join("|", IDs),
+                            TextUtils.join("|", names));
+
+                    tempScores = new ArrayList<>();
+                    for (int i = 0; i < IDs.size(); i++) {
+                        tempScores.add(i, -1);
+                    }
+
+                    try {
+                        sendToChannel("START",
+                                String.valueOf(gameAsyncTask.getRandomId()),
+                                "");
+                    } catch (ExecutionException | InterruptedException e) {
+                        e.printStackTrace();
+                        sendToChannel("START",
+                                "1",
+                                "");
+                    }
+                }
             }
         }
     }
 
-    private void startScript(int id){
+    public void startScript(int id){
+        Log.d(Constants.TAG, "STARTING SCRIPT " + String.valueOf(id));
         boolean installNeeded = Utility.isInstallNeeded(this);
 
         if(installNeeded) {
@@ -650,17 +790,11 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
     }
 
     private void runScriptService(int id) {
-        tempScores = new ArrayList<>();
-        for(int i = 0; i < IDs.size(); i++)
-        {
-            tempScores.add(i, (float) -1.00);
-        }
-
         Intent intent = new Intent(this, ScriptService.class);
         intent.putExtra("id",id);
 
         try {
-            GameModel gameModel = new GameAsyncTask(this).getGame(id);
+            GameModel gameModel = gameAsyncTask.getGame(id);
             setBackgroundColor(gameModel.getColor());
             setText(gameModel.getName(),gameModel.getDescription());
             Picasso.get()
@@ -720,14 +854,6 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         }
 
         bluetooth_le_adapter.writeCharacteristic(Utility.normaliseUUID(BleAdapterService.LEDSERVICE_SERVICE_UUID), Utility.normaliseUUID(BleAdapterService.LEDMATRIXSTATE_CHARACTERISTIC_UUID), led_matrix_state);
-    }
-
-    public int getPixel(int x, int y){
-        if (led_matrix_state != null){
-            Log.d(Constants.TAG,"GET PIXEL: x:"+String.valueOf(x)+" y:"+String.valueOf(y)+" z:"+String.valueOf(leds[y][x]));
-            return leds[y][x];
-        }
-        return 0;
     }
 
     public void sendImage(String img){
@@ -794,6 +920,14 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
     }
 
+    public int getPixel(int x, int y){
+        if (led_matrix_state != null){
+            //Log.d(Constants.TAG,"GET PIXEL: x:"+String.valueOf(x)+" y:"+String.valueOf(y)+" z:"+String.valueOf(leds[y][x]));
+            return leds[y][x];
+        }
+        return 0;
+    }
+
     /*-------------------BUTTONS-------------------*/
     public int getPresses(int button) {
         if (button == 1){
@@ -825,7 +959,6 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         }
         return false;
     }
-
 
     /*---------------------MISC--------------------*/
     public void sendScore(String score) {

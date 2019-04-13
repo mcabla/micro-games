@@ -57,7 +57,7 @@ public class BleScannerAndroid4 extends BleScanner {
     @Override
     public void startScanning(ScanResultsConsumer scan_results_consumer) {
         if (scanning) {
-            Log.d(Constants.TAG,"Already scanning so ignoring startScanning request");
+            //Log.d(Constants.TAG,"Already scanning so ignoring startScanning request");
             return;
         }
         this.scan_results_consumer = scan_results_consumer;
@@ -67,7 +67,7 @@ public class BleScannerAndroid4 extends BleScanner {
 
     public void startScanning(final ScanResultsConsumer scan_results_consumer, long stop_after_ms) {
         if (scanning) {
-            Log.d(Constants.TAG,"Already scanning so ignoring startScanning request");
+            //Log.d(Constants.TAG,"Already scanning so ignoring startScanning request");
             return;
         }
         handler.postDelayed(new Runnable() {

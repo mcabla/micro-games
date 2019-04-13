@@ -21,7 +21,7 @@
     <string name="app_name">micro:games</string>
     <string name="menu_settings">Instellingen</string>
     <string name="menu_help">Help</string>
-    <string name="menu_dev">Ontwikkelaar</string>
+    <string name="menu_dev">Oefenmodus</string>
     <string name="menu_about">Over</string>
     <string name="menu_profile">Bluetooth Profiel</string>
     <string name="menu_services">Bluetooth Services</string>
@@ -47,7 +47,7 @@
 
     <string name="accelerometer_period">Accelerometer Periode</string>
     <string name="display_text">Toon tekst</string>
-    <string name="bluetooth_scanning">Bluetooth Scanning</string>
+    <string name="bluetooth_scanning">Bluetooth Scannen</string>
     <string name="scan_filter_unpaired">Filter onaangekoppelde micro:bits van de scan resultaten?</string>
     <string name="bluetooth_services">Bluetooth Services op de micro:bit</string>
     <string name="services_key">Legende</string>

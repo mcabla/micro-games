@@ -185,14 +185,14 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(Constants.TAG, "onActivityResult");
+        //Log.d(Constants.TAG, "onActivityResult");
         if (requestCode == MainSettingsActivity.START_MAIN_SETTINGS) {
             if (resultCode == RESULT_OK) {
-                Log.d(Constants.TAG, "onActivityResult RESULT_OK");
+                //Log.d(Constants.TAG, "onActivityResult RESULT_OK");
                 setButtonText();
                 showMsg(Utility.htmlColorGreen("Ready"));
             } else {
-                Log.d(Constants.TAG, "onActivityResult NOT RESULT_OK");
+                //Log.d(Constants.TAG, "onActivityResult NOT RESULT_OK");
             }
         }
     }
@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
                     permissions_granted = false;
                     requestLocationPermission();
                 } else {
-                    Log.i(Constants.TAG, "Location permission has already been granted. Starting scanning.");
+                    //Log.i(Constants.TAG, "Location permission has already been granted. Starting scanning.");
                     permissions_granted = true;
                 }
             } else {
@@ -221,7 +221,6 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
         }
     }
 
-    //TODO: refactor this
     public class InstallAsyncTask extends AsyncTask<Void, Integer, Boolean> {
         @Override
         protected void onPreExecute() {
@@ -233,7 +232,6 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
 
             Utility.copyResourcesToLocal(getBaseContext());
 
-            // TODO
             return true;
         }
 
@@ -276,16 +274,16 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
     }
 
     private void requestLocationPermission() {
-        Log.i(Constants.TAG, "Location permission has NOT yet been granted. Requesting permission.");
+        //Log.i(Constants.TAG, "Location permission has NOT yet been granted. Requesting permission.");
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)){
-            Log.i(Constants.TAG, "Displaying location permission rationale to provide additional context.");
+            //Log.i(Constants.TAG, "Displaying location permission rationale to provide additional context.");
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Permission Required");
-            builder.setMessage("Please grant Location access so this application can perform Bluetooth scanning");
+            builder.setTitle("Machtiging vereist");
+            builder.setMessage("Gelieve deze applicatie toegang te geven tot jouw locatie zodat we naar Bluethoot apparaten kunnen scannen.");
             builder.setPositiveButton(android.R.string.ok, null);
             builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 public void onDismiss(DialogInterface dialog) {
-                    Log.d(Constants.TAG, "Requesting permissions after explanation");
+                    //Log.d(Constants.TAG, "Requesting permissions after explanation");
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION);
                 }
             });
@@ -298,17 +296,17 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_LOCATION) {
-            Log.i(Constants.TAG, "Received response for location permission request.");
+            //Log.i(Constants.TAG, "Received response for location permission request.");
             // Check if the only required permission has been granted
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Location permission has been granted
-                Log.i(Constants.TAG, "Location permission has now been granted. Scanning.....");
+                //Log.i(Constants.TAG, "Location permission has now been granted. Scanning.....");
                 permissions_granted = true;
                 if (ble_scanner.isScanning()) {
                     startScanning();
                 }
             }else{
-                Log.i(Constants.TAG, "Location permission was NOT granted.");
+                //Log.i(Constants.TAG, "Location permission was NOT granted.");
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -350,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
     public void scanningStopped() {
         setScanState(false);
         if (device_count > 0) {
-            showMsg(Utility.htmlColorGreen("Ready"));
+            showMsg(Utility.htmlColorGreen("Klaar"));
         } else {
             showMsg(Utility.htmlColorRed(getNoneFoundMessage()));
         }
@@ -448,7 +446,7 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
         };
 
     private void showMsg(final String msg) {
-        Log.d(Constants.TAG, msg);
+        //Log.d(Constants.TAG, msg);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

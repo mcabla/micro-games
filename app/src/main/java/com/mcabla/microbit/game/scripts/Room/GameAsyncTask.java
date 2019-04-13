@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class GameAsyncTask {
@@ -31,6 +33,56 @@ public class GameAsyncTask {
 
         @Override
         protected void onPostExecute(Integer result){
+            super.onPostExecute(result);
+        }
+    }
+
+
+
+
+
+    public ArrayList<String> getGameTitles() throws ExecutionException, InterruptedException {
+        return new ArrayList<>(new getGameTitlesAsyncTask(appDatabase).execute().get());
+    }
+
+    private static class getGameTitlesAsyncTask extends AsyncTask<Void, Void, List<String>>{
+        private AppDatabase db;
+
+        getGameTitlesAsyncTask(AppDatabase appDatabase){
+            db = appDatabase;
+        }
+
+        @Override
+        protected List<String> doInBackground(Void... voids) {
+            return db.gameModel().getGameTitles();
+        }
+
+        @Override
+        protected void onPostExecute(List<String> result){
+            super.onPostExecute(result);
+        }
+    }
+
+
+
+    public ArrayList<Integer> getGameIds() throws ExecutionException, InterruptedException {
+        return new ArrayList<>(new getGameIdsAsyncTask(appDatabase).execute().get());
+    }
+
+    private static class getGameIdsAsyncTask extends AsyncTask<Void, Void, List<Integer>>{
+        private AppDatabase db;
+
+        getGameIdsAsyncTask(AppDatabase appDatabase){
+            db = appDatabase;
+        }
+
+        @Override
+        protected List<Integer> doInBackground(Void... voids) {
+            return db.gameModel().getGameIds();
+        }
+
+        @Override
+        protected void onPostExecute(List<Integer> result){
             super.onPostExecute(result);
         }
     }
