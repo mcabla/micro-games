@@ -31,5 +31,5 @@ if keuze==x:
     time.sleep(3)
     score = 1
 else:
-    display.scroll("Nope")
+    display.scroll("Fout")
     time.sleep(2)
