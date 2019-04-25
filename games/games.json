@@ -24,7 +24,7 @@
       "file": "coinflip.py",
       "description":"Kop of munt.",
       "icon":"coin.png",
-      "color":"#e0bf04",
+      "color":"#bc8000",
       "max_spelers": 0
     },
     {
@@ -68,8 +68,8 @@
       "name": "Kermis",
       "file": "kermis.py",
       "description":"Beschrijving toevoegen!",
-      "icon":"test.png",
-      "color":"#000000",
+      "icon":"kermis.png",
+      "color":"#0a4c75",
       "max_spelers": 0
     }
   ],

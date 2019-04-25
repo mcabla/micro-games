@@ -103,7 +103,7 @@ def speler():
             k += 1
           
     
-    elif button_a.was_pressed():
+    elif button_a.was_pressed() or button_b.was_pressed():
         spring()
         aan_het_springen = True
         k = 0
@@ -154,6 +154,7 @@ display.clear()
 
 start()
 button_a.was_pressed()
+button_b.was_pressed()
 
 
 while gewenning:
@@ -171,8 +172,8 @@ while in_leven:
         if j % 20 == 0:
             versnelling += 1
         
-        if j >= 400:
-            versnelling -=1
+            if j >= 400:
+                versnelling -=1
           
         i = versnelling
         
