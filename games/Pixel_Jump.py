@@ -103,7 +103,7 @@ def speler():
             k += 1
           
     
-    elif button_a.was_pressed():
+    elif button_a.was_pressed() or button_b.was_pressed():
         spring()
         aan_het_springen = True
         k = 0
