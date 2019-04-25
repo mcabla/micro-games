@@ -267,183 +267,202 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
 
     private  void subscribeToChannel(final String channel){
         mChannel = channel;
-        //Log.d(Constants.TAG,mChannel);
+        Log.d(Constants.TAG,mChannel);
 
         client.onConnected = new OnConnected() {
             @Override
             public void run(final OrtcClient sender) {
                 // Messaging client connected
+                runOnUiThread(new Runnable() {
 
-                // Now subscribe the channel
-                client.subscribe(channel, true, new OnMessage() {
-                    // This function is the message handler
-                    // It will be invoked for each message received in myChannel
-                    public void run(OrtcClient sender, String channel, String message) {
-                        // Received a message
-                        final String[] data = message.split(";");
-                        Log.d(Constants.TAG,"RECIEVED: 0="+data[0] );
-                        try {
-                            Log.d(Constants.TAG,"RECIEVED: 1="+data[1] );
-                            Log.d(Constants.TAG,"RECIEVED: 2="+data[2] );
-                        } catch ( ArrayIndexOutOfBoundsException ignored){}
+                    @Override
+                    public void run() {
 
+                        Log.d(Constants.TAG, "Connected 1");
 
-                        if (Objects.equals(data[0], "STATUSNAMES")){
-                            IDs = new ArrayList(Arrays.asList(data[1].split("\\|")));
-                            names = new ArrayList(Arrays.asList(data[2].split("\\|")));
-                            scores = new ArrayList<>();
-                            for(int i = 0; i < IDs.size(); i++)
-                                scores.add(i, 0);
-
-                            runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    //System.out.println(IDs);
-                                    //System.out.println(names);
-                                    GameAdapter mAdapter = new GameAdapter(names,scores,false,GameActivity.this);
-                                    deviceList.setAdapter(mAdapter);
-                                    card.setVisibility(View.VISIBLE);
+                        // Now subscribe the channel
+                        client.subscribe(channel, true, new OnMessage() {
+                            // This function is the message handler
+                            // It will be invoked for each message received in myChannel
+                            public void run(OrtcClient sender, String channel, String message) {
+                                // Received a message
+                                final String[] data = message.split(";");
+                                Log.d(Constants.TAG, "RECIEVED: 0=" + data[0]);
+                                try {
+                                    Log.d(Constants.TAG, "RECIEVED: 1=" + data[1]);
+                                    Log.d(Constants.TAG, "RECIEVED: 2=" + data[2]);
+                                } catch (ArrayIndexOutOfBoundsException ignored) {
                                 }
-                            });
-                        } else if (Objects.equals(data[0], "STATUSSCORES")){
-                            scores = new ArrayList(Arrays.asList(data[2].split("\\|")));
-                            runOnUiThread(new Runnable() {
 
-                                @Override
-                                public void run() {
-                                    GameAdapter mAdapter = new GameAdapter(names,scores, false,GameActivity.this);
-                                    deviceList.setAdapter(mAdapter);
-                                    card.setVisibility(View.VISIBLE);
-                                }
-                            });
-                        } else if (Objects.equals(data[0], "START")){
-                            runOnUiThread(new Runnable() {
 
-                                @Override
-                                public void run() {
-                                    startScript(Integer.valueOf(data[1]));
-                                }
-                            });
-                        } else if (Objects.equals(data[0], "END")){
-                            runOnUiThread(new Runnable() {
+                                if (Objects.equals(data[0], "STATUSNAMES")) {
+                                    IDs = new ArrayList(Arrays.asList(data[1].split("\\|")));
+                                    names = new ArrayList(Arrays.asList(data[2].split("\\|")));
+                                    scores = new ArrayList<>();
+                                    for (int i = 0; i < IDs.size(); i++)
+                                        scores.add(i, 0);
 
-                                @Override
-                                public void run() {
-                                    einde = true;
-                                    winnaars = new ArrayList(Arrays.asList(data[1].split("\\|")));
-                                    StringBuilder winnaarsnamen = new StringBuilder();
-                                    for(int i = 0; i < winnaars.size(); i++)
-                                    {
-                                        if (i != 0){
-                                            if (i == winnaars.size() - 1) winnaarsnamen.append(" en");
-                                            else winnaarsnamen.append(",");
+                                    runOnUiThread(new Runnable() {
+
+                                        @Override
+                                        public void run() {
+                                            //System.out.println(IDs);
+                                            //System.out.println(names);
+                                            GameAdapter mAdapter = new GameAdapter(names, scores, false, GameActivity.this);
+                                            deviceList.setAdapter(mAdapter);
+                                            card.setVisibility(View.VISIBLE);
                                         }
-                                        winnaarsnamen.append(" ").append(winnaars.get(i));
-                                    }
-                                    setText("Einde", "Proficiat" + winnaarsnamen.toString() + "!");
-                                    button.setText("Sluiten");
-                                    button.setVisibility(View.VISIBLE);
-                                    image.setImageDrawable(getDrawable(R.mipmap.ic_launcher));
-                                    setBackgroundColor("#006E65");
-                                }
-                            });
-                        } else if (mode == MODE_MAKE){
-                            if (Objects.equals(data[0], "ADD") && !Objects.equals(data[1], mID) && !gestart){
-                                if (!IDs.contains(data[1])){
-                                    IDs.add(data[1]);
-                                    names.add(data[2]);
-                                    scores.add(0);
-                                    //Log.d(Constants.TAG,"ADDED: "+data[1]+" "+ data[2] + " 0");
+                                    });
+                                } else if (Objects.equals(data[0], "STATUSSCORES")) {
+                                    scores = new ArrayList(Arrays.asList(data[2].split("\\|")));
+                                    runOnUiThread(new Runnable() {
 
-                                } else {
-                                    names.set(IDs.indexOf(data[1]),data[2]);
-                                    //Log.d(Constants.TAG,"MODIFIED: "+data[1]+" "+ data[2] + " 0");
-                                }
-                                sendToChannel("STATUSNAMES",
-                                        TextUtils.join("|", IDs),
-                                        TextUtils.join("|", names));
-
-                            } else if (Objects.equals(data[0], "SET")){
-
-                                tempScores.set(IDs.indexOf(data[1]),Math.round(Float.valueOf(data[2])*1000));
-
-                                if (!tempScores.contains(-1)) {
-
-                                    Integer max = Collections.max(tempScores);
-                                    for (int i = 0; i < tempScores.size(); i++) {
-
-                                        if (Objects.equals(tempScores.get(i), max)){
-                                            scores.set(i,Integer.parseInt(String.valueOf(scores.get(i)))+1);
+                                        @Override
+                                        public void run() {
+                                            GameAdapter mAdapter = new GameAdapter(names, scores, false, GameActivity.this);
+                                            deviceList.setAdapter(mAdapter);
+                                            card.setVisibility(View.VISIBLE);
                                         }
-                                    }
+                                    });
+                                } else if (Objects.equals(data[0], "START")) {
+                                    runOnUiThread(new Runnable() {
 
-                                    sendToChannel("STATUSSCORES",
-                                            TextUtils.join("|", IDs),
-                                            TextUtils.join("|", scores));
-
-
-                                    if (huidigeRonde == rondes){
-                                        Integer max2 =  0;
-                                        for (int i = 0; i < scores.size(); i++) {
-                                            Integer tempInt = Integer.parseInt(String.valueOf(scores.get(i)));
-                                            if (tempInt > max2) max2 = tempInt;
+                                        @Override
+                                        public void run() {
+                                            startScript(Integer.valueOf(data[1]));
                                         }
-                                        System.out.println("MAX: " + String.valueOf(max2));
-                                        for (int i = 0; i < scores.size(); i++) {
+                                    });
+                                } else if (Objects.equals(data[0], "END")) {
+                                    runOnUiThread(new Runnable() {
 
-                                            Log.d(Constants.TAG,names.get(i) +" heeft " + String.valueOf(scores.get(i)));
-                                            // accessing each element of array
-                                            if (Integer.parseInt(String.valueOf(scores.get(i))) == max2){
-                                                Log.d(Constants.TAG, "is gewonnen!");
-                                                winnaars.add(names.get(i));
+                                        @Override
+                                        public void run() {
+                                            einde = true;
+                                            winnaars = new ArrayList(Arrays.asList(data[1].split("\\|")));
+                                            StringBuilder winnaarsnamen = new StringBuilder();
+                                            for (int i = 0; i < winnaars.size(); i++) {
+                                                if (i != 0) {
+                                                    if (i == winnaars.size() - 1)
+                                                        winnaarsnamen.append(" en");
+                                                    else winnaarsnamen.append(",");
+                                                }
+                                                winnaarsnamen.append(" ").append(winnaars.get(i));
                                             }
+                                            setText("Einde", "Proficiat" + winnaarsnamen.toString() + "!");
+                                            button.setText("Sluiten");
+                                            button.setVisibility(View.VISIBLE);
+                                            image.setImageDrawable(getDrawable(R.mipmap.ic_launcher));
+                                            setBackgroundColor("#006E65");
                                         }
-                                        sendToChannel("END",
-                                                TextUtils.join("|", winnaars),
-                                                "");
-                                    } else {
-                                        huidigeRonde++;
+                                    });
+                                } else if (mode == MODE_MAKE) {
+                                    if (Objects.equals(data[0], "ADD") && !Objects.equals(data[1], mID) && !gestart) {
+                                        if (!IDs.contains(data[1])) {
+                                            IDs.add(data[1]);
+                                            names.add(data[2]);
+                                            scores.add(0);
+                                            //Log.d(Constants.TAG,"ADDED: "+data[1]+" "+ data[2] + " 0");
 
-                                        runOnUiThread(new Runnable() {
+                                        } else {
+                                            names.set(IDs.indexOf(data[1]), data[2]);
+                                            //Log.d(Constants.TAG,"MODIFIED: "+data[1]+" "+ data[2] + " 0");
+                                        }
+                                        sendToChannel("STATUSNAMES",
+                                                TextUtils.join("|", IDs),
+                                                TextUtils.join("|", names));
 
-                                            @Override
-                                            public void run() {
+                                    } else if (Objects.equals(data[0], "SET")) {
 
-                                                new Handler().postDelayed(new Runnable() {
+                                        tempScores.set(IDs.indexOf(data[1]), Math.round(Float.valueOf(data[2]) * 1000));
+
+                                        if (!tempScores.contains(-1)) {
+
+                                            Integer max = Collections.max(tempScores);
+                                            for (int i = 0; i < tempScores.size(); i++) {
+
+                                                if (Objects.equals(tempScores.get(i), max)) {
+                                                    scores.set(i, Integer.parseInt(String.valueOf(scores.get(i))) + 1);
+                                                }
+                                            }
+
+                                            sendToChannel("STATUSSCORES",
+                                                    TextUtils.join("|", IDs),
+                                                    TextUtils.join("|", scores));
+
+
+                                            if (huidigeRonde == rondes) {
+                                                Integer max2 = 0;
+                                                for (int i = 0; i < scores.size(); i++) {
+                                                    Integer tempInt = Integer.parseInt(String.valueOf(scores.get(i)));
+                                                    if (tempInt > max2) max2 = tempInt;
+                                                }
+                                                System.out.println("MAX: " + String.valueOf(max2));
+                                                for (int i = 0; i < scores.size(); i++) {
+
+                                                    Log.d(Constants.TAG, names.get(i) + " heeft " + String.valueOf(scores.get(i)));
+                                                    // accessing each element of array
+                                                    if (Integer.parseInt(String.valueOf(scores.get(i))) == max2) {
+                                                        Log.d(Constants.TAG, "is gewonnen!");
+                                                        winnaars.add(names.get(i));
+                                                    }
+                                                }
+                                                sendToChannel("END",
+                                                        TextUtils.join("|", winnaars),
+                                                        "");
+                                            } else {
+                                                huidigeRonde++;
+
+                                                runOnUiThread(new Runnable() {
 
                                                     @Override
                                                     public void run() {
 
-                                                        tempScores = new ArrayList<>();
-                                                        for (int i = 0; i < IDs.size(); i++) {
-                                                            tempScores.add(i, -1);
-                                                        }
+                                                        new Handler().postDelayed(new Runnable() {
 
-                                                        try {
-                                                            sendToChannel("START",
-                                                                    String.valueOf(gameAsyncTask.getRandomId()),
-                                                                    "");
-                                                        } catch (ExecutionException | InterruptedException e) {
-                                                            e.printStackTrace();
-                                                            sendToChannel("START",
-                                                                    "1",
-                                                                    "");
-                                                        }
+                                                            @Override
+                                                            public void run() {
+
+                                                                tempScores = new ArrayList<>();
+                                                                for (int i = 0; i < IDs.size(); i++) {
+                                                                    tempScores.add(i, -1);
+                                                                }
+
+                                                                try {
+                                                                    sendToChannel("START",
+                                                                            String.valueOf(gameAsyncTask.getRandomId()),
+                                                                            "");
+                                                                } catch (ExecutionException | InterruptedException e) {
+                                                                    e.printStackTrace();
+                                                                    sendToChannel("START",
+                                                                            "1",
+                                                                            "");
+                                                                }
+                                                            }
+                                                        }, 5000);
                                                     }
-                                                }, 5000);
+                                                });
                                             }
-                                        });
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }
-                });
+                        });
 
-                if (mode != MODE_MAKE) sendToChannel("ADD",mID,mName);
+                        Log.d(Constants.TAG, "Connected 2");
+                        if (mode == MODE_JOIN) new Handler().postDelayed(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                Log.d(Constants.TAG, "and adding");
+                                sendToChannel("ADD", mID, mName);
+                            }
+                        }, 1000);
+                    }
+            });
             }
         };
+
+        Log.d(Constants.TAG, "verbonden: " + String.valueOf(client.isSubscribed(mChannel)));
     }
 
     private void sendToChannel(String type,String message, String message2){
