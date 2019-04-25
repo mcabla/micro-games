@@ -22,42 +22,41 @@
     <LINK href="file:///android_asset/help/help_style.css" type="text/css" rel="stylesheet">
 </head>
 <img>
-<h1>Device List</h1>
-<h2>Getting Started</h2>
-<p>To use this application with your micro:bit you must do three things first:</p>
-<h3>1. Pair your micro:bit with your phone or tablet</h3>
-<p>You can pair your micro:bit with your phone quite easily using the Bluetooth screen within Android's Settings screen. The best way to learn how to pair with your micro:bit is to watch it being done by someone else. To that end I made a video showing the procedure:</p>
+<h1>Apparatenlijst</h1>
+<h2>Aan de slag</h2>
+<p>Om deze app met je micro:bit te gebruiken moet je eerst drie dingen doen:</p>
+<h3>1. Verbind de micro:bit met je telefoon of tablet</h3>
+<p>De micro:bit kan makkelijk verbonden worden met je apparaat door het Bluetooth scherm in de instellingen te gebruiken. In de volgende video wordt getoond hoe dat moet. </p>
 <p><a href="https://www.youtube.com/watch?v=7hLBfdAGkZI">Video: Pairing your phone with your micro:bit</a></p>
-<p>The pairing procedure is described below as well if you prefer to read rather than watch.</p>
-<p>Pairing makes your phone and micro:bit know and trust each other. Behind the scenes it equips them each with various encryption keys which they can use for security purposes.</p>
-<p>You do not need to pair your micro:bit and phone every time your use them together. They will stay paired until either one of the two devices 'forgets' about the other. How  might this happen?</p>
-<p>If you load a new hex file onto your micro:bit using a USB cable, your micro:bit will lose those encryption keys that were created when pairing. In other words it will 'forget' it was paired with your phone. So if you do use USB to flash a hex file then you will need to select your micro:bit in Android's Settings/Bluetooth screen and then select the Forget option to clear it from your phone. You'll then need to go through the pairing procedure again.</p>
-<p>If you flash your hex file onto your micro:bit using Bluetooth, perhaps with the Samsung micro:bit application, you should not need to pair again. Flashing the micro:bit over Bluetooth does not erase those pairing keys.</p>
-<h3>2. Load a suitable hex file onto your micro:bit</h3>
-<p>You'll need a hex file that contains the micro:bit Bluetooth 'services' which are needed (see below) and to flash it to your micro:bit. As mentioned you can do this over USB (and will need to pair again) or over Bluetooth using an application like the Samsung micro:bit app (and will not need to pair again).</p>
-<p>You can either load a hex file that someone else created or make one yourself. I have a list of hex files which you can use with this application available for download from </p>
-<p><a href="http://bluetooth-mdw.blogspot.co.uk/p/bbc-microbit.html">micro:bit hex files for Bluetooth uses</a></p>
-<p>When you unboxed your micro:bit it's probable it had all of the various Bluetooth 'services' on it but if you've flashed it with a hex file you made using one of the microbit.co.uk editors, you will have lost the majority of those services, by the way.</p>
-<p>For a more advanced tutorial on making your own hex files in a way which gives you complete control over its Bluetooth capabilities I made a video explaining this:</p>
-<p><a href="https://www.youtube.com/watch?v=LEQO_9NVTpE">Using C/C++ to make a micro:bit hex file</a></p>
-<h3>3. Allow Bluetooth scanning to be performed</h3>
-<p>On phones running the latest Android version, the first time you select the "FIND PAIRED BBC MICRO:BIT(s)" button you will get a dialogue pop up indicated that permission is required. You're being asked to let the application perform Bluetooth scanning which is how your micro:bit will be found (your micro:bit by the way is 'advertising' so it can be found). You should grant permission by selecting 'Allow' and then select the FIND... button again.</p>
-<h2>Finding Your micro:bit</h2>
-<p>To use any of the demos in this application, the first thing you must do is tell your phone to try to detect your micro:bit using Bluetooth.</p>
-<p>Start by pressing the FIND button at the foot of the first screen and this will
-    cause your phone to start scanning for micro:bit devices which are within Bluetooth range. </p>
-<p class="important_text">IMPORTANT:</p>
-<p>By default, only micro:bits you have paired your phone with will be listed for selection. If you haven't yet paired your device then follow the instructions in the 'Pairing' section below and then return to this application and select FIND again.</p>
-<p>To allow the application to be used with micro:bit firmware builds which do not implement Bluetooth security, you can disable the filtering on non-paired devices from within the Settings screen which is accessible from the overflow menu.
-</p>
-<h2>PAIRING</h2>
-<p>To pair your micro:bit with your phone go into the Android Settings screen and select Bluetooth.
-    If your micro:bit is powered on and in range then you should see it listed in the bottom part of the Bluetooth Settings screen in a section probably entitled "Available Devices".</p>
+<p>De verbindprocedure is hieronder beschreven voor als je liever leest dan de video kijkt.</p>
+
+<p>Koppelen zorgt ervoor dat jouw apparaat en de micro:bit elkaar vertrouwen, doormiddel van encryptiesleutels. </p>
+<p>Dit moet je niet elke keer doen wanneer je ze samen gebruikt. Ze blijven namelijk gekoppeld totdat één van de twee het ander apparaat 'vergeet'. Hoe dat kan gebeuren? Zo:</p>
+<p>Als je een nieuwe hex file op je micro:bit laadt met een USB-kabel, zal de micro:bit de encryptiesleutel die bij het koppelen werd aangemaakt vergeten. Hij 'vergeet' dus dat hij gekoppeld was met je apparaat. Dus als je USB gebruikt om een hex file te laden, moet je in de Bluetooth instellingen van je apparaat de micro:bit eerst ontkoppelen ('vergeten'), en daarna weer koppelen.</p>
+
+<p>Als je een hex file op je micro:bit zet via Bluetooth, zou je niet opnieuw moeten paren. Flashing via Bluetooth laat de encryptiesleutels niet vergeten.</p>
+<h3>2. Laad een gepaste hex file op de micro:bit</h3>
+<p>Je hebt een hex bestand nodig dat de 'micro:bit Bluetooth services' bevat. Deze moet op de micro:bit gezet worden. Dit kan via USB (dan moet je opnieuw koppelen), of via Bluetooth, gebruikmakend van een app zoals de Samsung micro:bit app (opnieuw koppelen moet dan niet.)</p>
+<p>Je kan een hex file van iemand anders uploaden, of er zelf een maken. Hier is een lijst van hex files die je kan gebruiken met deze app.</p>
+<p><a href="http://bluetooth-mdw.blogspot.co.uk/p/bbc-microbit.html">micro:bit hex bestanden voor Bluetooth gebruik</a></p>
+<p>Voor een meer geavanceerde tutorial op hoe je je eigen Bluetooth hex bestanden maakt, zie volgende video</p>
+<p><a href="https://www.youtube.com/watch?v=LEQO_9NVTpE">Gebruik maken van C/C++ om een micro:bit hex bestand te maken.</a></p>
+<h3>3. Bluetooth scannen</h3>
+<p>Op telefoons met de laatste Android versie, de eerste keer dan je tikt op de "FIND PAIRED BBC MICRO:BIT(s)" knop, zal je een dialoog pop up krijgen die vraagt voor toestemming voor Bluetooth scanning. Geef toestemming en klik terug op de 'FIND...' Button.</p>
+<h2>De micro:bit vinden</h2>
+<p>Om te beginnen moet je jouuw apparaat laten de micro:bit detecteren via Bluetooth.</p>
+<p>Begin met het drukken op de FIND knop onderaan het eerste scherm, dit zorgt ervoor dat je apparaat begint met scannen naar micro:bits binnen bereik.</p>
+<p class="important_text">BELANGRIJK:</p>
+<p>Standaard worden alleen gekoppelde micro:bits getoond in de lijst. Als je nog niet gekoppeld hebt, volg de instructies in het 'KOPPELEN'gedeelte onderaan, en ga dan terug naar de app om op FIND... te drukken.</p>
+<p>Om de applicatie te kunnen gebruiken met micro:bits die geen Bluetooth-beveiliging implementeren, kunt u het filteren op niet-gepaarde apparaten uitschakelen via het scherm Instellingen dat toegankelijk is vanuit het beginscherm.</p>
+<h2>KOPPELEN</h2>
+<p>Om je micro:bit met je apparaat te koppelen, ga naar de Android Bluetooth instellingen.
+    Als je micro:bit aan staat en binnen het bereik is, zou je hem moeten zien staan in de lijst in het Bluetooth instellingen scherm, waarschijnlijk onder 'Beschikbare apparaten'. </p>
 <img src="file:///android_asset/help/pairing.png"/>
-<p>Switch your micro:bit into "PAIRING MODE" mode by holding down buttons A and B together and then pressing the reset button on the back of the micro:bit,
-    continuing to hold buttons A and B for a sdecond or two.</p>
-<p>1. micro:bit shown as available but not paired in Android Settings, Bluetooth screen</p>
-<p>2. Enter the 6 digit number which your micro:bit will display when put into BLUEZONE mode in this pop up dialogue</p>
-<p>3. micro:bit now shown as paired. Now try to find it again from the first screen of this application.</p>
+<p>Zet je micro:bit in 'PAIRING MODE' door knoppen A en B ingedrukt te houden, en vervolgens op de reset-knop (op de achterkant van de micro:bit) te drukken, terwijl knoppen A en B nog een paar seconden ingedrukt gehouden worden. </p>
+
+<p>1. micro:bit wordt getoond als beschikbaar maar niet gekoppeld in Android Bluetooth instellingen</p>
+<p>2. Voer het zescijferige code die op de micro:bit verschijnt, in het pop up venster</p>
+<p>3. micro:bit wordt nu getoond als gekoppeld. Probeer het nu opnieuw te vinden in het eerste scherm van deze app. </p>
 </body>
 </html>
