@@ -174,7 +174,7 @@ while in_leven:
         if j % 20 == 0:
             versnelling += 1
         
-            if j >= 400:
+            if j >= 500:
                 versnelling -=1
           
         i = versnelling
