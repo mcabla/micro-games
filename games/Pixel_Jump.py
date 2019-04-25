@@ -78,6 +78,8 @@ def bewegend_obstakel():
   
     O = 0
     obstakel()
+    if ObstakelX == 0 and hoogteP1 == 4:
+        display.set_pixel(0, 4, 9)
     
     O = 9
     ObstakelX -= 1
