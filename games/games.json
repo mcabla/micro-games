@@ -4,7 +4,7 @@
       "id": 1,
       "name": "Pixel Jump",
       "file": "Pixel_Jump.py",
-      "description":"Druk op A om over de opstakels te springen.",
+      "description":"Druk op A of B om over de opstakels te springen.",
       "icon":"runningman.jpg",
       "color":"#000000",
       "max_spelers": 0
@@ -13,7 +13,7 @@
       "id": 2,
       "name": "Reactietijd",
       "file": "reactietijd.py",
-      "description":"Testen van de reactietijd: druk op een knop na het rode scherm",
+      "description":"Testen van de reactietijd: druk op A of B nadat het rode scherm verschijnt.",
       "icon":"speedmeter.png",
       "color":"#ba6d14",
       "max_spelers": 0
@@ -22,7 +22,7 @@
       "id": 3,
       "name": "Coin Flip",
       "file": "coinflip.py",
-      "description":"Kop of munt.",
+      "description":"Kop of munt: maak een gok.",
       "icon":"coin.png",
       "color":"#bc8000",
       "max_spelers": 0
@@ -31,7 +31,7 @@
       "id": 4,
       "name": "Klikspel",
       "file": "ipklikspel.py",
-      "description":"Zo snel mogelijk 50 keer drukken.",
+      "description":"Zo snel mogelijk 50 keer op een knop naar keuze drukken.",
       "icon":"klik.png",
       "color":"#4f4f4f",
       "max_spelers": 0
@@ -40,7 +40,7 @@
       "id": 5,
       "name": "Blad, steen, schaar",
       "file": "blad_steen_schaar.py",
-      "description":"wisselen met A, selecteren met B",
+      "description":"wisselen met A, selecteren met B. Speel tegen de micro:bit",
       "icon":"schaarsteenpapier.png",
       "color":"#2f305e",
       "max_spelers": 0
@@ -49,7 +49,7 @@
       "id": 6,
       "name": "Hoger, Lager",
       "file": "hogerlager.py",
-      "description":"Hoger, lager",
+      "description":"Raad of het volgende getal hoger of lager zal zijn. Getallen tussen *** en ***.",
       "icon":"hogerlager.png",
       "color":"#1b7700",
       "max_spelers": 0
@@ -58,7 +58,7 @@
       "id": 7,
       "name": "Vallende Appels",
       "file": "VallendeAppels.py",
-      "description":"Beweeg naar links en rechts om de appels te vangen.",
+      "description":"Beweeg naar links (A) en rechts (B) om de appels te vangen.",
       "icon":"appel.png",
       "color":"#af2a2a",
       "max_spelers": 0
@@ -67,7 +67,7 @@
       "id": 8,
       "name": "Kermis",
       "file": "kermis.py",
-      "description":"Beschrijving toevoegen!",
+      "description":"Beschrijving toevoegen! *Maak een zo hoog mogelijke stapel blokjes.*",
       "icon":"kermis.png",
       "color":"#0a4c75",
       "max_spelers": 0
