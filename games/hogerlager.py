@@ -7,13 +7,13 @@ score = 0
 
 run = True
 while run:
-    getal = random.randrange(0,9)
-    willekeurig = random.randrange(0,9)
+    getal = random.randrange(0,9) # willekeurig getal dat op het scherm komt
+    willekeurig = random.randrange(0,9) # het getal naar waar gegokt moet worden
     getal_str = str(getal)
     display.show(getal_str)
     while True:
 
-        if button_a.was_pressed():
+        if button_a.was_pressed(): # Knop A: het te zoeken getal is LAGER dan het getal dat op het scherm staat
             if int(willekeurig) >= int(getal):
                 score += 1
                 display.scroll("JUIST!")
@@ -25,7 +25,7 @@ while run:
             break
         
         
-        elif button_b.was_pressed():
+        elif button_b.was_pressed(): # Knop B: het te zoeken getal is HOGER dan het getal dat op het scherm staat
             if int(willekeurig) <= int(getal):
                 score += 1
                 display.scroll("JUIST!")
