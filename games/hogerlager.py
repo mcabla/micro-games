@@ -38,5 +38,6 @@ for i in range(0,4):
 				display.scroll("FOUT! " + str(getal))
 				time.sleep(6)
 				break
+time.sleep(1)
 display.scroll("SCORE=" + str(score))
 time.sleep(4)
