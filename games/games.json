@@ -22,7 +22,7 @@
       "id": 3,
       "name": "Coin Flip",
       "file": "coinflip.py",
-      "description":"Kop of munt: maak een gok.",
+      "description":"Kop (A) of munt (B): maak een gok.",
       "icon":"coin.png",
       "color":"#bc8000",
       "max_spelers": 0
@@ -49,7 +49,7 @@
       "id": 6,
       "name": "Hoger, Lager",
       "file": "hogerlager.py",
-      "description":"Raad of het volgende getal hoger of lager zal zijn. Getallen tussen *** en ***.",
+      "description":"Raad of het volgende getal hoger of lager zal zijn. Getallen tussen 0 en 9.",
       "icon":"hogerlager.png",
       "color":"#1b7700",
       "max_spelers": 0
@@ -67,7 +67,7 @@
       "id": 8,
       "name": "Kermis",
       "file": "kermis.py",
-      "description":"Beschrijving toevoegen! *Maak een zo hoog mogelijke stapel blokjes.*",
+      "description":"Maak een zo hoog mogelijke stapel blokjes. Druk op A of B om een rij te plaatsen",
       "icon":"kermis.png",
       "color":"#0a4c75",
       "max_spelers": 0
