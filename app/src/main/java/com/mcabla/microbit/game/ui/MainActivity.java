@@ -663,6 +663,8 @@ public class MainActivity extends AppCompatActivity implements ScanResultsConsum
         content = content.replace("running_time()","droid.running_time().result");
 
         content = content.replace("str(\"","\"");
+        
+        content = content.replace("str(str)","str");
 
         content += "\n\ndroid.send_score(str(score)).result";
         content += "\n\ntime.sleep(3)";
