@@ -19,23 +19,22 @@ for i in range(0,4):
 		if button_a.was_pressed():
 			if willekeurig > getal:
 				score += 1
-				display.scroll("JUIST!" + str(getal))
+				display.scroll("JUIST! " + str(getal))
 				time.sleep(6) #Wegens een beperking in de python implementatie op Android, moeten we handmatig een sleep toevoegen achter een scroll
 				break
 			else:
-				display.scroll("FOUT!" + str(getal))
+				display.scroll("FOUT! " + str(getal))
 				time.sleep(6)
 				break
 		elif button_b.was_pressed():
 			if willekeurig < getal:
 				score += 1
-				display.scroll("JUIST!" + str(getal))
+				display.scroll("JUIST! " + str(getal))
 				time.sleep(6)
 				break
 			else:
-				str = 
-				display.scroll("FOUT!" + str(getal))
+				display.scroll("FOUT! " + str(getal))
 				time.sleep(6)
 				break
 display.scroll("SCORE=" + str(score))
-time.sleep(7)
+time.sleep(4)
