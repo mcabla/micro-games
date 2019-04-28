@@ -13,6 +13,8 @@ for i in range(0,4):
 	willekeurig = random.randrange(1,8)
 	willekeurig_str = str(willekeurig) #Wegens een beperking in de python implementatie op Android, moeten we helaas onze strings maken buiten de parameters van de microbit functies
 	display.show(willekeurig_str)
+	button_a.was_pressed()
+	button_b.was_pressed()
 	
 	while True:
 		time.sleep(0.2) #We zetten een niet merkbare vertraging op de lus om te voorkomen dat er niet te veel requests naar de microbit gestuurd worden.
