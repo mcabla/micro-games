@@ -31,7 +31,7 @@ verschil = 0
 
 while tijd:
   time.sleep(0.01)
-  if button_a.was_pressed():
+  if button_a.was_pressed() or button_b.was_pressed():
     start = min(start, running_time())
     aantal +=1
     if aantal >= 10:  
