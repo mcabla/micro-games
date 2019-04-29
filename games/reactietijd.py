@@ -35,7 +35,7 @@ start2= running_time()  #start2 telt vanaf het scherm rood is
 while not gedrukt:              #snel drukken na wachttijd
   if (button_a.was_pressed() or button_b.was_pressed()):
     gedrukt=True
-    if (running_time()-start2)>=400:     
+    if (running_time()-start2)>=300:     
       reactietijd = int(running_time() - start2)
       display.scroll(reactietijd)         #tijd in milliseconden
       score = (1/reactietijd)*1000
