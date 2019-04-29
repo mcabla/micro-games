@@ -1,5 +1,6 @@
 #wie kortste reactietijd heeft wint
 #wie hoogste score(= 1/reactietijd) heeft wint
+#valsspelers krijgen score 0
 
 from microbit import *
 import time
@@ -23,15 +24,22 @@ while timer<tijd:               #wachttijd
   display.show(Image("00000:00000:90909:00000:00000"))
   button_a.was_pressed()
   button_b.was_pressed()
-  timer= running_time() - start
+  timer = running_time() - start
   time.sleep(1)
 
 display.show(Image("99999:99999:99999:99999:99999"))
+timer = running_time() - start
+start2= running_time()  #start2 telt vanaf het scherm rood is
+
 while not gedrukt:              #snel drukken na wachttijd
-  if (button_a.was_pressed() or button_b.was_pressed()) and (running_time()-start)>=tijd:
-    reactietijd = int(running_time() - start - tijd)
-    gedrukt = True
-    display.scroll(reactietijd)         #tijd in milliseconden
+  if (button_a.was_pressed() or button_b.was_pressed()):
+    if (running_time()-start2)>=400:      
+      reactietijd = int(running_time() - start2)
+      gedrukt = True
+      display.scroll(reactietijd)         #tijd in milliseconden
+      score = (1/reactietijd)*1000
+    elif (running_time()-start2)>=tijd:
+      score = 0
+      display.scroll("Valse start")
   time.sleep(0.01)
     
-score = (1/reactietijd)*1000
