@@ -19,7 +19,7 @@ for i in range(0,4):
 	while True:
 		time.sleep(0.2) #We zetten een niet merkbare vertraging op de lus om te voorkomen dat er niet te veel requests naar de microbit gestuurd worden.
 		if button_a.was_pressed():
-			if willekeurig > getal:
+			if willekeurig >= getal:
 				score += 1
 				display.scroll("JUIST! " + str(getal))
 				time.sleep(6) #Wegens een beperking in de python implementatie op Android, moeten we handmatig een sleep toevoegen achter een scroll
@@ -29,7 +29,7 @@ for i in range(0,4):
 				time.sleep(6)
 				break
 		elif button_b.was_pressed():
-			if willekeurig < getal:
+			if willekeurig <= getal:
 				score += 1
 				display.scroll("JUIST! " + str(getal))
 				time.sleep(6)
