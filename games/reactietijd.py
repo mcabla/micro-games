@@ -42,4 +42,4 @@ while not gedrukt:              #snel drukken na wachttijd
     else:
       score = 0
       display.scroll("Valse start")
-  time.sleep(0.01)
+  time.sleep(2)
