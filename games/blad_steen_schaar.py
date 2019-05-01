@@ -43,6 +43,9 @@ while True:
     
 i2 = random.randint(0,2)
 
+display.show(keuze2[i2])
+time.sleep(2)
+
 score = 0
 if i == i2:
   score = 1
