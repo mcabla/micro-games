@@ -94,9 +94,8 @@ public class MicrobitFacade extends RpcReceiver {
     }
 
     @Rpc(description = "Get button a pressed")
-    public Boolean button_a_is_pressed() throws InterruptedException {
+    public boolean button_a_is_pressed() throws InterruptedException {
         mOnInitLock.await();
-        Log.d("micro:games BUTTON","" + String.valueOf(gameActivityWeakReference.get().getPressed(1)));
         if (gameActivityWeakReference != null) return gameActivityWeakReference.get().getPressed(1);
         return false;
     }
@@ -118,8 +117,7 @@ public class MicrobitFacade extends RpcReceiver {
     @Rpc(description = "Get button b was pressed")
     public boolean button_b_was_pressed() throws InterruptedException {
         mOnInitLock.await();
-        if (gameActivityWeakReference != null)
-            return gameActivityWeakReference.get().getWasPressed(2);
+        if (gameActivityWeakReference != null) return gameActivityWeakReference.get().getWasPressed(2);
         return false;
     }
 
