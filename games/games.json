@@ -13,7 +13,7 @@
       "id": 2,
       "name": "Reactietijd",
       "file": "reactietijd.py",
-      "description":"Testen van de reactietijd: druk op A of B nadat het rode scherm verschijnt.",
+      "description":"Testen van de reactietijd: druk op A of B nadat het rode scherm verschijnt, na een willekeurige wachttijd.",
       "icon":"speedmeter.png",
       "color":"#ba6d14",
       "max_spelers": 0
@@ -31,7 +31,7 @@
       "id": 4,
       "name": "Klikspel",
       "file": "ipklikspel.py",
-      "description":"Zo snel mogelijk 50 keer op een knop naar keuze drukken.",
+      "description":"Zo snel mogelijk 50 keer op een knop naar keuze drukken. Het spel start vanaf de eerste druk op een knop.",
       "icon":"klik.png",
       "color":"#4f4f4f",
       "max_spelers": 0
@@ -58,7 +58,7 @@
       "id": 7,
       "name": "Vallende Appels",
       "file": "VallendeAppels.py",
-      "description":"Beweeg naar links (A) en rechts (B) om de appels te vangen.",
+      "description":"Beweeg naar links (A) en rechts (B) om de vallende appels te vangen.",
       "icon":"appel.png",
       "color":"#af2a2a",
       "max_spelers": 0
