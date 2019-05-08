@@ -73,9 +73,9 @@ import ibt.ortc.extensibility.*;
 import ibt.ortc.api.*;
 
 public class GameActivity extends AppCompatActivity implements ConnectionStatusListener{
-    public static int MODE_DEV = 0;
-    public static int MODE_JOIN = 1;
-    public static int MODE_MAKE = 2;
+    public static final int MODE_DEV = 0;
+    public static final int MODE_JOIN = 1;
+    public static final int MODE_MAKE = 2;
 
     private ConstraintLayout constraintLayout;
 
@@ -233,7 +233,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
             finish();
         }
         if(mode == MODE_MAKE) {
-            subscribeToChannel(String.valueOf(ThreadLocalRandom.current().nextInt(1000, 999999)));
+            tryToSubscribeToChannel(String.valueOf(ThreadLocalRandom.current().nextInt(1, 10)),0);
             setText("Een groep maken", "Vul hieronder het aantal rondes in dat je wilt spelen.");
             button.setVisibility(View.GONE);
             new Handler ().postDelayed(new Runnable() {
@@ -263,6 +263,35 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
         }
 
 
+    }
+
+    private void tryToSubscribeToChannel(final String mChannel, final int teller){
+        subscribeToChannel(mChannel);
+        final boolean stop = exiting;
+        if (teller < 5) {
+            final int teller_2 = teller + 1;
+            if (!client.isSubscribed(mChannel)) new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (!client.isSubscribed(mChannel) && !stop) {
+                        Log.d(Constants.TAG, "NOT CONNECTED! RETRYING!");
+                        description.setText("Het lijkt er op dat uw internetverbinding te traag is. We proberen opnieuw.");
+                        tryToSubscribeToChannel(mChannel, teller_2);
+                    }
+                }
+            }, 7000);
+        } else {
+            description.setText("Uw internetverbinding is te traag. U kunt wel nog singleplayer spelen. Kijk hiervoor in de handleiding.");
+            button.setText("Sluiten");
+            button.setVisibility(View.VISIBLE);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+        }
     }
 
     private  void subscribeToChannel(final String channel){
@@ -727,7 +756,7 @@ public class GameActivity extends AppCompatActivity implements ConnectionStatusL
                 input2.setVisibility(View.GONE);
                 mName = input2.getText().toString();
                 if (mode == MODE_JOIN) {
-                    subscribeToChannel(input.getText().toString());
+                    tryToSubscribeToChannel(input.getText().toString(),0);
                 } else {
                     IDs.add(0, mID);
                     names.add(0, mName);
