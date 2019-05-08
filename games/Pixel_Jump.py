@@ -170,24 +170,24 @@ obstakel()
 while in_leven:      
     speler()
     if i ==(10):
-# hier is j RE met tempo versnellen        
-        if j % 20 == 0:
+        bewegend_obstakel()
+        # hier is j RE met tempo versnellen        
+        if j % 20 == 0 and j < 500:
             versnelling += 1
-        
-            if j >= 400:
-                versnelling -=1
           
         i = versnelling
-        
-        bewegend_obstakel()
     
+    else:
+         i += 1
+         j += 1    
+        
     if ObstakelX == 0 and hoogteP1 == 4:
         in_leven = False
-        
-    i += 1
-    j +=1
-    time.sleep(0.02)
     
+    time.sleep(0.021)
+ 
+
 display.scroll("Game over")
 score = running_time()
+
 time.sleep(5)
