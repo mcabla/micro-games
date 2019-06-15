@@ -7,7 +7,7 @@ The concept is simple:
  * Program a game like you normally would for the micro:bit.
  * Make your game end with an integer stored in a variable called score.
  * The person with the highest score gets a point.
- * Multiply games get played and the person with the highest amount of points wins.
+ * Multiple games get played and the person with the highest amount of points wins.
 
 ## Useful links
  * (https://github.com/ainsophical/DROID_PYTHON)
